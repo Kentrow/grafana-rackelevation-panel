@@ -1,0 +1,7 @@
+device,rack,position,u_height,face,is_full_depth,role,model,status,value
+pdu-a,RACK-PDU,,0,rear,false,pdu,APC AP8853,up,3.2
+pdu-b,RACK-PDU,,0,rear,false,pdu,APC AP8853,up,2.9
+cable-mgr-01,RACK-PDU,,,,,cable-manager,Generic vertical manager,,
+pdu-c,RACK-PDU,12,0,rear,false,pdu,Raritan PX3,down,
+sw-pdu-01,RACK-PDU,40,1,front,true,switch,Arista 7050SX3,up,47
+srv-pdu-01,RACK-PDU,30,2,front,true,server,Lenovo SR650 V3,up,55

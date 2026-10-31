@@ -1,0 +1,12 @@
+# Alerts with a device label, for the alerts frame of the panel: ALERTS{alertstate="firing", device!=""}.
+groups:
+  - name: devices
+    rules:
+      - alert: DeviceDown
+        expr: device_up == 0
+        labels:
+          severity: critical
+      - alert: HighTemperature
+        expr: device_temperature_celsius > 65
+        labels:
+          severity: warning

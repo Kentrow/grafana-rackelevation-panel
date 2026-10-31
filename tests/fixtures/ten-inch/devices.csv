@@ -1,0 +1,7 @@
+device,rack,position,u_height,face,is_full_depth,role,model,status,value
+sw-lab-10-01,LAB-10IN,12,1,front,true,switch,Netgear GS308,up,38
+patch-lab-10-01,LAB-10IN,11,1,front,false,patch-panel,Digitus 10-inch 12 ports,,
+nuc-lab-10-01,LAB-10IN,8,2,front,true,server,Intel NUC on 10-inch shelf,up,51
+ups-lab-10-01,LAB-10IN,1,2,front,true,ups,Eaton 10-inch UPS,down,
+sw-lab-19-01,LAB-19IN,12,1,front,true,switch,Cisco C9200L-24T,up,42
+srv-lab-19-01,LAB-19IN,8,2,front,true,server,Dell R660,up,63

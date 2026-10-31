@@ -1,0 +1,59 @@
+{
+  "$schema": "https://raw.githubusercontent.com/grafana/grafana/main/docs/sources/developers/plugins/plugin.schema.json",
+  "type": "panel",
+  "name": "Rack elevation",
+  "id": "kentrow-rackelevation-panel",
+  "suggestions": true,
+  "info": {
+    "keywords": [
+      "panel",
+      "rack",
+      "elevation",
+      "dcim",
+      "netbox",
+      "nautobot",
+      "datacenter",
+      "inventory",
+      "infrastructure"
+    ],
+    "description": "Front and rear view of server racks, U by U, placed from your inventory data and coloured by device state or metric.",
+    "author": {
+      "name": "Kentrow",
+      "url": "https://github.com/Kentrow"
+    },
+    "logos": {
+      "small": "img/logo.svg",
+      "large": "img/logo.svg"
+    },
+    "links": [
+      {
+        "name": "Source code",
+        "url": "https://github.com/Kentrow/grafana-rackelevation-panel"
+      },
+      {
+        "name": "Report a bug",
+        "url": "https://github.com/Kentrow/grafana-rackelevation-panel/issues"
+      }
+    ],
+    "screenshots": [
+      {
+        "name": "Both faces of five racks, temperature colours, alert badges and the device card",
+        "path": "img/screenshot-racks.png"
+      },
+      {
+        "name": "Highlight from a dashboard variable and role filter, light theme",
+        "path": "img/screenshot-light.png"
+      },
+      {
+        "name": "Overlapping and overflowing devices, drawn and listed",
+        "path": "img/screenshot-conflicts.png"
+      }
+    ],
+    "version": "%VERSION%",
+    "updated": "%TODAY%"
+  },
+  "dependencies": {
+    "grafanaDependency": ">=13.2.0",
+    "plugins": []
+  }
+}

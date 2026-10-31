@@ -1,0 +1,849 @@
+{
+  "uid": "rack-elevation-fixtures",
+  "title": "Rack elevation fixtures",
+  "tags": [
+    "rack-elevation"
+  ],
+  "editable": true,
+  "graphTooltip": 0,
+  "schemaVersion": 39,
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "",
+  "refresh": "",
+  "links": [],
+  "annotations": {
+    "list": []
+  },
+  "templating": {
+    "list": []
+  },
+  "panels": [
+    {
+      "id": 1,
+      "type": "kentrow-rackelevation-panel",
+      "title": "basic",
+      "description": "One 42U rack, every state",
+      "datasource": {
+        "type": "grafana-testdata-datasource",
+        "uid": "trlxrdZVk"
+      },
+      "gridPos": {
+        "w": 8,
+        "h": 25,
+        "x": 0,
+        "y": 0
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-testdata-datasource",
+            "uid": "trlxrdZVk"
+          },
+          "refId": "basic",
+          "scenarioId": "csv_content",
+          "csvContent": "device,rack,position,u_height,face,is_full_depth,role,model,status,value\npatch-hq-01,RACK-HQ-01,42,1,front,false,patch-panel,Panduit CP48,,\nfw-hq-01,RACK-HQ-01,40,1,front,true,firewall,FortiGate 100F,up,41\nsw-hq-core-01,RACK-HQ-01,38,1,front,true,switch,Cisco C9300-48P,up,45\nwlc-hq-01,RACK-HQ-01,35,1,front,true,wireless,Aruba 7210,up,62\nwlc-hq-02,RACK-HQ-01,34,1,front,true,wireless,Aruba 7210,down,\nsrv-hq-01,RACK-HQ-01,20,2,front,true,server,Dell R760,up,38\n"
+        }
+      ],
+      "options": {
+        "label": [
+          "name",
+          "value"
+        ]
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "celsius",
+          "decimals": 1,
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 50
+              },
+              {
+                "color": "red",
+                "value": 65
+              }
+            ]
+          }
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 2,
+      "type": "kentrow-rackelevation-panel",
+      "title": "two-faces",
+      "description": "Front, rear and full-depth devices",
+      "datasource": {
+        "type": "grafana-testdata-datasource",
+        "uid": "trlxrdZVk"
+      },
+      "gridPos": {
+        "w": 8,
+        "h": 25,
+        "x": 8,
+        "y": 0
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-testdata-datasource",
+            "uid": "trlxrdZVk"
+          },
+          "refId": "two-faces",
+          "scenarioId": "csv_content",
+          "csvContent": "device,rack,position,u_height,face,is_full_depth,role,model,status,value\nsw-front-01,RACK-2F,40,1,front,false,switch,Cisco C9200L-24T,up,39\npatch-rear-01,RACK-2F,40,1,rear,false,patch-panel,Panduit CP24,,\nsrv-full-01,RACK-2F,30,2,front,true,server,Dell R760,up,44\nups-rear-01,RACK-2F,2,3,rear,true,ups,APC SRT3000,up,31\nsrv-noface-01,RACK-2F,20,1,,,server,HPE DL360 Gen11,up,52\nfw-rear-01,RACK-2F,10,1,rear,,firewall,FortiGate 60F,down,\n"
+        }
+      ],
+      "options": {
+        "label": [
+          "name",
+          "value"
+        ],
+        "face": "both"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "celsius",
+          "decimals": 1,
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 50
+              },
+              {
+                "color": "red",
+                "value": 65
+              }
+            ]
+          }
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 3,
+      "type": "kentrow-rackelevation-panel",
+      "title": "desc-units",
+      "description": "Descending numbering from U0, next to the same rack ascending",
+      "datasource": {
+        "type": "grafana-testdata-datasource",
+        "uid": "trlxrdZVk"
+      },
+      "gridPos": {
+        "w": 8,
+        "h": 25,
+        "x": 16,
+        "y": 0
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-testdata-datasource",
+            "uid": "trlxrdZVk"
+          },
+          "refId": "devices",
+          "scenarioId": "csv_content",
+          "csvContent": "device,rack,position,u_height,face,is_full_depth,role,model,status,value\ndesc-unit0,RACK-DESC,0,1,front,true,switch,Juniper EX2300,up,35\ndesc-2u,RACK-DESC,3,2,front,true,server,Dell R760,up,41\ndesc-unit11,RACK-DESC,11,1,front,true,patch-panel,Panduit CP24,,\nasc-unit0,RACK-ASC,0,1,front,true,switch,Juniper EX2300,up,36\nasc-2u,RACK-ASC,3,2,front,true,server,Dell R760,up,40\nasc-unit11,RACK-ASC,11,1,front,true,patch-panel,Panduit CP24,,\n"
+        },
+        {
+          "datasource": {
+            "type": "grafana-testdata-datasource",
+            "uid": "trlxrdZVk"
+          },
+          "refId": "racks",
+          "scenarioId": "csv_content",
+          "csvContent": "rack,name,u_height,starting_unit,desc_units,site\nRACK-DESC,Descending rack,12,0,true,LAB\nRACK-ASC,Ascending rack,12,0,false,LAB\n"
+        }
+      ],
+      "options": {
+        "label": [
+          "name",
+          "value"
+        ]
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "celsius",
+          "decimals": 1,
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 50
+              },
+              {
+                "color": "red",
+                "value": 65
+              }
+            ]
+          }
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 4,
+      "type": "kentrow-rackelevation-panel",
+      "title": "zero-u",
+      "description": "PDUs and a cable manager in the 0U band",
+      "datasource": {
+        "type": "grafana-testdata-datasource",
+        "uid": "trlxrdZVk"
+      },
+      "gridPos": {
+        "w": 8,
+        "h": 25,
+        "x": 0,
+        "y": 25
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-testdata-datasource",
+            "uid": "trlxrdZVk"
+          },
+          "refId": "zero-u",
+          "scenarioId": "csv_content",
+          "csvContent": "device,rack,position,u_height,face,is_full_depth,role,model,status,value\npdu-a,RACK-PDU,,0,rear,false,pdu,APC AP8853,up,3.2\npdu-b,RACK-PDU,,0,rear,false,pdu,APC AP8853,up,2.9\ncable-mgr-01,RACK-PDU,,,,,cable-manager,Generic vertical manager,,\npdu-c,RACK-PDU,12,0,rear,false,pdu,Raritan PX3,down,\nsw-pdu-01,RACK-PDU,40,1,front,true,switch,Arista 7050SX3,up,47\nsrv-pdu-01,RACK-PDU,30,2,front,true,server,Lenovo SR650 V3,up,55\n"
+        }
+      ],
+      "options": {
+        "label": [
+          "name",
+          "value"
+        ],
+        "face": "both"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "celsius",
+          "decimals": 1,
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 50
+              },
+              {
+                "color": "red",
+                "value": 65
+              }
+            ]
+          }
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 5,
+      "type": "kentrow-rackelevation-panel",
+      "title": "collisions",
+      "description": "Overlaps, overflows and a duplicate: every device drawn, errors listed",
+      "datasource": {
+        "type": "grafana-testdata-datasource",
+        "uid": "trlxrdZVk"
+      },
+      "gridPos": {
+        "w": 8,
+        "h": 25,
+        "x": 8,
+        "y": 25
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-testdata-datasource",
+            "uid": "trlxrdZVk"
+          },
+          "refId": "devices",
+          "scenarioId": "csv_content",
+          "csvContent": "device,rack,position,u_height,face,is_full_depth,role,model,status,value\nsw-a,RACK-C,20,1,front,false,switch,Cisco C9300-24T,up,40\nsw-b,RACK-C,20,2,front,false,switch,Cisco C9300-48P,up,43\npatch-rear-c,RACK-C,20,1,rear,false,patch-panel,Panduit CP24,,\nsrv-full-c,RACK-C,10,2,front,true,server,Dell R660,up,51\npsu-rear-c,RACK-C,11,1,rear,false,power,Eaton ePDU G3,up,\nsrv-big-c,RACK-C,23,4,front,true,server,Dell R960,up,60\nnas-low-c,RACK-C,0,1,front,true,storage,Synology RS1221+,up,33\nsw-a,RACK-C,5,1,front,false,switch,Cisco C9300-24T,up,40\n"
+        },
+        {
+          "datasource": {
+            "type": "grafana-testdata-datasource",
+            "uid": "trlxrdZVk"
+          },
+          "refId": "racks",
+          "scenarioId": "csv_content",
+          "csvContent": "rack,name,u_height,starting_unit,desc_units,site\nRACK-C,Conflicts,24,1,false,LAB\n"
+        }
+      ],
+      "options": {
+        "label": [
+          "name",
+          "value"
+        ]
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "celsius",
+          "decimals": 1,
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 50
+              },
+              {
+                "color": "red",
+                "value": 65
+              }
+            ]
+          }
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 6,
+      "type": "kentrow-rackelevation-panel",
+      "title": "auto-height",
+      "description": "No racks frame: the rack grows to 47U",
+      "datasource": {
+        "type": "grafana-testdata-datasource",
+        "uid": "trlxrdZVk"
+      },
+      "gridPos": {
+        "w": 8,
+        "h": 25,
+        "x": 16,
+        "y": 25
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-testdata-datasource",
+            "uid": "trlxrdZVk"
+          },
+          "refId": "auto-height",
+          "scenarioId": "csv_content",
+          "csvContent": "device,rack,position,u_height,face,is_full_depth,role,model,status,value\nsw-tall-01,RACK-TALL,47,1,front,true,switch,Arista 7280R3,up,42\nsrv-tall-01,RACK-TALL,45,2,front,true,server,Dell R760,up,48\nsrv-tall-02,RACK-TALL,1,2,front,true,server,Dell R760,up,36\n"
+        }
+      ],
+      "options": {
+        "label": [
+          "name",
+          "value"
+        ]
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "celsius",
+          "decimals": 1,
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 50
+              },
+              {
+                "color": "red",
+                "value": 65
+              }
+            ]
+          }
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 7,
+      "type": "kentrow-rackelevation-panel",
+      "title": "children",
+      "description": "Blades listed in the tooltip of their chassis",
+      "datasource": {
+        "type": "grafana-testdata-datasource",
+        "uid": "trlxrdZVk"
+      },
+      "gridPos": {
+        "w": 8,
+        "h": 25,
+        "x": 0,
+        "y": 50
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-testdata-datasource",
+            "uid": "trlxrdZVk"
+          },
+          "refId": "children",
+          "scenarioId": "csv_content",
+          "csvContent": "device,rack,position,u_height,face,is_full_depth,role,model,status,value,parent_device\nchassis-01,RACK-BLADE,10,10,front,true,blade-chassis,Dell MX7000,up,46,\nblade-01,,,,,,blade-server,Dell MX760c,up,58,chassis-01\nblade-02,,,,,,blade-server,Dell MX760c,up,61,chassis-01\nblade-03,,,,,,blade-server,Dell MX760c,down,,chassis-01\nblade-04,,,,,,blade-server,Dell MX760c,,,chassis-01\nblade-99,,,,,,blade-server,Dell MX760c,up,40,chassis-99\nsw-blade-01,RACK-BLADE,40,1,front,true,switch,Dell S5248F-ON,up,44,\n"
+        }
+      ],
+      "options": {
+        "label": [
+          "name",
+          "value"
+        ]
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "celsius",
+          "decimals": 1,
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 50
+              },
+              {
+                "color": "red",
+                "value": 65
+              }
+            ]
+          }
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 8,
+      "type": "kentrow-rackelevation-panel",
+      "title": "prometheus-auto",
+      "description": "Three Prometheus frames, not joined: the panel points to Join by field",
+      "datasource": {
+        "type": "grafana-testdata-datasource",
+        "uid": "trlxrdZVk"
+      },
+      "gridPos": {
+        "w": 8,
+        "h": 25,
+        "x": 8,
+        "y": 50
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-testdata-datasource",
+            "uid": "trlxrdZVk"
+          },
+          "refId": "device_info",
+          "scenarioId": "csv_content",
+          "csvContent": "Time,device,rack,position,u_height,face,is_full_depth,role,model,Value #A\n1793390400000,patch-hq-01,RACK-HQ-01,42,1,front,false,patch-panel,Panduit CP48,1\n1793390400000,fw-hq-01,RACK-HQ-01,40,1,front,true,firewall,FortiGate 100F,1\n1793390400000,sw-hq-core-01,RACK-HQ-01,38,1,front,true,switch,Cisco C9300-48P,1\n1793390400000,wlc-hq-01,RACK-HQ-01,35,1,front,true,wireless,Aruba 7210,1\n1793390400000,wlc-hq-02,RACK-HQ-01,34,1,front,true,wireless,Aruba 7210,1\n1793390400000,srv-hq-01,RACK-HQ-01,20,2,front,true,server,Dell R760,1\n"
+        },
+        {
+          "datasource": {
+            "type": "grafana-testdata-datasource",
+            "uid": "trlxrdZVk"
+          },
+          "refId": "temperature",
+          "scenarioId": "csv_content",
+          "csvContent": "Time,device,Value #C\n1793390400000,fw-hq-01,41\n1793390400000,sw-hq-core-01,45\n1793390400000,wlc-hq-01,62\n1793390400000,srv-hq-01,38\n"
+        },
+        {
+          "datasource": {
+            "type": "grafana-testdata-datasource",
+            "uid": "trlxrdZVk"
+          },
+          "refId": "up",
+          "scenarioId": "csv_content",
+          "csvContent": "Time,device,job,Value #B\n1793390400000,fw-hq-01,snmp,1\n1793390400000,sw-hq-core-01,snmp,1\n1793390400000,wlc-hq-01,snmp,1\n1793390400000,wlc-hq-02,snmp,0\n1793390400000,srv-hq-01,snmp,1\n"
+        }
+      ],
+      "options": {
+        "label": [
+          "name",
+          "value"
+        ]
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "celsius",
+          "decimals": 1,
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 50
+              },
+              {
+                "color": "red",
+                "value": 65
+              }
+            ]
+          }
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 9,
+      "type": "kentrow-rackelevation-panel",
+      "title": "multi-rack",
+      "description": "Five racks with a racks frame and an alerts frame",
+      "datasource": {
+        "type": "grafana-testdata-datasource",
+        "uid": "trlxrdZVk"
+      },
+      "gridPos": {
+        "w": 24,
+        "h": 28,
+        "x": 0,
+        "y": 75
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-testdata-datasource",
+            "uid": "trlxrdZVk"
+          },
+          "refId": "alerts",
+          "scenarioId": "csv_content",
+          "csvContent": "device,alertname,severity\nsw-a1-tor-02,HighTemperature,critical\nfw-par1-02,DeviceDown,critical\nsw-a3-tor-01,InterfaceErrors,warning\nsw-a3-tor-01,HighCpu,warning\nnas-a1-02,DiskFull,warning\n"
+        },
+        {
+          "datasource": {
+            "type": "grafana-testdata-datasource",
+            "uid": "trlxrdZVk"
+          },
+          "refId": "devices",
+          "scenarioId": "csv_content",
+          "csvContent": "device,rack,position,u_height,face,is_full_depth,role,model,status,value,current,serial\npatch-a3-01,PAR1-A3,48,1,front,false,patch-panel,Panduit CP48,,,,SN004711\nsw-a3-tor-01,PAR1-A3,46,1,front,true,switch,Arista 7050SX3,1,48.4,,SN004748\nsw-a3-tor-02,PAR1-A3,45,1,front,true,switch,Arista 7050SX3,1,55.1,,SN004785\nsrv-a3-01,PAR1-A3,38,2,front,true,server,Dell R760,,43.8,,SN004822\nsrv-a3-02,PAR1-A3,36,1,front,true,server,HPE DL360 Gen11,1,54,,SN004859\nnas-a3-03,PAR1-A3,34,2,front,true,storage,NetApp AFF A250,1,54.5,,SN004896\nsrv-a3-04,PAR1-A3,32,2,front,true,server,Lenovo SR650 V3,1,33.9,,SN004933\nsrv-a3-05,PAR1-A3,31,1,front,true,server,Dell R660,1,46.3,,SN004970\nsrv-a3-06,PAR1-A3,28,2,front,true,server,Dell R760,1,53.1,,SN005007\nups-a3-01,PAR1-A3,1,3,rear,true,ups,APC SRT5K,1,27,,SN005044\npdu-a3-a,PAR1-A3,,0,rear,false,pdu,APC AP8853,1,,10.3,SN005081\npdu-a3-b,PAR1-A3,,0,rear,false,pdu,APC AP8853,1,,2.4,SN005118\npatch-a1-01,PAR1-A1,42,1,front,false,patch-panel,Panduit CP48,,,,SN005155\nsw-a1-tor-01,PAR1-A1,40,1,front,true,switch,Arista 7050SX3,1,36.9,,SN005192\nsw-a1-tor-02,PAR1-A1,39,1,front,true,switch,Arista 7050SX3,1,58.5,,SN005229\nfw-par1-01,PAR1-A1,37,1,front,true,firewall,FortiGate 600F,1,48,,SN005266\nfw-par1-02,PAR1-A1,36,1,front,true,firewall,FortiGate 600F,0,,,SN005303\nsrv-a1-01,PAR1-A1,33,1,front,true,server,HPE DL360 Gen11,1,28.8,,SN005340\nnas-a1-02,PAR1-A1,30,2,front,true,storage,NetApp AFF A250,1,42.6,,SN005377\nsrv-a1-03,PAR1-A1,28,2,front,true,server,Lenovo SR650 V3,1,41.5,,SN005414\nsrv-a1-04,PAR1-A1,26,1,front,true,server,Dell R660,0,44.7,,SN005451\nsrv-a1-05,PAR1-A1,24,2,front,true,server,Dell R760,1,47.4,,SN005488\nsrv-a1-06,PAR1-A1,22,1,front,true,server,HPE DL360 Gen11,1,50.2,,SN005525\nnas-a1-07,PAR1-A1,20,2,front,true,storage,NetApp AFF A250,1,34.1,,SN005562\nups-a1-01,PAR1-A1,1,3,rear,true,ups,APC SRT5K,1,27,,SN005599\npdu-a1-a,PAR1-A1,,0,rear,false,pdu,APC AP8853,1,,6.1,SN005636\npdu-a1-b,PAR1-A1,,0,rear,false,pdu,APC AP8853,1,,3,SN005673\npatch-a2-01,PAR1-A2,42,1,front,false,patch-panel,Panduit CP48,,,,SN005710\nsw-a2-tor-01,PAR1-A2,40,1,front,true,switch,Arista 7050SX3,1,55.4,,SN005747\nsw-a2-tor-02,PAR1-A2,39,1,front,true,switch,Arista 7050SX3,1,62.8,,SN005784\nnas-a2-01,PAR1-A2,32,2,front,true,storage,NetApp AFF A250,0,56.3,,SN005821\nsrv-a2-02,PAR1-A2,30,2,front,true,server,Lenovo SR650 V3,1,32.1,,SN005858\nsrv-a2-03,PAR1-A2,28,1,front,true,server,Dell R660,0,38.8,,SN005895\nsrv-a2-04,PAR1-A2,26,2,front,true,server,Dell R760,1,55,,SN005932\nsrv-a2-05,PAR1-A2,24,1,front,true,server,HPE DL360 Gen11,1,56,,SN005969\nnas-a2-06,PAR1-A2,21,2,front,true,storage,NetApp AFF A250,1,33.4,,SN006006\nsrv-a2-07,PAR1-A2,19,2,front,true,server,Lenovo SR650 V3,1,31.6,,SN006043\nsrv-a2-08,PAR1-A2,18,1,front,true,server,Dell R660,1,55.5,,SN006080\nups-a2-01,PAR1-A2,1,3,rear,true,ups,APC SRT5K,1,27,,SN006117\npdu-a2-a,PAR1-A2,,0,rear,false,pdu,APC AP8853,1,,10.1,SN006154\npdu-a2-b,PAR1-A2,,0,rear,false,pdu,APC AP8853,1,,6.7,SN006191\npatch-a5-01,PAR1-A5,42,1,front,false,patch-panel,Panduit CP48,,,,SN006228\nsw-a5-tor-01,PAR1-A5,40,1,front,true,switch,Arista 7050SX3,1,44.7,,SN006265\nsw-a5-tor-02,PAR1-A5,39,1,front,true,switch,Arista 7050SX3,1,43.9,,SN006302\nsrv-a5-01,PAR1-A5,32,2,front,true,server,Lenovo SR650 V3,1,53.3,,SN006339\nsrv-a5-02,PAR1-A5,31,1,front,true,server,Dell R660,1,54.7,,SN006376\nsrv-a5-03,PAR1-A5,29,2,front,true,server,Dell R760,1,36.9,,SN006413\nsrv-a5-04,PAR1-A5,27,1,front,true,server,HPE DL360 Gen11,1,37.4,,SN006450\nnas-a5-05,PAR1-A5,25,2,front,true,storage,NetApp AFF A250,1,30.8,,SN006487\nsrv-a5-06,PAR1-A5,23,2,front,true,server,Lenovo SR650 V3,1,31.9,,SN006524\nups-a5-01,PAR1-A5,1,3,rear,true,ups,APC SRT5K,1,27,,SN006561\npdu-a5-a,PAR1-A5,,0,rear,false,pdu,APC AP8853,1,,4.5,SN006598\npdu-a5-b,PAR1-A5,,0,rear,false,pdu,APC AP8853,1,,11.9,SN006635\npatch-a4-01,PAR1-A4,24,1,front,false,patch-panel,Panduit CP48,,,,SN006672\nsw-a4-tor-01,PAR1-A4,22,1,front,true,switch,Arista 7050SX3,1,41.7,,SN006709\nsw-a4-tor-02,PAR1-A4,21,1,front,true,switch,Arista 7050SX3,1,39.9,,SN006746\nsrv-a4-01,PAR1-A4,15,1,front,true,server,Dell R660,1,38.1,,SN006783\nsrv-a4-02,PAR1-A4,12,2,front,true,server,Dell R760,1,54.6,,SN006820\nsrv-a4-03,PAR1-A4,10,1,front,true,server,HPE DL360 Gen11,1,39.8,,SN006857\npdu-a4-a,PAR1-A4,,0,rear,false,pdu,APC AP8853,1,,14.1,SN006894\npdu-a4-b,PAR1-A4,,0,rear,false,pdu,APC AP8853,1,,7.2,SN006931\n"
+        },
+        {
+          "datasource": {
+            "type": "grafana-testdata-datasource",
+            "uid": "trlxrdZVk"
+          },
+          "refId": "racks",
+          "scenarioId": "csv_content",
+          "csvContent": "rack,name,u_height,starting_unit,desc_units,site\nPAR1-A3,Paris A3,48,1,false,PAR1\nPAR1-A1,Paris A1,42,1,false,PAR1\nPAR1-A2,Paris A2,42,1,false,PAR1\nPAR1-A5,Paris A5,42,1,false,PAR1\nPAR1-A4,Paris A4,24,1,false,PAR1\n"
+        }
+      ],
+      "options": {
+        "label": [
+          "name",
+          "value"
+        ],
+        "valueFields": [
+          "value",
+          "current"
+        ]
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "celsius",
+          "decimals": 1,
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 50
+              },
+              {
+                "color": "red",
+                "value": 65
+              }
+            ]
+          }
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 10,
+      "type": "kentrow-rackelevation-panel",
+      "title": "ten-inch",
+      "description": "A 10-inch rack next to a 19-inch one",
+      "datasource": {
+        "type": "grafana-testdata-datasource",
+        "uid": "trlxrdZVk"
+      },
+      "gridPos": {
+        "w": 8,
+        "h": 12,
+        "x": 0,
+        "y": 103
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-testdata-datasource",
+            "uid": "trlxrdZVk"
+          },
+          "refId": "devices",
+          "scenarioId": "csv_content",
+          "csvContent": "device,rack,position,u_height,face,is_full_depth,role,model,status,value\nsw-lab-10-01,LAB-10IN,12,1,front,true,switch,Netgear GS308,up,38\npatch-lab-10-01,LAB-10IN,11,1,front,false,patch-panel,Digitus 10-inch 12 ports,,\nnuc-lab-10-01,LAB-10IN,8,2,front,true,server,Intel NUC on 10-inch shelf,up,51\nups-lab-10-01,LAB-10IN,1,2,front,true,ups,Eaton 10-inch UPS,down,\nsw-lab-19-01,LAB-19IN,12,1,front,true,switch,Cisco C9200L-24T,up,42\nsrv-lab-19-01,LAB-19IN,8,2,front,true,server,Dell R660,up,63\n"
+        },
+        {
+          "datasource": {
+            "type": "grafana-testdata-datasource",
+            "uid": "trlxrdZVk"
+          },
+          "refId": "racks",
+          "scenarioId": "csv_content",
+          "csvContent": "rack,name,u_height,starting_unit,desc_units,site,width\nLAB-10IN,Lab 10-inch,12,1,false,LAB,10\nLAB-19IN,Lab 19-inch,12,1,false,LAB,19\n"
+        }
+      ],
+      "options": {
+        "label": [
+          "name",
+          "value"
+        ]
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "celsius",
+          "decimals": 1,
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 50
+              },
+              {
+                "color": "red",
+                "value": 65
+              }
+            ]
+          }
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 11,
+      "type": "kentrow-rackelevation-panel",
+      "title": "large",
+      "description": "30 racks, 1000 devices, fitted to the panel",
+      "datasource": {
+        "type": "grafana-testdata-datasource",
+        "uid": "trlxrdZVk"
+      },
+      "gridPos": {
+        "w": 24,
+        "h": 16,
+        "x": 0,
+        "y": 115
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-testdata-datasource",
+            "uid": "trlxrdZVk"
+          },
+          "refId": "large",
+          "scenarioId": "csv_content",
+          "csvContent": "device,rack,position,u_height,face,is_full_depth,role,model,status,value\nDC1-R01-sw-01,DC1-R01,42,1,front,true,switch,Arista 7050SX3,0,36.9\nDC1-R01-sw-02,DC1-R01,41,1,front,true,switch,Arista 7050SX3,1,56\nDC1-R01-srv-01,DC1-R01,1,2,front,true,server,Dell R760,1,37.2\nDC1-R01-srv-02,DC1-R01,3,2,front,true,server,Dell R760,1,32.2\nDC1-R01-srv-03,DC1-R01,5,2,front,true,server,Dell R760,1,46.9\nDC1-R01-srv-04,DC1-R01,7,2,front,true,server,Dell R760,1,29.7\nDC1-R01-srv-05,DC1-R01,9,1,front,true,server,Dell R660,1,40.6\nDC1-R01-srv-06,DC1-R01,10,1,front,true,server,Dell R660,1,36\nDC1-R01-srv-07,DC1-R01,11,1,front,true,server,Dell R660,1,41\nDC1-R01-srv-08,DC1-R01,12,1,front,true,server,Dell R660,1,54.3\nDC1-R01-srv-09,DC1-R01,13,1,front,true,server,Dell R660,1,51.3\nDC1-R01-srv-10,DC1-R01,14,1,front,true,server,Dell R660,1,29.3\nDC1-R01-srv-11,DC1-R01,15,1,front,true,server,Dell R660,1,33.7\nDC1-R01-srv-12,DC1-R01,16,1,front,true,server,Dell R660,1,47.9\nDC1-R01-srv-13,DC1-R01,17,1,front,true,server,Dell R660,1,52.4\nDC1-R01-srv-14,DC1-R01,18,1,front,true,server,Dell R660,1,43.6\nDC1-R01-srv-15,DC1-R01,19,1,front,true,server,Dell R660,1,54\nDC1-R01-srv-16,DC1-R01,20,1,front,true,server,Dell R660,1,52.6\nDC1-R01-srv-17,DC1-R01,21,1,front,true,server,Dell R660,1,26.2\nDC1-R01-srv-18,DC1-R01,22,1,front,true,server,Dell R660,1,35.7\nDC1-R01-srv-19,DC1-R01,23,1,front,true,server,Dell R660,1,25.6\nDC1-R01-srv-20,DC1-R01,24,1,front,true,server,Dell R660,1,48\nDC1-R01-srv-21,DC1-R01,25,1,front,true,server,Dell R660,1,37.8\nDC1-R01-srv-22,DC1-R01,26,1,front,true,server,Dell R660,1,53.4\nDC1-R01-srv-23,DC1-R01,27,1,front,true,server,Dell R660,1,45.6\nDC1-R01-srv-24,DC1-R01,28,1,front,true,server,Dell R660,1,35.7\nDC1-R01-srv-25,DC1-R01,29,1,front,true,server,Dell R660,1,29\nDC1-R01-srv-26,DC1-R01,30,1,front,true,server,Dell R660,1,34.7\nDC1-R01-srv-27,DC1-R01,31,1,front,true,server,Dell R660,1,44\nDC1-R01-srv-28,DC1-R01,32,1,front,true,server,Dell R660,1,26.3\nDC1-R01-srv-29,DC1-R01,33,1,front,true,server,Dell R660,1,52.6\nDC1-R01-srv-30,DC1-R01,34,1,front,true,server,Dell R660,1,49.8\nDC1-R01-pdu-a,DC1-R01,,0,rear,false,pdu,APC AP8853,1,3\nDC1-R01-pdu-b,DC1-R01,,0,rear,false,pdu,APC AP8853,1,3\nDC1-R02-sw-01,DC1-R02,42,1,front,true,switch,Arista 7050SX3,1,62.6\nDC1-R02-sw-02,DC1-R02,41,1,front,true,switch,Arista 7050SX3,1,50.9\nDC1-R02-srv-01,DC1-R02,1,2,front,true,server,Dell R760,1,51.7\nDC1-R02-srv-02,DC1-R02,3,2,front,true,server,Dell R760,1,50.1\nDC1-R02-srv-03,DC1-R02,5,2,front,true,server,Dell R760,1,53.9\nDC1-R02-srv-04,DC1-R02,7,2,front,true,server,Dell R760,1,41.5\nDC1-R02-srv-05,DC1-R02,9,1,front,true,server,Dell R660,1,25.2\nDC1-R02-srv-06,DC1-R02,10,1,front,true,server,Dell R660,1,34.8\nDC1-R02-srv-07,DC1-R02,11,1,front,true,server,Dell R660,1,41.5\nDC1-R02-srv-08,DC1-R02,12,1,front,true,server,Dell R660,1,54.3\nDC1-R02-srv-09,DC1-R02,13,1,front,true,server,Dell R660,1,49.7\nDC1-R02-srv-10,DC1-R02,14,1,front,true,server,Dell R660,1,44.3\nDC1-R02-srv-11,DC1-R02,15,1,front,true,server,Dell R660,1,41.6\nDC1-R02-srv-12,DC1-R02,16,1,front,true,server,Dell R660,1,32.1\nDC1-R02-srv-13,DC1-R02,17,1,front,true,server,Dell R660,0,25.7\nDC1-R02-srv-14,DC1-R02,18,1,front,true,server,Dell R660,1,50\nDC1-R02-srv-15,DC1-R02,19,1,front,true,server,Dell R660,1,25.4\nDC1-R02-srv-16,DC1-R02,20,1,front,true,server,Dell R660,1,42.8\nDC1-R02-srv-17,DC1-R02,21,1,front,true,server,Dell R660,1,54.8\nDC1-R02-srv-18,DC1-R02,22,1,front,true,server,Dell R660,1,54.6\nDC1-R02-srv-19,DC1-R02,23,1,front,true,server,Dell R660,1,49.1\nDC1-R02-srv-20,DC1-R02,24,1,front,true,server,Dell R660,1,49.9\nDC1-R02-srv-21,DC1-R02,25,1,front,true,server,Dell R660,1,54.8\nDC1-R02-srv-22,DC1-R02,26,1,front,true,server,Dell R660,1,42\nDC1-R02-srv-23,DC1-R02,27,1,front,true,server,Dell R660,1,36.9\nDC1-R02-srv-24,DC1-R02,28,1,front,true,server,Dell R660,1,49.4\nDC1-R02-srv-25,DC1-R02,29,1,front,true,server,Dell R660,1,47.1\nDC1-R02-srv-26,DC1-R02,30,1,front,true,server,Dell R660,1,54.7\nDC1-R02-srv-27,DC1-R02,31,1,front,true,server,Dell R660,1,47.1\nDC1-R02-srv-28,DC1-R02,32,1,front,true,server,Dell R660,1,39.7\nDC1-R02-srv-29,DC1-R02,33,1,front,true,server,Dell R660,1,42.5\nDC1-R02-srv-30,DC1-R02,34,1,front,true,server,Dell R660,1,50.6\nDC1-R02-pdu-a,DC1-R02,,0,rear,false,pdu,APC AP8853,1,3\nDC1-R02-pdu-b,DC1-R02,,0,rear,false,pdu,APC AP8853,1,3\nDC1-R03-sw-01,DC1-R03,42,1,front,true,switch,Arista 7050SX3,1,51.6\nDC1-R03-sw-02,DC1-R03,41,1,front,true,switch,Arista 7050SX3,1,50.8\nDC1-R03-srv-01,DC1-R03,1,2,front,true,server,Dell R760,1,32.5\nDC1-R03-srv-02,DC1-R03,3,2,front,true,server,Dell R760,1,39.3\nDC1-R03-srv-03,DC1-R03,5,2,front,true,server,Dell R760,1,25.1\nDC1-R03-srv-04,DC1-R03,7,2,front,true,server,Dell R760,1,25.7\nDC1-R03-srv-05,DC1-R03,9,1,front,true,server,Dell R660,1,51.3\nDC1-R03-srv-06,DC1-R03,10,1,front,true,server,Dell R660,1,26.8\nDC1-R03-srv-07,DC1-R03,11,1,front,true,server,Dell R660,1,37.2\nDC1-R03-srv-08,DC1-R03,12,1,front,true,server,Dell R660,1,47\nDC1-R03-srv-09,DC1-R03,13,1,front,true,server,Dell R660,1,35.8\nDC1-R03-srv-10,DC1-R03,14,1,front,true,server,Dell R660,1,46.3\nDC1-R03-srv-11,DC1-R03,15,1,front,true,server,Dell R660,1,40.9\nDC1-R03-srv-12,DC1-R03,16,1,front,true,server,Dell R660,1,37.4\nDC1-R03-srv-13,DC1-R03,17,1,front,true,server,Dell R660,1,33.8\nDC1-R03-srv-14,DC1-R03,18,1,front,true,server,Dell R660,1,48.3\nDC1-R03-srv-15,DC1-R03,19,1,front,true,server,Dell R660,1,32.6\nDC1-R03-srv-16,DC1-R03,20,1,front,true,server,Dell R660,1,49.8\nDC1-R03-srv-17,DC1-R03,21,1,front,true,server,Dell R660,1,37.9\nDC1-R03-srv-18,DC1-R03,22,1,front,true,server,Dell R660,1,52.6\nDC1-R03-srv-19,DC1-R03,23,1,front,true,server,Dell R660,1,35.8\nDC1-R03-srv-20,DC1-R03,24,1,front,true,server,Dell R660,1,49.9\nDC1-R03-srv-21,DC1-R03,25,1,front,true,server,Dell R660,1,54.2\nDC1-R03-srv-22,DC1-R03,26,1,front,true,server,Dell R660,1,38.1\nDC1-R03-srv-23,DC1-R03,27,1,front,true,server,Dell R660,1,41.1\nDC1-R03-srv-24,DC1-R03,28,1,front,true,server,Dell R660,1,51.5\nDC1-R03-srv-25,DC1-R03,29,1,front,true,server,Dell R660,1,54.6\nDC1-R03-srv-26,DC1-R03,30,1,front,true,server,Dell R660,1,39.9\nDC1-R03-srv-27,DC1-R03,31,1,front,true,server,Dell R660,1,45.9\nDC1-R03-srv-28,DC1-R03,32,1,front,true,server,Dell R660,1,41.5\nDC1-R03-srv-29,DC1-R03,33,1,front,true,server,Dell R660,1,29.9\nDC1-R03-srv-30,DC1-R03,34,1,front,true,server,Dell R660,1,36.7\nDC1-R03-pdu-a,DC1-R03,,0,rear,false,pdu,APC AP8853,1,3\nDC1-R03-pdu-b,DC1-R03,,0,rear,false,pdu,APC AP8853,1,3\nDC1-R04-sw-01,DC1-R04,42,1,front,true,switch,Arista 7050SX3,1,60.7\nDC1-R04-sw-02,DC1-R04,41,1,front,true,switch,Arista 7050SX3,1,43.9\nDC1-R04-srv-01,DC1-R04,1,2,front,true,server,Dell R760,1,45.5\nDC1-R04-srv-02,DC1-R04,3,2,front,true,server,Dell R760,1,53.9\nDC1-R04-srv-03,DC1-R04,5,2,front,true,server,Dell R760,1,32.8\nDC1-R04-srv-04,DC1-R04,7,2,front,true,server,Dell R760,,46.6\nDC1-R04-srv-05,DC1-R04,9,1,front,true,server,Dell R660,1,48.5\nDC1-R04-srv-06,DC1-R04,10,1,front,true,server,Dell R660,1,53.9\nDC1-R04-srv-07,DC1-R04,11,1,front,true,server,Dell R660,1,54.4\nDC1-R04-srv-08,DC1-R04,12,1,front,true,server,Dell R660,1,41.2\nDC1-R04-srv-09,DC1-R04,13,1,front,true,server,Dell R660,1,46.4\nDC1-R04-srv-10,DC1-R04,14,1,front,true,server,Dell R660,1,43.7\nDC1-R04-srv-11,DC1-R04,15,1,front,true,server,Dell R660,1,43.6\nDC1-R04-srv-12,DC1-R04,16,1,front,true,server,Dell R660,1,33.2\nDC1-R04-srv-13,DC1-R04,17,1,front,true,server,Dell R660,1,39.5\nDC1-R04-srv-14,DC1-R04,18,1,front,true,server,Dell R660,1,46.7\nDC1-R04-srv-15,DC1-R04,19,1,front,true,server,Dell R660,1,41.8\nDC1-R04-srv-16,DC1-R04,20,1,front,true,server,Dell R660,1,51.6\nDC1-R04-srv-17,DC1-R04,21,1,front,true,server,Dell R660,1,29.6\nDC1-R04-srv-18,DC1-R04,22,1,front,true,server,Dell R660,1,33.6\nDC1-R04-srv-19,DC1-R04,23,1,front,true,server,Dell R660,1,36.8\nDC1-R04-srv-20,DC1-R04,24,1,front,true,server,Dell R660,1,50.7\nDC1-R04-srv-21,DC1-R04,25,1,front,true,server,Dell R660,1,52.2\nDC1-R04-srv-22,DC1-R04,26,1,front,true,server,Dell R660,1,39.8\nDC1-R04-srv-23,DC1-R04,27,1,front,true,server,Dell R660,1,45.3\nDC1-R04-srv-24,DC1-R04,28,1,front,true,server,Dell R660,1,35\nDC1-R04-srv-25,DC1-R04,29,1,front,true,server,Dell R660,1,54.1\nDC1-R04-srv-26,DC1-R04,30,1,front,true,server,Dell R660,1,25.1\nDC1-R04-srv-27,DC1-R04,31,1,front,true,server,Dell R660,1,47.6\nDC1-R04-srv-28,DC1-R04,32,1,front,true,server,Dell R660,1,27.5\nDC1-R04-srv-29,DC1-R04,33,1,front,true,server,Dell R660,1,33.1\nDC1-R04-srv-30,DC1-R04,34,1,front,true,server,Dell R660,1,32.9\nDC1-R04-pdu-a,DC1-R04,,0,rear,false,pdu,APC AP8853,1,3\nDC1-R04-pdu-b,DC1-R04,,0,rear,false,pdu,APC AP8853,1,3\nDC1-R05-sw-01,DC1-R05,42,1,front,true,switch,Arista 7050SX3,1,56.6\nDC1-R05-sw-02,DC1-R05,41,1,front,true,switch,Arista 7050SX3,,48.4\nDC1-R05-srv-01,DC1-R05,1,2,front,true,server,Dell R760,1,27.5\nDC1-R05-srv-02,DC1-R05,3,2,front,true,server,Dell R760,1,36.4\nDC1-R05-srv-03,DC1-R05,5,2,front,true,server,Dell R760,1,45.7\nDC1-R05-srv-04,DC1-R05,7,2,front,true,server,Dell R760,1,39.9\nDC1-R05-srv-05,DC1-R05,9,1,front,true,server,Dell R660,1,39.5\nDC1-R05-srv-06,DC1-R05,10,1,front,true,server,Dell R660,1,41.3\nDC1-R05-srv-07,DC1-R05,11,1,front,true,server,Dell R660,1,48.2\nDC1-R05-srv-08,DC1-R05,12,1,front,true,server,Dell R660,1,45.8\nDC1-R05-srv-09,DC1-R05,13,1,front,true,server,Dell R660,1,26.1\nDC1-R05-srv-10,DC1-R05,14,1,front,true,server,Dell R660,1,46.5\nDC1-R05-srv-11,DC1-R05,15,1,front,true,server,Dell R660,1,33.5\nDC1-R05-srv-12,DC1-R05,16,1,front,true,server,Dell R660,1,44.3\nDC1-R05-srv-13,DC1-R05,17,1,front,true,server,Dell R660,1,27.8\nDC1-R05-srv-14,DC1-R05,18,1,front,true,server,Dell R660,1,54.7\nDC1-R05-srv-15,DC1-R05,19,1,front,true,server,Dell R660,1,32.7\nDC1-R05-srv-16,DC1-R05,20,1,front,true,server,Dell R660,1,27.1\nDC1-R05-srv-17,DC1-R05,21,1,front,true,server,Dell R660,1,37.8\nDC1-R05-srv-18,DC1-R05,22,1,front,true,server,Dell R660,1,29.9\nDC1-R05-srv-19,DC1-R05,23,1,front,true,server,Dell R660,1,30.1\nDC1-R05-srv-20,DC1-R05,24,1,front,true,server,Dell R660,1,31.1\nDC1-R05-srv-21,DC1-R05,25,1,front,true,server,Dell R660,1,25.9\nDC1-R05-srv-22,DC1-R05,26,1,front,true,server,Dell R660,0,53.2\nDC1-R05-srv-23,DC1-R05,27,1,front,true,server,Dell R660,1,39.5\nDC1-R05-srv-24,DC1-R05,28,1,front,true,server,Dell R660,1,46.2\nDC1-R05-srv-25,DC1-R05,29,1,front,true,server,Dell R660,1,40.5\nDC1-R05-srv-26,DC1-R05,30,1,front,true,server,Dell R660,1,42.9\nDC1-R05-srv-27,DC1-R05,31,1,front,true,server,Dell R660,1,50.4\nDC1-R05-srv-28,DC1-R05,32,1,front,true,server,Dell R660,,42.1\nDC1-R05-srv-29,DC1-R05,33,1,front,true,server,Dell R660,1,26.7\nDC1-R05-srv-30,DC1-R05,34,1,front,true,server,Dell R660,1,33.2\nDC1-R05-pdu-a,DC1-R05,,0,rear,false,pdu,APC AP8853,1,3\nDC1-R05-pdu-b,DC1-R05,,0,rear,false,pdu,APC AP8853,1,3\nDC1-R06-sw-01,DC1-R06,42,1,front,true,switch,Arista 7050SX3,1,43.5\nDC1-R06-sw-02,DC1-R06,41,1,front,true,switch,Arista 7050SX3,1,58.8\nDC1-R06-srv-01,DC1-R06,1,2,front,true,server,Dell R760,1,51\nDC1-R06-srv-02,DC1-R06,3,2,front,true,server,Dell R760,1,46.2\nDC1-R06-srv-03,DC1-R06,5,2,front,true,server,Dell R760,1,44.1\nDC1-R06-srv-04,DC1-R06,7,2,front,true,server,Dell R760,1,45.6\nDC1-R06-srv-05,DC1-R06,9,1,front,true,server,Dell R660,1,37.1\nDC1-R06-srv-06,DC1-R06,10,1,front,true,server,Dell R660,1,34.8\nDC1-R06-srv-07,DC1-R06,11,1,front,true,server,Dell R660,1,39.9\nDC1-R06-srv-08,DC1-R06,12,1,front,true,server,Dell R660,1,45.3\nDC1-R06-srv-09,DC1-R06,13,1,front,true,server,Dell R660,1,46.3\nDC1-R06-srv-10,DC1-R06,14,1,front,true,server,Dell R660,1,47.1\nDC1-R06-srv-11,DC1-R06,15,1,front,true,server,Dell R660,1,38.2\nDC1-R06-srv-12,DC1-R06,16,1,front,true,server,Dell R660,1,49.5\nDC1-R06-srv-13,DC1-R06,17,1,front,true,server,Dell R660,1,41.6\nDC1-R06-srv-14,DC1-R06,18,1,front,true,server,Dell R660,1,44.8\nDC1-R06-srv-15,DC1-R06,19,1,front,true,server,Dell R660,1,27.3\nDC1-R06-srv-16,DC1-R06,20,1,front,true,server,Dell R660,1,53.4\nDC1-R06-srv-17,DC1-R06,21,1,front,true,server,Dell R660,1,40.4\nDC1-R06-srv-18,DC1-R06,22,1,front,true,server,Dell R660,1,34.5\nDC1-R06-srv-19,DC1-R06,23,1,front,true,server,Dell R660,1,26.9\nDC1-R06-srv-20,DC1-R06,24,1,front,true,server,Dell R660,1,38.4\nDC1-R06-srv-21,DC1-R06,25,1,front,true,server,Dell R660,1,39.8\nDC1-R06-srv-22,DC1-R06,26,1,front,true,server,Dell R660,1,50.6\nDC1-R06-srv-23,DC1-R06,27,1,front,true,server,Dell R660,1,41\nDC1-R06-srv-24,DC1-R06,28,1,front,true,server,Dell R660,1,30\nDC1-R06-srv-25,DC1-R06,29,1,front,true,server,Dell R660,1,30.2\nDC1-R06-srv-26,DC1-R06,30,1,front,true,server,Dell R660,,46\nDC1-R06-srv-27,DC1-R06,31,1,front,true,server,Dell R660,1,31.5\nDC1-R06-srv-28,DC1-R06,32,1,front,true,server,Dell R660,0,39.5\nDC1-R06-srv-29,DC1-R06,33,1,front,true,server,Dell R660,1,34.4\nDC1-R06-srv-30,DC1-R06,34,1,front,true,server,Dell R660,1,53.2\nDC1-R06-pdu-a,DC1-R06,,0,rear,false,pdu,APC AP8853,1,3\nDC1-R06-pdu-b,DC1-R06,,0,rear,false,pdu,APC AP8853,1,3\nDC1-R07-sw-01,DC1-R07,42,1,front,true,switch,Arista 7050SX3,1,51.5\nDC1-R07-sw-02,DC1-R07,41,1,front,true,switch,Arista 7050SX3,1,44\nDC1-R07-srv-01,DC1-R07,1,2,front,true,server,Dell R760,1,44\nDC1-R07-srv-02,DC1-R07,3,2,front,true,server,Dell R760,1,41.4\nDC1-R07-srv-03,DC1-R07,5,2,front,true,server,Dell R760,1,45.2\nDC1-R07-srv-04,DC1-R07,7,2,front,true,server,Dell R760,1,47.2\nDC1-R07-srv-05,DC1-R07,9,1,front,true,server,Dell R660,1,48.3\nDC1-R07-srv-06,DC1-R07,10,1,front,true,server,Dell R660,1,47.6\nDC1-R07-srv-07,DC1-R07,11,1,front,true,server,Dell R660,1,43.5\nDC1-R07-srv-08,DC1-R07,12,1,front,true,server,Dell R660,1,45.3\nDC1-R07-srv-09,DC1-R07,13,1,front,true,server,Dell R660,1,46.7\nDC1-R07-srv-10,DC1-R07,14,1,front,true,server,Dell R660,1,50.8\nDC1-R07-srv-11,DC1-R07,15,1,front,true,server,Dell R660,1,43.8\nDC1-R07-srv-12,DC1-R07,16,1,front,true,server,Dell R660,1,32.6\nDC1-R07-srv-13,DC1-R07,17,1,front,true,server,Dell R660,1,31.1\nDC1-R07-srv-14,DC1-R07,18,1,front,true,server,Dell R660,1,26.1\nDC1-R07-srv-15,DC1-R07,19,1,front,true,server,Dell R660,1,40.6\nDC1-R07-srv-16,DC1-R07,20,1,front,true,server,Dell R660,1,33.1\nDC1-R07-srv-17,DC1-R07,21,1,front,true,server,Dell R660,1,34.8\nDC1-R07-srv-18,DC1-R07,22,1,front,true,server,Dell R660,1,44.4\nDC1-R07-srv-19,DC1-R07,23,1,front,true,server,Dell R660,1,28.2\nDC1-R07-srv-20,DC1-R07,24,1,front,true,server,Dell R660,1,53.2\nDC1-R07-srv-21,DC1-R07,25,1,front,true,server,Dell R660,1,29.5\nDC1-R07-srv-22,DC1-R07,26,1,front,true,server,Dell R660,1,47\nDC1-R07-srv-23,DC1-R07,27,1,front,true,server,Dell R660,0,46.4\nDC1-R07-srv-24,DC1-R07,28,1,front,true,server,Dell R660,0,54.3\nDC1-R07-srv-25,DC1-R07,29,1,front,true,server,Dell R660,1,54.1\nDC1-R07-srv-26,DC1-R07,30,1,front,true,server,Dell R660,1,36.6\nDC1-R07-srv-27,DC1-R07,31,1,front,true,server,Dell R660,1,33.2\nDC1-R07-srv-28,DC1-R07,32,1,front,true,server,Dell R660,1,44.8\nDC1-R07-srv-29,DC1-R07,33,1,front,true,server,Dell R660,1,41.2\nDC1-R07-srv-30,DC1-R07,34,1,front,true,server,Dell R660,1,36.4\nDC1-R07-pdu-a,DC1-R07,,0,rear,false,pdu,APC AP8853,1,3\nDC1-R07-pdu-b,DC1-R07,,0,rear,false,pdu,APC AP8853,1,3\nDC1-R08-sw-01,DC1-R08,42,1,front,true,switch,Arista 7050SX3,1,42.4\nDC1-R08-sw-02,DC1-R08,41,1,front,true,switch,Arista 7050SX3,,47\nDC1-R08-srv-01,DC1-R08,1,2,front,true,server,Dell R760,1,47.9\nDC1-R08-srv-02,DC1-R08,3,2,front,true,server,Dell R760,1,34.7\nDC1-R08-srv-03,DC1-R08,5,2,front,true,server,Dell R760,1,35\nDC1-R08-srv-04,DC1-R08,7,2,front,true,server,Dell R760,1,51.6\nDC1-R08-srv-05,DC1-R08,9,1,front,true,server,Dell R660,1,46.9\nDC1-R08-srv-06,DC1-R08,10,1,front,true,server,Dell R660,1,25.5\nDC1-R08-srv-07,DC1-R08,11,1,front,true,server,Dell R660,1,31.2\nDC1-R08-srv-08,DC1-R08,12,1,front,true,server,Dell R660,1,38.8\nDC1-R08-srv-09,DC1-R08,13,1,front,true,server,Dell R660,1,38.7\nDC1-R08-srv-10,DC1-R08,14,1,front,true,server,Dell R660,1,25.3\nDC1-R08-srv-11,DC1-R08,15,1,front,true,server,Dell R660,0,44\nDC1-R08-srv-12,DC1-R08,16,1,front,true,server,Dell R660,1,34\nDC1-R08-srv-13,DC1-R08,17,1,front,true,server,Dell R660,,38.2\nDC1-R08-srv-14,DC1-R08,18,1,front,true,server,Dell R660,1,51\nDC1-R08-srv-15,DC1-R08,19,1,front,true,server,Dell R660,1,46.6\nDC1-R08-srv-16,DC1-R08,20,1,front,true,server,Dell R660,1,53.8\nDC1-R08-srv-17,DC1-R08,21,1,front,true,server,Dell R660,1,51\nDC1-R08-srv-18,DC1-R08,22,1,front,true,server,Dell R660,1,48.9\nDC1-R08-srv-19,DC1-R08,23,1,front,true,server,Dell R660,1,45.8\nDC1-R08-srv-20,DC1-R08,24,1,front,true,server,Dell R660,1,34.6\nDC1-R08-srv-21,DC1-R08,25,1,front,true,server,Dell R660,1,48.9\nDC1-R08-srv-22,DC1-R08,26,1,front,true,server,Dell R660,1,47.9\nDC1-R08-srv-23,DC1-R08,27,1,front,true,server,Dell R660,,42.3\nDC1-R08-srv-24,DC1-R08,28,1,front,true,server,Dell R660,1,32.2\nDC1-R08-srv-25,DC1-R08,29,1,front,true,server,Dell R660,1,44.9\nDC1-R08-srv-26,DC1-R08,30,1,front,true,server,Dell R660,1,34\nDC1-R08-srv-27,DC1-R08,31,1,front,true,server,Dell R660,0,42.3\nDC1-R08-srv-28,DC1-R08,32,1,front,true,server,Dell R660,1,26.3\nDC1-R08-srv-29,DC1-R08,33,1,front,true,server,Dell R660,,37.1\nDC1-R08-srv-30,DC1-R08,34,1,front,true,server,Dell R660,1,45.3\nDC1-R08-pdu-a,DC1-R08,,0,rear,false,pdu,APC AP8853,1,3\nDC1-R08-pdu-b,DC1-R08,,0,rear,false,pdu,APC AP8853,1,3\nDC1-R09-sw-01,DC1-R09,42,1,front,true,switch,Arista 7050SX3,1,58.9\nDC1-R09-sw-02,DC1-R09,41,1,front,true,switch,Arista 7050SX3,1,58.4\nDC1-R09-srv-01,DC1-R09,1,2,front,true,server,Dell R760,1,52.9\nDC1-R09-srv-02,DC1-R09,3,2,front,true,server,Dell R760,1,40.8\nDC1-R09-srv-03,DC1-R09,5,2,front,true,server,Dell R760,1,52.7\nDC1-R09-srv-04,DC1-R09,7,2,front,true,server,Dell R760,1,52.3\nDC1-R09-srv-05,DC1-R09,9,1,front,true,server,Dell R660,1,39.9\nDC1-R09-srv-06,DC1-R09,10,1,front,true,server,Dell R660,1,33.4\nDC1-R09-srv-07,DC1-R09,11,1,front,true,server,Dell R660,1,53.8\nDC1-R09-srv-08,DC1-R09,12,1,front,true,server,Dell R660,1,35.3\nDC1-R09-srv-09,DC1-R09,13,1,front,true,server,Dell R660,1,47.5\nDC1-R09-srv-10,DC1-R09,14,1,front,true,server,Dell R660,1,46.6\nDC1-R09-srv-11,DC1-R09,15,1,front,true,server,Dell R660,1,49.6\nDC1-R09-srv-12,DC1-R09,16,1,front,true,server,Dell R660,1,48.7\nDC1-R09-srv-13,DC1-R09,17,1,front,true,server,Dell R660,1,30.4\nDC1-R09-srv-14,DC1-R09,18,1,front,true,server,Dell R660,1,47.2\nDC1-R09-srv-15,DC1-R09,19,1,front,true,server,Dell R660,1,40.3\nDC1-R09-srv-16,DC1-R09,20,1,front,true,server,Dell R660,1,53.3\nDC1-R09-srv-17,DC1-R09,21,1,front,true,server,Dell R660,1,29.5\nDC1-R09-srv-18,DC1-R09,22,1,front,true,server,Dell R660,1,32\nDC1-R09-srv-19,DC1-R09,23,1,front,true,server,Dell R660,1,39.1\nDC1-R09-srv-20,DC1-R09,24,1,front,true,server,Dell R660,1,37.2\nDC1-R09-srv-21,DC1-R09,25,1,front,true,server,Dell R660,1,43.2\nDC1-R09-srv-22,DC1-R09,26,1,front,true,server,Dell R660,1,28\nDC1-R09-srv-23,DC1-R09,27,1,front,true,server,Dell R660,1,50.8\nDC1-R09-srv-24,DC1-R09,28,1,front,true,server,Dell R660,1,49.5\nDC1-R09-srv-25,DC1-R09,29,1,front,true,server,Dell R660,1,44.3\nDC1-R09-srv-26,DC1-R09,30,1,front,true,server,Dell R660,1,49.3\nDC1-R09-srv-27,DC1-R09,31,1,front,true,server,Dell R660,1,29.4\nDC1-R09-srv-28,DC1-R09,32,1,front,true,server,Dell R660,1,43.2\nDC1-R09-srv-29,DC1-R09,33,1,front,true,server,Dell R660,1,54.1\nDC1-R09-srv-30,DC1-R09,34,1,front,true,server,Dell R660,,43.8\nDC1-R09-pdu-a,DC1-R09,,0,rear,false,pdu,APC AP8853,1,3\nDC1-R09-pdu-b,DC1-R09,,0,rear,false,pdu,APC AP8853,1,3\nDC1-R10-sw-01,DC1-R10,42,1,front,true,switch,Arista 7050SX3,1,40.2\nDC1-R10-sw-02,DC1-R10,41,1,front,true,switch,Arista 7050SX3,1,62.9\nDC1-R10-srv-01,DC1-R10,1,2,front,true,server,Dell R760,1,26\nDC1-R10-srv-02,DC1-R10,3,2,front,true,server,Dell R760,1,42.6\nDC1-R10-srv-03,DC1-R10,5,2,front,true,server,Dell R760,1,34.1\nDC1-R10-srv-04,DC1-R10,7,2,front,true,server,Dell R760,1,30.1\nDC1-R10-srv-05,DC1-R10,9,1,front,true,server,Dell R660,1,39.4\nDC1-R10-srv-06,DC1-R10,10,1,front,true,server,Dell R660,1,53.4\nDC1-R10-srv-07,DC1-R10,11,1,front,true,server,Dell R660,1,44.8\nDC1-R10-srv-08,DC1-R10,12,1,front,true,server,Dell R660,1,35.6\nDC1-R10-srv-09,DC1-R10,13,1,front,true,server,Dell R660,1,34.7\nDC1-R10-srv-10,DC1-R10,14,1,front,true,server,Dell R660,1,43.6\nDC1-R10-srv-11,DC1-R10,15,1,front,true,server,Dell R660,1,27.2\nDC1-R10-srv-12,DC1-R10,16,1,front,true,server,Dell R660,1,27.1\nDC1-R10-srv-13,DC1-R10,17,1,front,true,server,Dell R660,1,46.3\nDC1-R10-srv-14,DC1-R10,18,1,front,true,server,Dell R660,1,27.5\nDC1-R10-srv-15,DC1-R10,19,1,front,true,server,Dell R660,1,53.6\nDC1-R10-srv-16,DC1-R10,20,1,front,true,server,Dell R660,1,51.4\nDC1-R10-srv-17,DC1-R10,21,1,front,true,server,Dell R660,1,38.9\nDC1-R10-srv-18,DC1-R10,22,1,front,true,server,Dell R660,,32.3\nDC1-R10-srv-19,DC1-R10,23,1,front,true,server,Dell R660,1,29.3\nDC1-R10-srv-20,DC1-R10,24,1,front,true,server,Dell R660,1,48.7\nDC1-R10-srv-21,DC1-R10,25,1,front,true,server,Dell R660,1,37.3\nDC1-R10-srv-22,DC1-R10,26,1,front,true,server,Dell R660,1,48.4\nDC1-R10-srv-23,DC1-R10,27,1,front,true,server,Dell R660,1,44.9\nDC1-R10-srv-24,DC1-R10,28,1,front,true,server,Dell R660,1,30.6\nDC1-R10-srv-25,DC1-R10,29,1,front,true,server,Dell R660,1,49.8\nDC1-R10-srv-26,DC1-R10,30,1,front,true,server,Dell R660,1,39.9\nDC1-R10-srv-27,DC1-R10,31,1,front,true,server,Dell R660,1,50\nDC1-R10-srv-28,DC1-R10,32,1,front,true,server,Dell R660,1,26.7\nDC1-R10-srv-29,DC1-R10,33,1,front,true,server,Dell R660,1,51.6\nDC1-R10-srv-30,DC1-R10,34,1,front,true,server,Dell R660,1,54\nDC1-R10-pdu-a,DC1-R10,,0,rear,false,pdu,APC AP8853,1,3\nDC1-R10-pdu-b,DC1-R10,,0,rear,false,pdu,APC AP8853,1,3\nDC1-R11-sw-01,DC1-R11,42,1,front,true,switch,Arista 7050SX3,1,48.7\nDC1-R11-sw-02,DC1-R11,41,1,front,true,switch,Arista 7050SX3,1,46.2\nDC1-R11-srv-01,DC1-R11,1,2,front,true,server,Dell R760,1,39.2\nDC1-R11-srv-02,DC1-R11,3,2,front,true,server,Dell R760,1,28.4\nDC1-R11-srv-03,DC1-R11,5,2,front,true,server,Dell R760,1,41\nDC1-R11-srv-04,DC1-R11,7,2,front,true,server,Dell R760,1,44\nDC1-R11-srv-05,DC1-R11,9,1,front,true,server,Dell R660,1,54.9\nDC1-R11-srv-06,DC1-R11,10,1,front,true,server,Dell R660,1,52.8\nDC1-R11-srv-07,DC1-R11,11,1,front,true,server,Dell R660,1,46.3\nDC1-R11-srv-08,DC1-R11,12,1,front,true,server,Dell R660,1,38.5\nDC1-R11-srv-09,DC1-R11,13,1,front,true,server,Dell R660,1,52.5\nDC1-R11-srv-10,DC1-R11,14,1,front,true,server,Dell R660,1,35.2\nDC1-R11-srv-11,DC1-R11,15,1,front,true,server,Dell R660,1,37.2\nDC1-R11-srv-12,DC1-R11,16,1,front,true,server,Dell R660,,25.7\nDC1-R11-srv-13,DC1-R11,17,1,front,true,server,Dell R660,1,27.5\nDC1-R11-srv-14,DC1-R11,18,1,front,true,server,Dell R660,1,37.9\nDC1-R11-srv-15,DC1-R11,19,1,front,true,server,Dell R660,1,53\nDC1-R11-srv-16,DC1-R11,20,1,front,true,server,Dell R660,1,35.6\nDC1-R11-srv-17,DC1-R11,21,1,front,true,server,Dell R660,1,34.6\nDC1-R11-srv-18,DC1-R11,22,1,front,true,server,Dell R660,1,42.8\nDC1-R11-srv-19,DC1-R11,23,1,front,true,server,Dell R660,1,53.6\nDC1-R11-srv-20,DC1-R11,24,1,front,true,server,Dell R660,1,26.3\nDC1-R11-srv-21,DC1-R11,25,1,front,true,server,Dell R660,1,53.6\nDC1-R11-srv-22,DC1-R11,26,1,front,true,server,Dell R660,1,25.3\nDC1-R11-srv-23,DC1-R11,27,1,front,true,server,Dell R660,1,31.7\nDC1-R11-srv-24,DC1-R11,28,1,front,true,server,Dell R660,1,26.7\nDC1-R11-srv-25,DC1-R11,29,1,front,true,server,Dell R660,1,50\nDC1-R11-srv-26,DC1-R11,30,1,front,true,server,Dell R660,1,29.4\nDC1-R11-srv-27,DC1-R11,31,1,front,true,server,Dell R660,1,51.6\nDC1-R11-srv-28,DC1-R11,32,1,front,true,server,Dell R660,1,51.4\nDC1-R11-srv-29,DC1-R11,33,1,front,true,server,Dell R660,1,35.4\nDC1-R11-pdu-a,DC1-R11,,0,rear,false,pdu,APC AP8853,1,3\nDC1-R11-pdu-b,DC1-R11,,0,rear,false,pdu,APC AP8853,1,3\nDC1-R12-sw-01,DC1-R12,42,1,front,true,switch,Arista 7050SX3,0,36.1\nDC1-R12-sw-02,DC1-R12,41,1,front,true,switch,Arista 7050SX3,1,63.6\nDC1-R12-srv-01,DC1-R12,1,2,front,true,server,Dell R760,1,39.3\nDC1-R12-srv-02,DC1-R12,3,2,front,true,server,Dell R760,1,46.3\nDC1-R12-srv-03,DC1-R12,5,2,front,true,server,Dell R760,1,36.9\nDC1-R12-srv-04,DC1-R12,7,2,front,true,server,Dell R760,1,45.1\nDC1-R12-srv-05,DC1-R12,9,1,front,true,server,Dell R660,1,29.3\nDC1-R12-srv-06,DC1-R12,10,1,front,true,server,Dell R660,1,41.8\nDC1-R12-srv-07,DC1-R12,11,1,front,true,server,Dell R660,0,32.5\nDC1-R12-srv-08,DC1-R12,12,1,front,true,server,Dell R660,1,42.3\nDC1-R12-srv-09,DC1-R12,13,1,front,true,server,Dell R660,1,51.4\nDC1-R12-srv-10,DC1-R12,14,1,front,true,server,Dell R660,1,37.7\nDC1-R12-srv-11,DC1-R12,15,1,front,true,server,Dell R660,1,38.8\nDC1-R12-srv-12,DC1-R12,16,1,front,true,server,Dell R660,1,37\nDC1-R12-srv-13,DC1-R12,17,1,front,true,server,Dell R660,1,49.8\nDC1-R12-srv-14,DC1-R12,18,1,front,true,server,Dell R660,1,28.8\nDC1-R12-srv-15,DC1-R12,19,1,front,true,server,Dell R660,1,32\nDC1-R12-srv-16,DC1-R12,20,1,front,true,server,Dell R660,1,25.6\nDC1-R12-srv-17,DC1-R12,21,1,front,true,server,Dell R660,1,35.3\nDC1-R12-srv-18,DC1-R12,22,1,front,true,server,Dell R660,1,28.3\nDC1-R12-srv-19,DC1-R12,23,1,front,true,server,Dell R660,1,26.3\nDC1-R12-srv-20,DC1-R12,24,1,front,true,server,Dell R660,1,33\nDC1-R12-srv-21,DC1-R12,25,1,front,true,server,Dell R660,1,44.9\nDC1-R12-srv-22,DC1-R12,26,1,front,true,server,Dell R660,1,33.3\nDC1-R12-srv-23,DC1-R12,27,1,front,true,server,Dell R660,1,36.7\nDC1-R12-srv-24,DC1-R12,28,1,front,true,server,Dell R660,1,52.5\nDC1-R12-srv-25,DC1-R12,29,1,front,true,server,Dell R660,1,48.1\nDC1-R12-srv-26,DC1-R12,30,1,front,true,server,Dell R660,1,44.8\nDC1-R12-srv-27,DC1-R12,31,1,front,true,server,Dell R660,1,51.2\nDC1-R12-srv-28,DC1-R12,32,1,front,true,server,Dell R660,1,47.8\nDC1-R12-srv-29,DC1-R12,33,1,front,true,server,Dell R660,1,44.9\nDC1-R12-pdu-a,DC1-R12,,0,rear,false,pdu,APC AP8853,1,3\nDC1-R12-pdu-b,DC1-R12,,0,rear,false,pdu,APC AP8853,1,3\nDC1-R13-sw-01,DC1-R13,42,1,front,true,switch,Arista 7050SX3,1,58.9\nDC1-R13-sw-02,DC1-R13,41,1,front,true,switch,Arista 7050SX3,1,46.2\nDC1-R13-srv-01,DC1-R13,1,2,front,true,server,Dell R760,0,49.5\nDC1-R13-srv-02,DC1-R13,3,2,front,true,server,Dell R760,1,49.6\nDC1-R13-srv-03,DC1-R13,5,2,front,true,server,Dell R760,1,42.8\nDC1-R13-srv-04,DC1-R13,7,2,front,true,server,Dell R760,1,32.8\nDC1-R13-srv-05,DC1-R13,9,1,front,true,server,Dell R660,1,37.4\nDC1-R13-srv-06,DC1-R13,10,1,front,true,server,Dell R660,1,52.8\nDC1-R13-srv-07,DC1-R13,11,1,front,true,server,Dell R660,1,47.4\nDC1-R13-srv-08,DC1-R13,12,1,front,true,server,Dell R660,1,41.9\nDC1-R13-srv-09,DC1-R13,13,1,front,true,server,Dell R660,1,30.3\nDC1-R13-srv-10,DC1-R13,14,1,front,true,server,Dell R660,1,35.5\nDC1-R13-srv-11,DC1-R13,15,1,front,true,server,Dell R660,1,46.7\nDC1-R13-srv-12,DC1-R13,16,1,front,true,server,Dell R660,1,46.9\nDC1-R13-srv-13,DC1-R13,17,1,front,true,server,Dell R660,0,54.1\nDC1-R13-srv-14,DC1-R13,18,1,front,true,server,Dell R660,1,36.3\nDC1-R13-srv-15,DC1-R13,19,1,front,true,server,Dell R660,1,47.4\nDC1-R13-srv-16,DC1-R13,20,1,front,true,server,Dell R660,1,45.1\nDC1-R13-srv-17,DC1-R13,21,1,front,true,server,Dell R660,1,30.9\nDC1-R13-srv-18,DC1-R13,22,1,front,true,server,Dell R660,1,38.3\nDC1-R13-srv-19,DC1-R13,23,1,front,true,server,Dell R660,1,30.9\nDC1-R13-srv-20,DC1-R13,24,1,front,true,server,Dell R660,1,46.2\nDC1-R13-srv-21,DC1-R13,25,1,front,true,server,Dell R660,1,27.7\nDC1-R13-srv-22,DC1-R13,26,1,front,true,server,Dell R660,1,53.3\nDC1-R13-srv-23,DC1-R13,27,1,front,true,server,Dell R660,1,42\nDC1-R13-srv-24,DC1-R13,28,1,front,true,server,Dell R660,1,47.5\nDC1-R13-srv-25,DC1-R13,29,1,front,true,server,Dell R660,1,50.1\nDC1-R13-srv-26,DC1-R13,30,1,front,true,server,Dell R660,1,54.8\nDC1-R13-srv-27,DC1-R13,31,1,front,true,server,Dell R660,1,42.6\nDC1-R13-srv-28,DC1-R13,32,1,front,true,server,Dell R660,1,39.8\nDC1-R13-srv-29,DC1-R13,33,1,front,true,server,Dell R660,1,41.5\nDC1-R13-pdu-a,DC1-R13,,0,rear,false,pdu,APC AP8853,1,3\nDC1-R13-pdu-b,DC1-R13,,0,rear,false,pdu,APC AP8853,1,3\nDC1-R14-sw-01,DC1-R14,42,1,front,true,switch,Arista 7050SX3,1,38.9\nDC1-R14-sw-02,DC1-R14,41,1,front,true,switch,Arista 7050SX3,1,45.7\nDC1-R14-srv-01,DC1-R14,1,2,front,true,server,Dell R760,1,27.2\nDC1-R14-srv-02,DC1-R14,3,2,front,true,server,Dell R760,1,25.1\nDC1-R14-srv-03,DC1-R14,5,2,front,true,server,Dell R760,1,53.3\nDC1-R14-srv-04,DC1-R14,7,2,front,true,server,Dell R760,1,54.5\nDC1-R14-srv-05,DC1-R14,9,1,front,true,server,Dell R660,,44.7\nDC1-R14-srv-06,DC1-R14,10,1,front,true,server,Dell R660,1,51.6\nDC1-R14-srv-07,DC1-R14,11,1,front,true,server,Dell R660,1,26.6\nDC1-R14-srv-08,DC1-R14,12,1,front,true,server,Dell R660,1,54.7\nDC1-R14-srv-09,DC1-R14,13,1,front,true,server,Dell R660,1,46.8\nDC1-R14-srv-10,DC1-R14,14,1,front,true,server,Dell R660,1,37.8\nDC1-R14-srv-11,DC1-R14,15,1,front,true,server,Dell R660,1,44.7\nDC1-R14-srv-12,DC1-R14,16,1,front,true,server,Dell R660,1,42.9\nDC1-R14-srv-13,DC1-R14,17,1,front,true,server,Dell R660,1,44.3\nDC1-R14-srv-14,DC1-R14,18,1,front,true,server,Dell R660,1,53.4\nDC1-R14-srv-15,DC1-R14,19,1,front,true,server,Dell R660,1,52.3\nDC1-R14-srv-16,DC1-R14,20,1,front,true,server,Dell R660,1,45.6\nDC1-R14-srv-17,DC1-R14,21,1,front,true,server,Dell R660,1,38.4\nDC1-R14-srv-18,DC1-R14,22,1,front,true,server,Dell R660,1,37.9\nDC1-R14-srv-19,DC1-R14,23,1,front,true,server,Dell R660,1,43.1\nDC1-R14-srv-20,DC1-R14,24,1,front,true,server,Dell R660,1,40.5\nDC1-R14-srv-21,DC1-R14,25,1,front,true,server,Dell R660,1,29.8\nDC1-R14-srv-22,DC1-R14,26,1,front,true,server,Dell R660,1,27.2\nDC1-R14-srv-23,DC1-R14,27,1,front,true,server,Dell R660,1,41.1\nDC1-R14-srv-24,DC1-R14,28,1,front,true,server,Dell R660,1,54.3\nDC1-R14-srv-25,DC1-R14,29,1,front,true,server,Dell R660,1,48.1\nDC1-R14-srv-26,DC1-R14,30,1,front,true,server,Dell R660,1,38.6\nDC1-R14-srv-27,DC1-R14,31,1,front,true,server,Dell R660,1,51.6\nDC1-R14-srv-28,DC1-R14,32,1,front,true,server,Dell R660,1,29.8\nDC1-R14-srv-29,DC1-R14,33,1,front,true,server,Dell R660,1,51.3\nDC1-R14-pdu-a,DC1-R14,,0,rear,false,pdu,APC AP8853,1,3\nDC1-R14-pdu-b,DC1-R14,,0,rear,false,pdu,APC AP8853,1,3\nDC1-R15-sw-01,DC1-R15,42,1,front,true,switch,Arista 7050SX3,1,58\nDC1-R15-sw-02,DC1-R15,41,1,front,true,switch,Arista 7050SX3,1,49.1\nDC1-R15-srv-01,DC1-R15,1,2,front,true,server,Dell R760,1,38.2\nDC1-R15-srv-02,DC1-R15,3,2,front,true,server,Dell R760,1,25.1\nDC1-R15-srv-03,DC1-R15,5,2,front,true,server,Dell R760,1,43.7\nDC1-R15-srv-04,DC1-R15,7,2,front,true,server,Dell R760,1,33.9\nDC1-R15-srv-05,DC1-R15,9,1,front,true,server,Dell R660,1,27.6\nDC1-R15-srv-06,DC1-R15,10,1,front,true,server,Dell R660,1,41.4\nDC1-R15-srv-07,DC1-R15,11,1,front,true,server,Dell R660,1,30.3\nDC1-R15-srv-08,DC1-R15,12,1,front,true,server,Dell R660,1,47.2\nDC1-R15-srv-09,DC1-R15,13,1,front,true,server,Dell R660,1,37.6\nDC1-R15-srv-10,DC1-R15,14,1,front,true,server,Dell R660,1,28\nDC1-R15-srv-11,DC1-R15,15,1,front,true,server,Dell R660,1,33.1\nDC1-R15-srv-12,DC1-R15,16,1,front,true,server,Dell R660,1,51.5\nDC1-R15-srv-13,DC1-R15,17,1,front,true,server,Dell R660,1,40.4\nDC1-R15-srv-14,DC1-R15,18,1,front,true,server,Dell R660,1,41.3\nDC1-R15-srv-15,DC1-R15,19,1,front,true,server,Dell R660,1,34.4\nDC1-R15-srv-16,DC1-R15,20,1,front,true,server,Dell R660,1,42.3\nDC1-R15-srv-17,DC1-R15,21,1,front,true,server,Dell R660,1,41.5\nDC1-R15-srv-18,DC1-R15,22,1,front,true,server,Dell R660,1,52.7\nDC1-R15-srv-19,DC1-R15,23,1,front,true,server,Dell R660,1,47.9\nDC1-R15-srv-20,DC1-R15,24,1,front,true,server,Dell R660,1,36.6\nDC1-R15-srv-21,DC1-R15,25,1,front,true,server,Dell R660,1,48.8\nDC1-R15-srv-22,DC1-R15,26,1,front,true,server,Dell R660,1,26.4\nDC1-R15-srv-23,DC1-R15,27,1,front,true,server,Dell R660,1,33.3\nDC1-R15-srv-24,DC1-R15,28,1,front,true,server,Dell R660,1,40.7\nDC1-R15-srv-25,DC1-R15,29,1,front,true,server,Dell R660,1,50.6\nDC1-R15-srv-26,DC1-R15,30,1,front,true,server,Dell R660,1,42.7\nDC1-R15-srv-27,DC1-R15,31,1,front,true,server,Dell R660,1,45.5\nDC1-R15-srv-28,DC1-R15,32,1,front,true,server,Dell R660,1,31.8\nDC1-R15-srv-29,DC1-R15,33,1,front,true,server,Dell R660,1,49.7\nDC1-R15-pdu-a,DC1-R15,,0,rear,false,pdu,APC AP8853,1,3\nDC1-R15-pdu-b,DC1-R15,,0,rear,false,pdu,APC AP8853,1,3\nDC1-R16-sw-01,DC1-R16,42,1,front,true,switch,Arista 7050SX3,1,44.1\nDC1-R16-sw-02,DC1-R16,41,1,front,true,switch,Arista 7050SX3,1,54.7\nDC1-R16-srv-01,DC1-R16,1,2,front,true,server,Dell R760,,42.4\nDC1-R16-srv-02,DC1-R16,3,2,front,true,server,Dell R760,1,35\nDC1-R16-srv-03,DC1-R16,5,2,front,true,server,Dell R760,1,32.4\nDC1-R16-srv-04,DC1-R16,7,2,front,true,server,Dell R760,1,32.9\nDC1-R16-srv-05,DC1-R16,9,1,front,true,server,Dell R660,1,29.8\nDC1-R16-srv-06,DC1-R16,10,1,front,true,server,Dell R660,1,45.6\nDC1-R16-srv-07,DC1-R16,11,1,front,true,server,Dell R660,1,40.7\nDC1-R16-srv-08,DC1-R16,12,1,front,true,server,Dell R660,1,47.4\nDC1-R16-srv-09,DC1-R16,13,1,front,true,server,Dell R660,1,38.4\nDC1-R16-srv-10,DC1-R16,14,1,front,true,server,Dell R660,1,35\nDC1-R16-srv-11,DC1-R16,15,1,front,true,server,Dell R660,1,46.4\nDC1-R16-srv-12,DC1-R16,16,1,front,true,server,Dell R660,1,41.8\nDC1-R16-srv-13,DC1-R16,17,1,front,true,server,Dell R660,1,40.5\nDC1-R16-srv-14,DC1-R16,18,1,front,true,server,Dell R660,1,53\nDC1-R16-srv-15,DC1-R16,19,1,front,true,server,Dell R660,1,51.8\nDC1-R16-srv-16,DC1-R16,20,1,front,true,server,Dell R660,1,28.1\nDC1-R16-srv-17,DC1-R16,21,1,front,true,server,Dell R660,0,52.6\nDC1-R16-srv-18,DC1-R16,22,1,front,true,server,Dell R660,1,33.8\nDC1-R16-srv-19,DC1-R16,23,1,front,true,server,Dell R660,1,29.3\nDC1-R16-srv-20,DC1-R16,24,1,front,true,server,Dell R660,1,52.4\nDC1-R16-srv-21,DC1-R16,25,1,front,true,server,Dell R660,1,29.4\nDC1-R16-srv-22,DC1-R16,26,1,front,true,server,Dell R660,1,38.1\nDC1-R16-srv-23,DC1-R16,27,1,front,true,server,Dell R660,1,40.7\nDC1-R16-srv-24,DC1-R16,28,1,front,true,server,Dell R660,1,39.5\nDC1-R16-srv-25,DC1-R16,29,1,front,true,server,Dell R660,1,44.5\nDC1-R16-srv-26,DC1-R16,30,1,front,true,server,Dell R660,1,47.3\nDC1-R16-srv-27,DC1-R16,31,1,front,true,server,Dell R660,1,41.1\nDC1-R16-srv-28,DC1-R16,32,1,front,true,server,Dell R660,1,34.2\nDC1-R16-srv-29,DC1-R16,33,1,front,true,server,Dell R660,1,40.4\nDC1-R16-pdu-a,DC1-R16,,0,rear,false,pdu,APC AP8853,1,3\nDC1-R16-pdu-b,DC1-R16,,0,rear,false,pdu,APC AP8853,1,3\nDC1-R17-sw-01,DC1-R17,42,1,front,true,switch,Arista 7050SX3,1,60.6\nDC1-R17-sw-02,DC1-R17,41,1,front,true,switch,Arista 7050SX3,1,43.2\nDC1-R17-srv-01,DC1-R17,1,2,front,true,server,Dell R760,1,27.3\nDC1-R17-srv-02,DC1-R17,3,2,front,true,server,Dell R760,1,38.8\nDC1-R17-srv-03,DC1-R17,5,2,front,true,server,Dell R760,1,44.2\nDC1-R17-srv-04,DC1-R17,7,2,front,true,server,Dell R760,1,54.5\nDC1-R17-srv-05,DC1-R17,9,1,front,true,server,Dell R660,1,45.1\nDC1-R17-srv-06,DC1-R17,10,1,front,true,server,Dell R660,1,27.5\nDC1-R17-srv-07,DC1-R17,11,1,front,true,server,Dell R660,1,34.1\nDC1-R17-srv-08,DC1-R17,12,1,front,true,server,Dell R660,,52\nDC1-R17-srv-09,DC1-R17,13,1,front,true,server,Dell R660,1,46.2\nDC1-R17-srv-10,DC1-R17,14,1,front,true,server,Dell R660,1,43.6\nDC1-R17-srv-11,DC1-R17,15,1,front,true,server,Dell R660,,53.4\nDC1-R17-srv-12,DC1-R17,16,1,front,true,server,Dell R660,1,31\nDC1-R17-srv-13,DC1-R17,17,1,front,true,server,Dell R660,1,42.6\nDC1-R17-srv-14,DC1-R17,18,1,front,true,server,Dell R660,1,31\nDC1-R17-srv-15,DC1-R17,19,1,front,true,server,Dell R660,0,28.6\nDC1-R17-srv-16,DC1-R17,20,1,front,true,server,Dell R660,1,51\nDC1-R17-srv-17,DC1-R17,21,1,front,true,server,Dell R660,1,51.1\nDC1-R17-srv-18,DC1-R17,22,1,front,true,server,Dell R660,1,46.9\nDC1-R17-srv-19,DC1-R17,23,1,front,true,server,Dell R660,1,44.2\nDC1-R17-srv-20,DC1-R17,24,1,front,true,server,Dell R660,0,27.7\nDC1-R17-srv-21,DC1-R17,25,1,front,true,server,Dell R660,1,33.1\nDC1-R17-srv-22,DC1-R17,26,1,front,true,server,Dell R660,1,33.7\nDC1-R17-srv-23,DC1-R17,27,1,front,true,server,Dell R660,1,31.8\nDC1-R17-srv-24,DC1-R17,28,1,front,true,server,Dell R660,1,30.8\nDC1-R17-srv-25,DC1-R17,29,1,front,true,server,Dell R660,1,34.7\nDC1-R17-srv-26,DC1-R17,30,1,front,true,server,Dell R660,1,41.7\nDC1-R17-srv-27,DC1-R17,31,1,front,true,server,Dell R660,1,31.5\nDC1-R17-srv-28,DC1-R17,32,1,front,true,server,Dell R660,1,38.2\nDC1-R17-srv-29,DC1-R17,33,1,front,true,server,Dell R660,1,51.1\nDC1-R17-pdu-a,DC1-R17,,0,rear,false,pdu,APC AP8853,1,3\nDC1-R17-pdu-b,DC1-R17,,0,rear,false,pdu,APC AP8853,1,3\nDC1-R18-sw-01,DC1-R18,42,1,front,true,switch,Arista 7050SX3,1,57.4\nDC1-R18-sw-02,DC1-R18,41,1,front,true,switch,Arista 7050SX3,1,35.8\nDC1-R18-srv-01,DC1-R18,1,2,front,true,server,Dell R760,1,47.6\nDC1-R18-srv-02,DC1-R18,3,2,front,true,server,Dell R760,1,43.9\nDC1-R18-srv-03,DC1-R18,5,2,front,true,server,Dell R760,1,34.6\nDC1-R18-srv-04,DC1-R18,7,2,front,true,server,Dell R760,1,30.4\nDC1-R18-srv-05,DC1-R18,9,1,front,true,server,Dell R660,1,52.5\nDC1-R18-srv-06,DC1-R18,10,1,front,true,server,Dell R660,1,31.4\nDC1-R18-srv-07,DC1-R18,11,1,front,true,server,Dell R660,1,43.5\nDC1-R18-srv-08,DC1-R18,12,1,front,true,server,Dell R660,1,35.7\nDC1-R18-srv-09,DC1-R18,13,1,front,true,server,Dell R660,1,50.1\nDC1-R18-srv-10,DC1-R18,14,1,front,true,server,Dell R660,1,52.4\nDC1-R18-srv-11,DC1-R18,15,1,front,true,server,Dell R660,1,40.7\nDC1-R18-srv-12,DC1-R18,16,1,front,true,server,Dell R660,1,28.9\nDC1-R18-srv-13,DC1-R18,17,1,front,true,server,Dell R660,1,49\nDC1-R18-srv-14,DC1-R18,18,1,front,true,server,Dell R660,1,48.7\nDC1-R18-srv-15,DC1-R18,19,1,front,true,server,Dell R660,1,42.6\nDC1-R18-srv-16,DC1-R18,20,1,front,true,server,Dell R660,1,54.5\nDC1-R18-srv-17,DC1-R18,21,1,front,true,server,Dell R660,1,39.6\nDC1-R18-srv-18,DC1-R18,22,1,front,true,server,Dell R660,1,29.6\nDC1-R18-srv-19,DC1-R18,23,1,front,true,server,Dell R660,1,35\nDC1-R18-srv-20,DC1-R18,24,1,front,true,server,Dell R660,1,43.1\nDC1-R18-srv-21,DC1-R18,25,1,front,true,server,Dell R660,1,45\nDC1-R18-srv-22,DC1-R18,26,1,front,true,server,Dell R660,1,39.5\nDC1-R18-srv-23,DC1-R18,27,1,front,true,server,Dell R660,1,25.5\nDC1-R18-srv-24,DC1-R18,28,1,front,true,server,Dell R660,1,29.7\nDC1-R18-srv-25,DC1-R18,29,1,front,true,server,Dell R660,0,29.3\nDC1-R18-srv-26,DC1-R18,30,1,front,true,server,Dell R660,1,31.2\nDC1-R18-srv-27,DC1-R18,31,1,front,true,server,Dell R660,1,40.5\nDC1-R18-srv-28,DC1-R18,32,1,front,true,server,Dell R660,1,41.1\nDC1-R18-srv-29,DC1-R18,33,1,front,true,server,Dell R660,1,33.5\nDC1-R18-pdu-a,DC1-R18,,0,rear,false,pdu,APC AP8853,1,3\nDC1-R18-pdu-b,DC1-R18,,0,rear,false,pdu,APC AP8853,1,3\nDC1-R19-sw-01,DC1-R19,42,1,front,true,switch,Arista 7050SX3,1,58.9\nDC1-R19-sw-02,DC1-R19,41,1,front,true,switch,Arista 7050SX3,1,45.1\nDC1-R19-srv-01,DC1-R19,1,2,front,true,server,Dell R760,0,37\nDC1-R19-srv-02,DC1-R19,3,2,front,true,server,Dell R760,1,50.9\nDC1-R19-srv-03,DC1-R19,5,2,front,true,server,Dell R760,1,52.9\nDC1-R19-srv-04,DC1-R19,7,2,front,true,server,Dell R760,1,42.9\nDC1-R19-srv-05,DC1-R19,9,1,front,true,server,Dell R660,1,48.7\nDC1-R19-srv-06,DC1-R19,10,1,front,true,server,Dell R660,1,37.3\nDC1-R19-srv-07,DC1-R19,11,1,front,true,server,Dell R660,1,26.8\nDC1-R19-srv-08,DC1-R19,12,1,front,true,server,Dell R660,1,43.3\nDC1-R19-srv-09,DC1-R19,13,1,front,true,server,Dell R660,1,31.5\nDC1-R19-srv-10,DC1-R19,14,1,front,true,server,Dell R660,0,31.8\nDC1-R19-srv-11,DC1-R19,15,1,front,true,server,Dell R660,1,29.2\nDC1-R19-srv-12,DC1-R19,16,1,front,true,server,Dell R660,1,42.6\nDC1-R19-srv-13,DC1-R19,17,1,front,true,server,Dell R660,1,26.9\nDC1-R19-srv-14,DC1-R19,18,1,front,true,server,Dell R660,1,29.8\nDC1-R19-srv-15,DC1-R19,19,1,front,true,server,Dell R660,1,46.6\nDC1-R19-srv-16,DC1-R19,20,1,front,true,server,Dell R660,1,52.3\nDC1-R19-srv-17,DC1-R19,21,1,front,true,server,Dell R660,1,28.7\nDC1-R19-srv-18,DC1-R19,22,1,front,true,server,Dell R660,1,26.4\nDC1-R19-srv-19,DC1-R19,23,1,front,true,server,Dell R660,1,38.4\nDC1-R19-srv-20,DC1-R19,24,1,front,true,server,Dell R660,1,47.8\nDC1-R19-srv-21,DC1-R19,25,1,front,true,server,Dell R660,1,36.7\nDC1-R19-srv-22,DC1-R19,26,1,front,true,server,Dell R660,1,32.9\nDC1-R19-srv-23,DC1-R19,27,1,front,true,server,Dell R660,1,37.6\nDC1-R19-srv-24,DC1-R19,28,1,front,true,server,Dell R660,1,44.5\nDC1-R19-srv-25,DC1-R19,29,1,front,true,server,Dell R660,1,26.1\nDC1-R19-srv-26,DC1-R19,30,1,front,true,server,Dell R660,1,46.6\nDC1-R19-srv-27,DC1-R19,31,1,front,true,server,Dell R660,1,38.7\nDC1-R19-srv-28,DC1-R19,32,1,front,true,server,Dell R660,1,46\nDC1-R19-srv-29,DC1-R19,33,1,front,true,server,Dell R660,1,42.3\nDC1-R19-pdu-a,DC1-R19,,0,rear,false,pdu,APC AP8853,1,3\nDC1-R19-pdu-b,DC1-R19,,0,rear,false,pdu,APC AP8853,1,3\nDC1-R20-sw-01,DC1-R20,42,1,front,true,switch,Arista 7050SX3,1,41.3\nDC1-R20-sw-02,DC1-R20,41,1,front,true,switch,Arista 7050SX3,1,39.3\nDC1-R20-srv-01,DC1-R20,1,2,front,true,server,Dell R760,1,53\nDC1-R20-srv-02,DC1-R20,3,2,front,true,server,Dell R760,1,30\nDC1-R20-srv-03,DC1-R20,5,2,front,true,server,Dell R760,1,34.3\nDC1-R20-srv-04,DC1-R20,7,2,front,true,server,Dell R760,1,43.9\nDC1-R20-srv-05,DC1-R20,9,1,front,true,server,Dell R660,1,44.3\nDC1-R20-srv-06,DC1-R20,10,1,front,true,server,Dell R660,,37.9\nDC1-R20-srv-07,DC1-R20,11,1,front,true,server,Dell R660,1,30.7\nDC1-R20-srv-08,DC1-R20,12,1,front,true,server,Dell R660,1,30.5\nDC1-R20-srv-09,DC1-R20,13,1,front,true,server,Dell R660,0,53.4\nDC1-R20-srv-10,DC1-R20,14,1,front,true,server,Dell R660,1,30.6\nDC1-R20-srv-11,DC1-R20,15,1,front,true,server,Dell R660,1,47.4\nDC1-R20-srv-12,DC1-R20,16,1,front,true,server,Dell R660,1,33.3\nDC1-R20-srv-13,DC1-R20,17,1,front,true,server,Dell R660,1,34.3\nDC1-R20-srv-14,DC1-R20,18,1,front,true,server,Dell R660,1,52.9\nDC1-R20-srv-15,DC1-R20,19,1,front,true,server,Dell R660,,38\nDC1-R20-srv-16,DC1-R20,20,1,front,true,server,Dell R660,1,33.6\nDC1-R20-srv-17,DC1-R20,21,1,front,true,server,Dell R660,1,28.6\nDC1-R20-srv-18,DC1-R20,22,1,front,true,server,Dell R660,1,53.2\nDC1-R20-srv-19,DC1-R20,23,1,front,true,server,Dell R660,0,28.8\nDC1-R20-srv-20,DC1-R20,24,1,front,true,server,Dell R660,1,36.3\nDC1-R20-srv-21,DC1-R20,25,1,front,true,server,Dell R660,1,48.6\nDC1-R20-srv-22,DC1-R20,26,1,front,true,server,Dell R660,1,32.3\nDC1-R20-srv-23,DC1-R20,27,1,front,true,server,Dell R660,1,30.1\nDC1-R20-srv-24,DC1-R20,28,1,front,true,server,Dell R660,1,32.2\nDC1-R20-srv-25,DC1-R20,29,1,front,true,server,Dell R660,1,47.4\nDC1-R20-srv-26,DC1-R20,30,1,front,true,server,Dell R660,1,52.6\nDC1-R20-srv-27,DC1-R20,31,1,front,true,server,Dell R660,1,52.2\nDC1-R20-srv-28,DC1-R20,32,1,front,true,server,Dell R660,1,32\nDC1-R20-srv-29,DC1-R20,33,1,front,true,server,Dell R660,1,34.6\nDC1-R20-pdu-a,DC1-R20,,0,rear,false,pdu,APC AP8853,1,3\nDC1-R20-pdu-b,DC1-R20,,0,rear,false,pdu,APC AP8853,1,3\nDC1-R21-sw-01,DC1-R21,42,1,front,true,switch,Arista 7050SX3,1,64.4\nDC1-R21-sw-02,DC1-R21,41,1,front,true,switch,Arista 7050SX3,1,52.4\nDC1-R21-srv-01,DC1-R21,1,2,front,true,server,Dell R760,1,27.8\nDC1-R21-srv-02,DC1-R21,3,2,front,true,server,Dell R760,1,33.9\nDC1-R21-srv-03,DC1-R21,5,2,front,true,server,Dell R760,1,42.2\nDC1-R21-srv-04,DC1-R21,7,2,front,true,server,Dell R760,1,37.3\nDC1-R21-srv-05,DC1-R21,9,1,front,true,server,Dell R660,1,54.5\nDC1-R21-srv-06,DC1-R21,10,1,front,true,server,Dell R660,1,27.8\nDC1-R21-srv-07,DC1-R21,11,1,front,true,server,Dell R660,1,39\nDC1-R21-srv-08,DC1-R21,12,1,front,true,server,Dell R660,1,53.7\nDC1-R21-srv-09,DC1-R21,13,1,front,true,server,Dell R660,1,51.6\nDC1-R21-srv-10,DC1-R21,14,1,front,true,server,Dell R660,1,46.3\nDC1-R21-srv-11,DC1-R21,15,1,front,true,server,Dell R660,1,34.5\nDC1-R21-srv-12,DC1-R21,16,1,front,true,server,Dell R660,,45.5\nDC1-R21-srv-13,DC1-R21,17,1,front,true,server,Dell R660,1,35.6\nDC1-R21-srv-14,DC1-R21,18,1,front,true,server,Dell R660,1,31.1\nDC1-R21-srv-15,DC1-R21,19,1,front,true,server,Dell R660,0,26.5\nDC1-R21-srv-16,DC1-R21,20,1,front,true,server,Dell R660,1,46.4\nDC1-R21-srv-17,DC1-R21,21,1,front,true,server,Dell R660,1,42.7\nDC1-R21-srv-18,DC1-R21,22,1,front,true,server,Dell R660,1,47.6\nDC1-R21-srv-19,DC1-R21,23,1,front,true,server,Dell R660,1,28\nDC1-R21-srv-20,DC1-R21,24,1,front,true,server,Dell R660,1,47.4\nDC1-R21-srv-21,DC1-R21,25,1,front,true,server,Dell R660,1,43.5\nDC1-R21-srv-22,DC1-R21,26,1,front,true,server,Dell R660,1,52.8\nDC1-R21-srv-23,DC1-R21,27,1,front,true,server,Dell R660,1,27.7\nDC1-R21-srv-24,DC1-R21,28,1,front,true,server,Dell R660,1,47.7\nDC1-R21-srv-25,DC1-R21,29,1,front,true,server,Dell R660,0,52.8\nDC1-R21-srv-26,DC1-R21,30,1,front,true,server,Dell R660,1,38\nDC1-R21-srv-27,DC1-R21,31,1,front,true,server,Dell R660,0,31.5\nDC1-R21-srv-28,DC1-R21,32,1,front,true,server,Dell R660,1,31.5\nDC1-R21-srv-29,DC1-R21,33,1,front,true,server,Dell R660,1,37.4\nDC1-R21-pdu-a,DC1-R21,,0,rear,false,pdu,APC AP8853,1,3\nDC1-R21-pdu-b,DC1-R21,,0,rear,false,pdu,APC AP8853,1,3\nDC1-R22-sw-01,DC1-R22,42,1,front,true,switch,Arista 7050SX3,1,53\nDC1-R22-sw-02,DC1-R22,41,1,front,true,switch,Arista 7050SX3,1,50.6\nDC1-R22-srv-01,DC1-R22,1,2,front,true,server,Dell R760,1,51.5\nDC1-R22-srv-02,DC1-R22,3,2,front,true,server,Dell R760,1,46.9\nDC1-R22-srv-03,DC1-R22,5,2,front,true,server,Dell R760,1,29.9\nDC1-R22-srv-04,DC1-R22,7,2,front,true,server,Dell R760,1,26\nDC1-R22-srv-05,DC1-R22,9,1,front,true,server,Dell R660,1,36.4\nDC1-R22-srv-06,DC1-R22,10,1,front,true,server,Dell R660,0,35\nDC1-R22-srv-07,DC1-R22,11,1,front,true,server,Dell R660,1,43\nDC1-R22-srv-08,DC1-R22,12,1,front,true,server,Dell R660,1,30\nDC1-R22-srv-09,DC1-R22,13,1,front,true,server,Dell R660,1,34.9\nDC1-R22-srv-10,DC1-R22,14,1,front,true,server,Dell R660,1,51.4\nDC1-R22-srv-11,DC1-R22,15,1,front,true,server,Dell R660,1,53.1\nDC1-R22-srv-12,DC1-R22,16,1,front,true,server,Dell R660,1,29.6\nDC1-R22-srv-13,DC1-R22,17,1,front,true,server,Dell R660,1,37.5\nDC1-R22-srv-14,DC1-R22,18,1,front,true,server,Dell R660,1,41\nDC1-R22-srv-15,DC1-R22,19,1,front,true,server,Dell R660,1,35.7\nDC1-R22-srv-16,DC1-R22,20,1,front,true,server,Dell R660,1,51.8\nDC1-R22-srv-17,DC1-R22,21,1,front,true,server,Dell R660,1,32.7\nDC1-R22-srv-18,DC1-R22,22,1,front,true,server,Dell R660,0,54.8\nDC1-R22-srv-19,DC1-R22,23,1,front,true,server,Dell R660,1,27.8\nDC1-R22-srv-20,DC1-R22,24,1,front,true,server,Dell R660,1,51\nDC1-R22-srv-21,DC1-R22,25,1,front,true,server,Dell R660,1,34.8\nDC1-R22-srv-22,DC1-R22,26,1,front,true,server,Dell R660,1,25\nDC1-R22-srv-23,DC1-R22,27,1,front,true,server,Dell R660,1,27.4\nDC1-R22-srv-24,DC1-R22,28,1,front,true,server,Dell R660,1,29\nDC1-R22-srv-25,DC1-R22,29,1,front,true,server,Dell R660,1,26.6\nDC1-R22-srv-26,DC1-R22,30,1,front,true,server,Dell R660,1,27.7\nDC1-R22-srv-27,DC1-R22,31,1,front,true,server,Dell R660,1,29.8\nDC1-R22-srv-28,DC1-R22,32,1,front,true,server,Dell R660,1,43.5\nDC1-R22-srv-29,DC1-R22,33,1,front,true,server,Dell R660,1,54.6\nDC1-R22-pdu-a,DC1-R22,,0,rear,false,pdu,APC AP8853,1,3\nDC1-R22-pdu-b,DC1-R22,,0,rear,false,pdu,APC AP8853,1,3\nDC1-R23-sw-01,DC1-R23,42,1,front,true,switch,Arista 7050SX3,1,36.5\nDC1-R23-sw-02,DC1-R23,41,1,front,true,switch,Arista 7050SX3,1,37.5\nDC1-R23-srv-01,DC1-R23,1,2,front,true,server,Dell R760,1,43.1\nDC1-R23-srv-02,DC1-R23,3,2,front,true,server,Dell R760,1,30.8\nDC1-R23-srv-03,DC1-R23,5,2,front,true,server,Dell R760,1,40\nDC1-R23-srv-04,DC1-R23,7,2,front,true,server,Dell R760,1,44.4\nDC1-R23-srv-05,DC1-R23,9,1,front,true,server,Dell R660,1,54.2\nDC1-R23-srv-06,DC1-R23,10,1,front,true,server,Dell R660,1,48\nDC1-R23-srv-07,DC1-R23,11,1,front,true,server,Dell R660,1,25.8\nDC1-R23-srv-08,DC1-R23,12,1,front,true,server,Dell R660,1,46.6\nDC1-R23-srv-09,DC1-R23,13,1,front,true,server,Dell R660,1,38.3\nDC1-R23-srv-10,DC1-R23,14,1,front,true,server,Dell R660,,44\nDC1-R23-srv-11,DC1-R23,15,1,front,true,server,Dell R660,,30.9\nDC1-R23-srv-12,DC1-R23,16,1,front,true,server,Dell R660,1,54.7\nDC1-R23-srv-13,DC1-R23,17,1,front,true,server,Dell R660,1,41.2\nDC1-R23-srv-14,DC1-R23,18,1,front,true,server,Dell R660,1,44.3\nDC1-R23-srv-15,DC1-R23,19,1,front,true,server,Dell R660,1,45\nDC1-R23-srv-16,DC1-R23,20,1,front,true,server,Dell R660,1,36.9\nDC1-R23-srv-17,DC1-R23,21,1,front,true,server,Dell R660,1,42.1\nDC1-R23-srv-18,DC1-R23,22,1,front,true,server,Dell R660,1,37.3\nDC1-R23-srv-19,DC1-R23,23,1,front,true,server,Dell R660,0,41\nDC1-R23-srv-20,DC1-R23,24,1,front,true,server,Dell R660,1,36.1\nDC1-R23-srv-21,DC1-R23,25,1,front,true,server,Dell R660,1,43.8\nDC1-R23-srv-22,DC1-R23,26,1,front,true,server,Dell R660,1,32.1\nDC1-R23-srv-23,DC1-R23,27,1,front,true,server,Dell R660,1,36.9\nDC1-R23-srv-24,DC1-R23,28,1,front,true,server,Dell R660,1,39.6\nDC1-R23-srv-25,DC1-R23,29,1,front,true,server,Dell R660,1,29\nDC1-R23-srv-26,DC1-R23,30,1,front,true,server,Dell R660,1,29.9\nDC1-R23-srv-27,DC1-R23,31,1,front,true,server,Dell R660,,44.3\nDC1-R23-srv-28,DC1-R23,32,1,front,true,server,Dell R660,1,50.3\nDC1-R23-srv-29,DC1-R23,33,1,front,true,server,Dell R660,1,50.4\nDC1-R23-pdu-a,DC1-R23,,0,rear,false,pdu,APC AP8853,1,3\nDC1-R23-pdu-b,DC1-R23,,0,rear,false,pdu,APC AP8853,1,3\nDC1-R24-sw-01,DC1-R24,42,1,front,true,switch,Arista 7050SX3,1,40.3\nDC1-R24-sw-02,DC1-R24,41,1,front,true,switch,Arista 7050SX3,1,53.2\nDC1-R24-srv-01,DC1-R24,1,2,front,true,server,Dell R760,1,53.4\nDC1-R24-srv-02,DC1-R24,3,2,front,true,server,Dell R760,1,29.9\nDC1-R24-srv-03,DC1-R24,5,2,front,true,server,Dell R760,1,37.1\nDC1-R24-srv-04,DC1-R24,7,2,front,true,server,Dell R760,1,45.6\nDC1-R24-srv-05,DC1-R24,9,1,front,true,server,Dell R660,1,41.3\nDC1-R24-srv-06,DC1-R24,10,1,front,true,server,Dell R660,1,47.3\nDC1-R24-srv-07,DC1-R24,11,1,front,true,server,Dell R660,1,34.7\nDC1-R24-srv-08,DC1-R24,12,1,front,true,server,Dell R660,1,53.8\nDC1-R24-srv-09,DC1-R24,13,1,front,true,server,Dell R660,1,32.1\nDC1-R24-srv-10,DC1-R24,14,1,front,true,server,Dell R660,1,40.8\nDC1-R24-srv-11,DC1-R24,15,1,front,true,server,Dell R660,1,46.9\nDC1-R24-srv-12,DC1-R24,16,1,front,true,server,Dell R660,1,40.5\nDC1-R24-srv-13,DC1-R24,17,1,front,true,server,Dell R660,1,41.2\nDC1-R24-srv-14,DC1-R24,18,1,front,true,server,Dell R660,1,39.9\nDC1-R24-srv-15,DC1-R24,19,1,front,true,server,Dell R660,1,45.5\nDC1-R24-srv-16,DC1-R24,20,1,front,true,server,Dell R660,1,31.5\nDC1-R24-srv-17,DC1-R24,21,1,front,true,server,Dell R660,1,37.3\nDC1-R24-srv-18,DC1-R24,22,1,front,true,server,Dell R660,1,44.3\nDC1-R24-srv-19,DC1-R24,23,1,front,true,server,Dell R660,1,47.7\nDC1-R24-srv-20,DC1-R24,24,1,front,true,server,Dell R660,1,49.1\nDC1-R24-srv-21,DC1-R24,25,1,front,true,server,Dell R660,1,51.5\nDC1-R24-srv-22,DC1-R24,26,1,front,true,server,Dell R660,1,28.4\nDC1-R24-srv-23,DC1-R24,27,1,front,true,server,Dell R660,1,55\nDC1-R24-srv-24,DC1-R24,28,1,front,true,server,Dell R660,1,30.4\nDC1-R24-srv-25,DC1-R24,29,1,front,true,server,Dell R660,1,34.4\nDC1-R24-srv-26,DC1-R24,30,1,front,true,server,Dell R660,1,28.8\nDC1-R24-srv-27,DC1-R24,31,1,front,true,server,Dell R660,1,43.2\nDC1-R24-srv-28,DC1-R24,32,1,front,true,server,Dell R660,1,39.3\nDC1-R24-srv-29,DC1-R24,33,1,front,true,server,Dell R660,1,36.9\nDC1-R24-pdu-a,DC1-R24,,0,rear,false,pdu,APC AP8853,1,3\nDC1-R24-pdu-b,DC1-R24,,0,rear,false,pdu,APC AP8853,1,3\nDC1-R25-sw-01,DC1-R25,42,1,front,true,switch,Arista 7050SX3,1,42.9\nDC1-R25-sw-02,DC1-R25,41,1,front,true,switch,Arista 7050SX3,1,56.2\nDC1-R25-srv-01,DC1-R25,1,2,front,true,server,Dell R760,1,32.3\nDC1-R25-srv-02,DC1-R25,3,2,front,true,server,Dell R760,1,25.3\nDC1-R25-srv-03,DC1-R25,5,2,front,true,server,Dell R760,1,29.6\nDC1-R25-srv-04,DC1-R25,7,2,front,true,server,Dell R760,1,37\nDC1-R25-srv-05,DC1-R25,9,1,front,true,server,Dell R660,1,35.9\nDC1-R25-srv-06,DC1-R25,10,1,front,true,server,Dell R660,1,37.7\nDC1-R25-srv-07,DC1-R25,11,1,front,true,server,Dell R660,1,43.2\nDC1-R25-srv-08,DC1-R25,12,1,front,true,server,Dell R660,1,46.6\nDC1-R25-srv-09,DC1-R25,13,1,front,true,server,Dell R660,1,48\nDC1-R25-srv-10,DC1-R25,14,1,front,true,server,Dell R660,1,44.4\nDC1-R25-srv-11,DC1-R25,15,1,front,true,server,Dell R660,1,54.4\nDC1-R25-srv-12,DC1-R25,16,1,front,true,server,Dell R660,1,33.1\nDC1-R25-srv-13,DC1-R25,17,1,front,true,server,Dell R660,1,35.2\nDC1-R25-srv-14,DC1-R25,18,1,front,true,server,Dell R660,1,34.3\nDC1-R25-srv-15,DC1-R25,19,1,front,true,server,Dell R660,1,38.1\nDC1-R25-srv-16,DC1-R25,20,1,front,true,server,Dell R660,1,35.4\nDC1-R25-srv-17,DC1-R25,21,1,front,true,server,Dell R660,1,30.2\nDC1-R25-srv-18,DC1-R25,22,1,front,true,server,Dell R660,1,53.7\nDC1-R25-srv-19,DC1-R25,23,1,front,true,server,Dell R660,1,45.4\nDC1-R25-srv-20,DC1-R25,24,1,front,true,server,Dell R660,1,25.6\nDC1-R25-srv-21,DC1-R25,25,1,front,true,server,Dell R660,1,54.8\nDC1-R25-srv-22,DC1-R25,26,1,front,true,server,Dell R660,1,51.1\nDC1-R25-srv-23,DC1-R25,27,1,front,true,server,Dell R660,1,27.6\nDC1-R25-srv-24,DC1-R25,28,1,front,true,server,Dell R660,1,54.9\nDC1-R25-srv-25,DC1-R25,29,1,front,true,server,Dell R660,1,28.5\nDC1-R25-srv-26,DC1-R25,30,1,front,true,server,Dell R660,1,45\nDC1-R25-srv-27,DC1-R25,31,1,front,true,server,Dell R660,1,25.9\nDC1-R25-srv-28,DC1-R25,32,1,front,true,server,Dell R660,1,37.3\nDC1-R25-srv-29,DC1-R25,33,1,front,true,server,Dell R660,1,25.8\nDC1-R25-pdu-a,DC1-R25,,0,rear,false,pdu,APC AP8853,1,3\nDC1-R25-pdu-b,DC1-R25,,0,rear,false,pdu,APC AP8853,1,3\nDC1-R26-sw-01,DC1-R26,42,1,front,true,switch,Arista 7050SX3,1,48.2\nDC1-R26-sw-02,DC1-R26,41,1,front,true,switch,Arista 7050SX3,1,36.4\nDC1-R26-srv-01,DC1-R26,1,2,front,true,server,Dell R760,1,35.8\nDC1-R26-srv-02,DC1-R26,3,2,front,true,server,Dell R760,,47.4\nDC1-R26-srv-03,DC1-R26,5,2,front,true,server,Dell R760,1,35.3\nDC1-R26-srv-04,DC1-R26,7,2,front,true,server,Dell R760,,44.7\nDC1-R26-srv-05,DC1-R26,9,1,front,true,server,Dell R660,1,42.4\nDC1-R26-srv-06,DC1-R26,10,1,front,true,server,Dell R660,1,26.5\nDC1-R26-srv-07,DC1-R26,11,1,front,true,server,Dell R660,1,40.7\nDC1-R26-srv-08,DC1-R26,12,1,front,true,server,Dell R660,1,32.2\nDC1-R26-srv-09,DC1-R26,13,1,front,true,server,Dell R660,,45.9\nDC1-R26-srv-10,DC1-R26,14,1,front,true,server,Dell R660,1,54.4\nDC1-R26-srv-11,DC1-R26,15,1,front,true,server,Dell R660,1,45.1\nDC1-R26-srv-12,DC1-R26,16,1,front,true,server,Dell R660,0,43.4\nDC1-R26-srv-13,DC1-R26,17,1,front,true,server,Dell R660,1,46.1\nDC1-R26-srv-14,DC1-R26,18,1,front,true,server,Dell R660,1,26.4\nDC1-R26-srv-15,DC1-R26,19,1,front,true,server,Dell R660,1,32.8\nDC1-R26-srv-16,DC1-R26,20,1,front,true,server,Dell R660,1,41.9\nDC1-R26-srv-17,DC1-R26,21,1,front,true,server,Dell R660,1,33.7\nDC1-R26-srv-18,DC1-R26,22,1,front,true,server,Dell R660,1,32\nDC1-R26-srv-19,DC1-R26,23,1,front,true,server,Dell R660,,28.1\nDC1-R26-srv-20,DC1-R26,24,1,front,true,server,Dell R660,1,45.9\nDC1-R26-srv-21,DC1-R26,25,1,front,true,server,Dell R660,1,30.7\nDC1-R26-srv-22,DC1-R26,26,1,front,true,server,Dell R660,,41.6\nDC1-R26-srv-23,DC1-R26,27,1,front,true,server,Dell R660,1,32.6\nDC1-R26-srv-24,DC1-R26,28,1,front,true,server,Dell R660,1,47\nDC1-R26-srv-25,DC1-R26,29,1,front,true,server,Dell R660,1,28\nDC1-R26-srv-26,DC1-R26,30,1,front,true,server,Dell R660,0,39.5\nDC1-R26-srv-27,DC1-R26,31,1,front,true,server,Dell R660,1,27.1\nDC1-R26-srv-28,DC1-R26,32,1,front,true,server,Dell R660,1,49.9\nDC1-R26-srv-29,DC1-R26,33,1,front,true,server,Dell R660,1,25.9\nDC1-R26-pdu-a,DC1-R26,,0,rear,false,pdu,APC AP8853,1,3\nDC1-R26-pdu-b,DC1-R26,,0,rear,false,pdu,APC AP8853,1,3\nDC1-R27-sw-01,DC1-R27,42,1,front,true,switch,Arista 7050SX3,1,62.3\nDC1-R27-sw-02,DC1-R27,41,1,front,true,switch,Arista 7050SX3,1,55.2\nDC1-R27-srv-01,DC1-R27,1,2,front,true,server,Dell R760,1,34.3\nDC1-R27-srv-02,DC1-R27,3,2,front,true,server,Dell R760,1,41.6\nDC1-R27-srv-03,DC1-R27,5,2,front,true,server,Dell R760,1,43\nDC1-R27-srv-04,DC1-R27,7,2,front,true,server,Dell R760,1,30.3\nDC1-R27-srv-05,DC1-R27,9,1,front,true,server,Dell R660,1,28.9\nDC1-R27-srv-06,DC1-R27,10,1,front,true,server,Dell R660,1,29.6\nDC1-R27-srv-07,DC1-R27,11,1,front,true,server,Dell R660,1,25.2\nDC1-R27-srv-08,DC1-R27,12,1,front,true,server,Dell R660,1,40.9\nDC1-R27-srv-09,DC1-R27,13,1,front,true,server,Dell R660,1,36.1\nDC1-R27-srv-10,DC1-R27,14,1,front,true,server,Dell R660,1,47.8\nDC1-R27-srv-11,DC1-R27,15,1,front,true,server,Dell R660,1,47.6\nDC1-R27-srv-12,DC1-R27,16,1,front,true,server,Dell R660,1,30.7\nDC1-R27-srv-13,DC1-R27,17,1,front,true,server,Dell R660,1,39.4\nDC1-R27-srv-14,DC1-R27,18,1,front,true,server,Dell R660,1,26.3\nDC1-R27-srv-15,DC1-R27,19,1,front,true,server,Dell R660,1,37.6\nDC1-R27-srv-16,DC1-R27,20,1,front,true,server,Dell R660,1,49.3\nDC1-R27-srv-17,DC1-R27,21,1,front,true,server,Dell R660,1,26\nDC1-R27-srv-18,DC1-R27,22,1,front,true,server,Dell R660,1,42.8\nDC1-R27-srv-19,DC1-R27,23,1,front,true,server,Dell R660,1,49.1\nDC1-R27-srv-20,DC1-R27,24,1,front,true,server,Dell R660,1,50.7\nDC1-R27-srv-21,DC1-R27,25,1,front,true,server,Dell R660,1,54.7\nDC1-R27-srv-22,DC1-R27,26,1,front,true,server,Dell R660,1,54.8\nDC1-R27-srv-23,DC1-R27,27,1,front,true,server,Dell R660,1,54.8\nDC1-R27-srv-24,DC1-R27,28,1,front,true,server,Dell R660,1,27.9\nDC1-R27-srv-25,DC1-R27,29,1,front,true,server,Dell R660,1,39.8\nDC1-R27-srv-26,DC1-R27,30,1,front,true,server,Dell R660,1,29.7\nDC1-R27-srv-27,DC1-R27,31,1,front,true,server,Dell R660,1,51.8\nDC1-R27-srv-28,DC1-R27,32,1,front,true,server,Dell R660,0,49.1\nDC1-R27-srv-29,DC1-R27,33,1,front,true,server,Dell R660,1,25.2\nDC1-R27-pdu-a,DC1-R27,,0,rear,false,pdu,APC AP8853,1,3\nDC1-R27-pdu-b,DC1-R27,,0,rear,false,pdu,APC AP8853,1,3\nDC1-R28-sw-01,DC1-R28,42,1,front,true,switch,Arista 7050SX3,1,48.8\nDC1-R28-sw-02,DC1-R28,41,1,front,true,switch,Arista 7050SX3,1,61.2\nDC1-R28-srv-01,DC1-R28,1,2,front,true,server,Dell R760,1,51.8\nDC1-R28-srv-02,DC1-R28,3,2,front,true,server,Dell R760,1,45.3\nDC1-R28-srv-03,DC1-R28,5,2,front,true,server,Dell R760,1,44.5\nDC1-R28-srv-04,DC1-R28,7,2,front,true,server,Dell R760,1,42.8\nDC1-R28-srv-05,DC1-R28,9,1,front,true,server,Dell R660,1,35.9\nDC1-R28-srv-06,DC1-R28,10,1,front,true,server,Dell R660,1,45.9\nDC1-R28-srv-07,DC1-R28,11,1,front,true,server,Dell R660,1,42.4\nDC1-R28-srv-08,DC1-R28,12,1,front,true,server,Dell R660,0,26.7\nDC1-R28-srv-09,DC1-R28,13,1,front,true,server,Dell R660,,47.4\nDC1-R28-srv-10,DC1-R28,14,1,front,true,server,Dell R660,1,30.8\nDC1-R28-srv-11,DC1-R28,15,1,front,true,server,Dell R660,1,29.7\nDC1-R28-srv-12,DC1-R28,16,1,front,true,server,Dell R660,1,28.2\nDC1-R28-srv-13,DC1-R28,17,1,front,true,server,Dell R660,1,26.9\nDC1-R28-srv-14,DC1-R28,18,1,front,true,server,Dell R660,1,52.4\nDC1-R28-srv-15,DC1-R28,19,1,front,true,server,Dell R660,1,25.8\nDC1-R28-srv-16,DC1-R28,20,1,front,true,server,Dell R660,1,29.7\nDC1-R28-srv-17,DC1-R28,21,1,front,true,server,Dell R660,1,46.8\nDC1-R28-srv-18,DC1-R28,22,1,front,true,server,Dell R660,1,44.2\nDC1-R28-srv-19,DC1-R28,23,1,front,true,server,Dell R660,1,31.7\nDC1-R28-srv-20,DC1-R28,24,1,front,true,server,Dell R660,1,47.5\nDC1-R28-srv-21,DC1-R28,25,1,front,true,server,Dell R660,1,51.2\nDC1-R28-srv-22,DC1-R28,26,1,front,true,server,Dell R660,1,34.7\nDC1-R28-srv-23,DC1-R28,27,1,front,true,server,Dell R660,1,45.3\nDC1-R28-srv-24,DC1-R28,28,1,front,true,server,Dell R660,1,28.9\nDC1-R28-srv-25,DC1-R28,29,1,front,true,server,Dell R660,1,40\nDC1-R28-srv-26,DC1-R28,30,1,front,true,server,Dell R660,0,34.6\nDC1-R28-srv-27,DC1-R28,31,1,front,true,server,Dell R660,1,39\nDC1-R28-srv-28,DC1-R28,32,1,front,true,server,Dell R660,1,37.6\nDC1-R28-srv-29,DC1-R28,33,1,front,true,server,Dell R660,1,25.7\nDC1-R28-pdu-a,DC1-R28,,0,rear,false,pdu,APC AP8853,1,3\nDC1-R28-pdu-b,DC1-R28,,0,rear,false,pdu,APC AP8853,1,3\nDC1-R29-sw-01,DC1-R29,42,1,front,true,switch,Arista 7050SX3,0,37.8\nDC1-R29-sw-02,DC1-R29,41,1,front,true,switch,Arista 7050SX3,1,62.5\nDC1-R29-srv-01,DC1-R29,1,2,front,true,server,Dell R760,1,32.3\nDC1-R29-srv-02,DC1-R29,3,2,front,true,server,Dell R760,1,52.8\nDC1-R29-srv-03,DC1-R29,5,2,front,true,server,Dell R760,1,37.6\nDC1-R29-srv-04,DC1-R29,7,2,front,true,server,Dell R760,1,32.4\nDC1-R29-srv-05,DC1-R29,9,1,front,true,server,Dell R660,1,41\nDC1-R29-srv-06,DC1-R29,10,1,front,true,server,Dell R660,1,50.5\nDC1-R29-srv-07,DC1-R29,11,1,front,true,server,Dell R660,1,26.8\nDC1-R29-srv-08,DC1-R29,12,1,front,true,server,Dell R660,1,26.1\nDC1-R29-srv-09,DC1-R29,13,1,front,true,server,Dell R660,1,41\nDC1-R29-srv-10,DC1-R29,14,1,front,true,server,Dell R660,1,39.8\nDC1-R29-srv-11,DC1-R29,15,1,front,true,server,Dell R660,1,27.9\nDC1-R29-srv-12,DC1-R29,16,1,front,true,server,Dell R660,1,32.6\nDC1-R29-srv-13,DC1-R29,17,1,front,true,server,Dell R660,1,25.4\nDC1-R29-srv-14,DC1-R29,18,1,front,true,server,Dell R660,1,38.6\nDC1-R29-srv-15,DC1-R29,19,1,front,true,server,Dell R660,1,54.9\nDC1-R29-srv-16,DC1-R29,20,1,front,true,server,Dell R660,1,47.1\nDC1-R29-srv-17,DC1-R29,21,1,front,true,server,Dell R660,1,50.9\nDC1-R29-srv-18,DC1-R29,22,1,front,true,server,Dell R660,1,44.3\nDC1-R29-srv-19,DC1-R29,23,1,front,true,server,Dell R660,1,25.8\nDC1-R29-srv-20,DC1-R29,24,1,front,true,server,Dell R660,1,47.4\nDC1-R29-srv-21,DC1-R29,25,1,front,true,server,Dell R660,1,48.8\nDC1-R29-srv-22,DC1-R29,26,1,front,true,server,Dell R660,1,37.2\nDC1-R29-srv-23,DC1-R29,27,1,front,true,server,Dell R660,1,29.3\nDC1-R29-srv-24,DC1-R29,28,1,front,true,server,Dell R660,1,48.1\nDC1-R29-srv-25,DC1-R29,29,1,front,true,server,Dell R660,1,33.1\nDC1-R29-srv-26,DC1-R29,30,1,front,true,server,Dell R660,1,49.6\nDC1-R29-srv-27,DC1-R29,31,1,front,true,server,Dell R660,1,51.8\nDC1-R29-srv-28,DC1-R29,32,1,front,true,server,Dell R660,1,28.6\nDC1-R29-srv-29,DC1-R29,33,1,front,true,server,Dell R660,1,29.5\nDC1-R29-pdu-a,DC1-R29,,0,rear,false,pdu,APC AP8853,1,3\nDC1-R29-pdu-b,DC1-R29,,0,rear,false,pdu,APC AP8853,1,3\nDC1-R30-sw-01,DC1-R30,42,1,front,true,switch,Arista 7050SX3,1,36.9\nDC1-R30-sw-02,DC1-R30,41,1,front,true,switch,Arista 7050SX3,1,39.4\nDC1-R30-srv-01,DC1-R30,1,2,front,true,server,Dell R760,1,38.4\nDC1-R30-srv-02,DC1-R30,3,2,front,true,server,Dell R760,,54.6\nDC1-R30-srv-03,DC1-R30,5,2,front,true,server,Dell R760,1,47.4\nDC1-R30-srv-04,DC1-R30,7,2,front,true,server,Dell R760,1,27.7\nDC1-R30-srv-05,DC1-R30,9,1,front,true,server,Dell R660,1,54\nDC1-R30-srv-06,DC1-R30,10,1,front,true,server,Dell R660,1,28.3\nDC1-R30-srv-07,DC1-R30,11,1,front,true,server,Dell R660,1,45\nDC1-R30-srv-08,DC1-R30,12,1,front,true,server,Dell R660,0,54.7\nDC1-R30-srv-09,DC1-R30,13,1,front,true,server,Dell R660,1,36.3\nDC1-R30-srv-10,DC1-R30,14,1,front,true,server,Dell R660,1,32.3\nDC1-R30-srv-11,DC1-R30,15,1,front,true,server,Dell R660,1,45.7\nDC1-R30-srv-12,DC1-R30,16,1,front,true,server,Dell R660,1,52.4\nDC1-R30-srv-13,DC1-R30,17,1,front,true,server,Dell R660,1,46.7\nDC1-R30-srv-14,DC1-R30,18,1,front,true,server,Dell R660,1,35.1\nDC1-R30-srv-15,DC1-R30,19,1,front,true,server,Dell R660,1,28.9\nDC1-R30-srv-16,DC1-R30,20,1,front,true,server,Dell R660,,30.1\nDC1-R30-srv-17,DC1-R30,21,1,front,true,server,Dell R660,,42.6\nDC1-R30-srv-18,DC1-R30,22,1,front,true,server,Dell R660,1,26.5\nDC1-R30-srv-19,DC1-R30,23,1,front,true,server,Dell R660,1,28.8\nDC1-R30-srv-20,DC1-R30,24,1,front,true,server,Dell R660,1,31.8\nDC1-R30-srv-21,DC1-R30,25,1,front,true,server,Dell R660,0,34.8\nDC1-R30-srv-22,DC1-R30,26,1,front,true,server,Dell R660,1,42.1\nDC1-R30-srv-23,DC1-R30,27,1,front,true,server,Dell R660,1,31.9\nDC1-R30-srv-24,DC1-R30,28,1,front,true,server,Dell R660,1,37.6\nDC1-R30-srv-25,DC1-R30,29,1,front,true,server,Dell R660,1,43.9\nDC1-R30-srv-26,DC1-R30,30,1,front,true,server,Dell R660,1,52.3\nDC1-R30-srv-27,DC1-R30,31,1,front,true,server,Dell R660,1,31.2\nDC1-R30-srv-28,DC1-R30,32,1,front,true,server,Dell R660,1,43\nDC1-R30-srv-29,DC1-R30,33,1,front,true,server,Dell R660,1,28.8\nDC1-R30-pdu-a,DC1-R30,,0,rear,false,pdu,APC AP8853,1,3\nDC1-R30-pdu-b,DC1-R30,,0,rear,false,pdu,APC AP8853,1,3\n"
+        }
+      ],
+      "options": {
+        "label": [
+          "name",
+          "value"
+        ],
+        "fitToPanel": true
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "celsius",
+          "decimals": 1,
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 50
+              },
+              {
+                "color": "red",
+                "value": 65
+              }
+            ]
+          }
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 12,
+      "type": "kentrow-rackelevation-panel",
+      "title": "prometheus-auto, joined",
+      "description": "Join by field on device, then status and value mapped to the Prometheus value columns.",
+      "datasource": {
+        "type": "grafana-testdata-datasource",
+        "uid": "trlxrdZVk"
+      },
+      "gridPos": {
+        "w": 8,
+        "h": 25,
+        "x": 0,
+        "y": 131
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-testdata-datasource",
+            "uid": "trlxrdZVk"
+          },
+          "refId": "device_info",
+          "scenarioId": "csv_content",
+          "csvContent": "Time,device,rack,position,u_height,face,is_full_depth,role,model,Value #A\n1793390400000,patch-hq-01,RACK-HQ-01,42,1,front,false,patch-panel,Panduit CP48,1\n1793390400000,fw-hq-01,RACK-HQ-01,40,1,front,true,firewall,FortiGate 100F,1\n1793390400000,sw-hq-core-01,RACK-HQ-01,38,1,front,true,switch,Cisco C9300-48P,1\n1793390400000,wlc-hq-01,RACK-HQ-01,35,1,front,true,wireless,Aruba 7210,1\n1793390400000,wlc-hq-02,RACK-HQ-01,34,1,front,true,wireless,Aruba 7210,1\n1793390400000,srv-hq-01,RACK-HQ-01,20,2,front,true,server,Dell R760,1\n"
+        },
+        {
+          "datasource": {
+            "type": "grafana-testdata-datasource",
+            "uid": "trlxrdZVk"
+          },
+          "refId": "temperature",
+          "scenarioId": "csv_content",
+          "csvContent": "Time,device,Value #C\n1793390400000,fw-hq-01,41\n1793390400000,sw-hq-core-01,45\n1793390400000,wlc-hq-01,62\n1793390400000,srv-hq-01,38\n"
+        },
+        {
+          "datasource": {
+            "type": "grafana-testdata-datasource",
+            "uid": "trlxrdZVk"
+          },
+          "refId": "up",
+          "scenarioId": "csv_content",
+          "csvContent": "Time,device,job,Value #B\n1793390400000,fw-hq-01,snmp,1\n1793390400000,sw-hq-core-01,snmp,1\n1793390400000,wlc-hq-01,snmp,1\n1793390400000,wlc-hq-02,snmp,0\n1793390400000,srv-hq-01,snmp,1\n"
+        }
+      ],
+      "options": {
+        "columns": {
+          "status": "Value #B"
+        },
+        "valueFields": [
+          "Value #C"
+        ],
+        "label": [
+          "name",
+          "value"
+        ]
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "celsius",
+          "decimals": 1,
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 50
+              },
+              {
+                "color": "red",
+                "value": 65
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "transformations": [
+        {
+          "id": "joinByField",
+          "options": {
+            "byField": "device",
+            "mode": "outerTabular"
+          }
+        }
+      ]
+    }
+  ]
+}

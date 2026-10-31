@@ -1,0 +1,6 @@
+Time,device,job,Value #B
+1793390400000,fw-hq-01,snmp,1
+1793390400000,sw-hq-core-01,snmp,1
+1793390400000,wlc-hq-01,snmp,1
+1793390400000,wlc-hq-02,snmp,0
+1793390400000,srv-hq-01,snmp,1

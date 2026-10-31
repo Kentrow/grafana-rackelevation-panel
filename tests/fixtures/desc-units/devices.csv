@@ -1,0 +1,7 @@
+device,rack,position,u_height,face,is_full_depth,role,model,status,value
+desc-unit0,RACK-DESC,0,1,front,true,switch,Juniper EX2300,up,35
+desc-2u,RACK-DESC,3,2,front,true,server,Dell R760,up,41
+desc-unit11,RACK-DESC,11,1,front,true,patch-panel,Panduit CP24,,
+asc-unit0,RACK-ASC,0,1,front,true,switch,Juniper EX2300,up,36
+asc-2u,RACK-ASC,3,2,front,true,server,Dell R760,up,40
+asc-unit11,RACK-ASC,11,1,front,true,patch-panel,Panduit CP24,,

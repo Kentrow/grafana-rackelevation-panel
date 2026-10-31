@@ -1,0 +1,303 @@
+{
+  "uid": "rack-elevation-dev",
+  "title": "Rack elevation",
+  "tags": [
+    "rack-elevation"
+  ],
+  "editable": true,
+  "graphTooltip": 0,
+  "schemaVersion": 39,
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "",
+  "refresh": "",
+  "links": [],
+  "annotations": {
+    "list": []
+  },
+  "templating": {
+    "list": []
+  },
+  "panels": [
+    {
+      "id": 1,
+      "type": "kentrow-rackelevation-panel",
+      "title": "Basic rack",
+      "datasource": {
+        "type": "grafana-testdata-datasource",
+        "uid": "trlxrdZVk"
+      },
+      "gridPos": {
+        "h": 25,
+        "w": 8,
+        "x": 0,
+        "y": 0
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-testdata-datasource",
+            "uid": "trlxrdZVk"
+          },
+          "refId": "basic",
+          "scenarioId": "csv_content",
+          "csvContent": "device,rack,position,u_height,face,is_full_depth,role,model,status,value\npatch-hq-01,RACK-HQ-01,42,1,front,false,patch-panel,Panduit CP48,,\nfw-hq-01,RACK-HQ-01,40,1,front,true,firewall,FortiGate 100F,up,41\nsw-hq-core-01,RACK-HQ-01,38,1,front,true,switch,Cisco C9300-48P,up,45\nwlc-hq-01,RACK-HQ-01,35,1,front,true,wireless,Aruba 7210,up,62\nwlc-hq-02,RACK-HQ-01,34,1,front,true,wireless,Aruba 7210,down,\nsrv-hq-01,RACK-HQ-01,20,2,front,true,server,Dell R760,up,38\n"
+        }
+      ],
+      "options": {
+        "label": [
+          "name",
+          "value"
+        ]
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "celsius",
+          "decimals": 1,
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 50
+              },
+              {
+                "color": "red",
+                "value": 65
+              }
+            ]
+          }
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 2,
+      "type": "kentrow-rackelevation-panel",
+      "title": "No data",
+      "datasource": {
+        "type": "grafana-testdata-datasource",
+        "uid": "trlxrdZVk"
+      },
+      "gridPos": {
+        "h": 25,
+        "w": 4,
+        "x": 8,
+        "y": 0
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-testdata-datasource",
+            "uid": "trlxrdZVk"
+          },
+          "refId": "A",
+          "scenarioId": "no_data_points"
+        }
+      ],
+      "options": {},
+      "fieldConfig": {
+        "defaults": {
+          "unit": "celsius",
+          "decimals": 1,
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 50
+              },
+              {
+                "color": "red",
+                "value": 65
+              }
+            ]
+          }
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 3,
+      "type": "kentrow-rackelevation-panel",
+      "title": "Prometheus, not joined",
+      "datasource": {
+        "type": "grafana-testdata-datasource",
+        "uid": "trlxrdZVk"
+      },
+      "gridPos": {
+        "h": 25,
+        "w": 6,
+        "x": 12,
+        "y": 0
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-testdata-datasource",
+            "uid": "trlxrdZVk"
+          },
+          "refId": "device_info",
+          "scenarioId": "csv_content",
+          "csvContent": "Time,device,rack,position,u_height,face,is_full_depth,role,model,Value #A\n1793390400000,patch-hq-01,RACK-HQ-01,42,1,front,false,patch-panel,Panduit CP48,1\n1793390400000,fw-hq-01,RACK-HQ-01,40,1,front,true,firewall,FortiGate 100F,1\n1793390400000,sw-hq-core-01,RACK-HQ-01,38,1,front,true,switch,Cisco C9300-48P,1\n1793390400000,wlc-hq-01,RACK-HQ-01,35,1,front,true,wireless,Aruba 7210,1\n1793390400000,wlc-hq-02,RACK-HQ-01,34,1,front,true,wireless,Aruba 7210,1\n1793390400000,srv-hq-01,RACK-HQ-01,20,2,front,true,server,Dell R760,1\n"
+        },
+        {
+          "datasource": {
+            "type": "grafana-testdata-datasource",
+            "uid": "trlxrdZVk"
+          },
+          "refId": "temperature",
+          "scenarioId": "csv_content",
+          "csvContent": "Time,device,Value #C\n1793390400000,fw-hq-01,41\n1793390400000,sw-hq-core-01,45\n1793390400000,wlc-hq-01,62\n1793390400000,srv-hq-01,38\n"
+        },
+        {
+          "datasource": {
+            "type": "grafana-testdata-datasource",
+            "uid": "trlxrdZVk"
+          },
+          "refId": "up",
+          "scenarioId": "csv_content",
+          "csvContent": "Time,device,job,Value #B\n1793390400000,fw-hq-01,snmp,1\n1793390400000,sw-hq-core-01,snmp,1\n1793390400000,wlc-hq-01,snmp,1\n1793390400000,wlc-hq-02,snmp,0\n1793390400000,srv-hq-01,snmp,1\n"
+        }
+      ],
+      "options": {},
+      "fieldConfig": {
+        "defaults": {
+          "unit": "celsius",
+          "decimals": 1,
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 50
+              },
+              {
+                "color": "red",
+                "value": 65
+              }
+            ]
+          }
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 4,
+      "type": "kentrow-rackelevation-panel",
+      "title": "Prometheus, joined",
+      "description": "Join by field on device, then status and value mapped to the Prometheus value columns.",
+      "datasource": {
+        "type": "grafana-testdata-datasource",
+        "uid": "trlxrdZVk"
+      },
+      "gridPos": {
+        "h": 25,
+        "w": 6,
+        "x": 18,
+        "y": 0
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-testdata-datasource",
+            "uid": "trlxrdZVk"
+          },
+          "refId": "device_info",
+          "scenarioId": "csv_content",
+          "csvContent": "Time,device,rack,position,u_height,face,is_full_depth,role,model,Value #A\n1793390400000,patch-hq-01,RACK-HQ-01,42,1,front,false,patch-panel,Panduit CP48,1\n1793390400000,fw-hq-01,RACK-HQ-01,40,1,front,true,firewall,FortiGate 100F,1\n1793390400000,sw-hq-core-01,RACK-HQ-01,38,1,front,true,switch,Cisco C9300-48P,1\n1793390400000,wlc-hq-01,RACK-HQ-01,35,1,front,true,wireless,Aruba 7210,1\n1793390400000,wlc-hq-02,RACK-HQ-01,34,1,front,true,wireless,Aruba 7210,1\n1793390400000,srv-hq-01,RACK-HQ-01,20,2,front,true,server,Dell R760,1\n"
+        },
+        {
+          "datasource": {
+            "type": "grafana-testdata-datasource",
+            "uid": "trlxrdZVk"
+          },
+          "refId": "temperature",
+          "scenarioId": "csv_content",
+          "csvContent": "Time,device,Value #C\n1793390400000,fw-hq-01,41\n1793390400000,sw-hq-core-01,45\n1793390400000,wlc-hq-01,62\n1793390400000,srv-hq-01,38\n"
+        },
+        {
+          "datasource": {
+            "type": "grafana-testdata-datasource",
+            "uid": "trlxrdZVk"
+          },
+          "refId": "up",
+          "scenarioId": "csv_content",
+          "csvContent": "Time,device,job,Value #B\n1793390400000,fw-hq-01,snmp,1\n1793390400000,sw-hq-core-01,snmp,1\n1793390400000,wlc-hq-01,snmp,1\n1793390400000,wlc-hq-02,snmp,0\n1793390400000,srv-hq-01,snmp,1\n"
+        }
+      ],
+      "options": {
+        "columns": {
+          "status": "Value #B"
+        },
+        "valueFields": [
+          "Value #C"
+        ],
+        "label": [
+          "name",
+          "value"
+        ]
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "celsius",
+          "decimals": 1,
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 50
+              },
+              {
+                "color": "red",
+                "value": 65
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "transformations": [
+        {
+          "id": "joinByField",
+          "options": {
+            "byField": "device",
+            "mode": "outerTabular"
+          }
+        }
+      ]
+    }
+  ]
+}

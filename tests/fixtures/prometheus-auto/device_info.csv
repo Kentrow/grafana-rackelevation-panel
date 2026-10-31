@@ -1,0 +1,7 @@
+Time,device,rack,position,u_height,face,is_full_depth,role,model,Value #A
+1793390400000,patch-hq-01,RACK-HQ-01,42,1,front,false,patch-panel,Panduit CP48,1
+1793390400000,fw-hq-01,RACK-HQ-01,40,1,front,true,firewall,FortiGate 100F,1
+1793390400000,sw-hq-core-01,RACK-HQ-01,38,1,front,true,switch,Cisco C9300-48P,1
+1793390400000,wlc-hq-01,RACK-HQ-01,35,1,front,true,wireless,Aruba 7210,1
+1793390400000,wlc-hq-02,RACK-HQ-01,34,1,front,true,wireless,Aruba 7210,1
+1793390400000,srv-hq-01,RACK-HQ-01,20,2,front,true,server,Dell R760,1

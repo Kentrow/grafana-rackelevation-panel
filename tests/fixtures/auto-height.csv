@@ -1,0 +1,4 @@
+device,rack,position,u_height,face,is_full_depth,role,model,status,value
+sw-tall-01,RACK-TALL,47,1,front,true,switch,Arista 7280R3,up,42
+srv-tall-01,RACK-TALL,45,2,front,true,server,Dell R760,up,48
+srv-tall-02,RACK-TALL,1,2,front,true,server,Dell R760,up,36

@@ -1,0 +1,11 @@
+device,rack,position,u_height,face,is_full_depth,role,model,status,value
+patch-hq-01,RACK-HQ-01,42,1,front,false,patch-panel,Panduit CP48,,
+fw-hq-01,RACK-HQ-01,40,1,front,true,firewall,FortiGate 100F,up,41
+sw-hq-core-01,RACK-HQ-01,38,1,front,true,switch,Cisco C9300-48P,up,45
+sw-hq-core-02,RACK-HQ-01,37,1,front,true,switch,Cisco C9300-48P,up,47
+wlc-hq-01,RACK-HQ-01,35,1,front,true,wireless,Aruba 7210,up,62
+wlc-hq-02,RACK-HQ-01,34,1,front,true,wireless,Aruba 7210,down,
+nas-hq-01,RACK-HQ-01,24,2,front,true,storage,Synology RS1221+,up,36
+srv-hq-01,RACK-HQ-01,20,2,front,true,server,Dell R760,up,38
+ups-hq-01,RACK-HQ-01,1,3,rear,true,ups,APC SRT3000,up,29
+pdu-hq-a,RACK-HQ-01,,0,rear,false,pdu,APC AP8853,,

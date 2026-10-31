@@ -1,0 +1,9 @@
+device,rack,position,u_height,face,is_full_depth,role,model,status,value
+sw-a,RACK-C,20,1,front,false,switch,Cisco C9300-24T,up,40
+sw-b,RACK-C,20,2,front,false,switch,Cisco C9300-48P,up,43
+patch-rear-c,RACK-C,20,1,rear,false,patch-panel,Panduit CP24,,
+srv-full-c,RACK-C,10,2,front,true,server,Dell R660,up,51
+psu-rear-c,RACK-C,11,1,rear,false,power,Eaton ePDU G3,up,
+srv-big-c,RACK-C,23,4,front,true,server,Dell R960,up,60
+nas-low-c,RACK-C,0,1,front,true,storage,Synology RS1221+,up,33
+sw-a,RACK-C,5,1,front,false,switch,Cisco C9300-24T,up,40

@@ -1,0 +1,6 @@
+device,alertname,severity
+sw-a1-tor-02,HighTemperature,critical
+fw-par1-02,DeviceDown,critical
+sw-a3-tor-01,InterfaceErrors,warning
+sw-a3-tor-01,HighCpu,warning
+nas-a1-02,DiskFull,warning

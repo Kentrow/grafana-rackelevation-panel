@@ -1,0 +1,463 @@
+{
+  "uid": "rack-elevation-demo",
+  "title": "Rack elevation demo",
+  "tags": [
+    "rack-elevation"
+  ],
+  "editable": true,
+  "graphTooltip": 0,
+  "schemaVersion": 39,
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "",
+  "refresh": "",
+  "links": [],
+  "annotations": {
+    "list": []
+  },
+  "templating": {
+    "list": [
+      {
+        "type": "textbox",
+        "name": "device",
+        "label": "Highlighted device",
+        "query": "",
+        "current": {
+          "text": "",
+          "value": ""
+        },
+        "options": []
+      },
+      {
+        "type": "custom",
+        "name": "role",
+        "label": "Role",
+        "query": "switch,server,storage,firewall,ups,pdu,patch-panel",
+        "multi": true,
+        "includeAll": true,
+        "current": {
+          "text": [
+            "switch"
+          ],
+          "value": [
+            "switch"
+          ]
+        },
+        "options": []
+      }
+    ]
+  },
+  "panels": [
+    {
+      "id": 1,
+      "type": "kentrow-rackelevation-panel",
+      "title": "Front",
+      "datasource": {
+        "type": "grafana-testdata-datasource",
+        "uid": "trlxrdZVk"
+      },
+      "gridPos": {
+        "h": 25,
+        "w": 6,
+        "x": 0,
+        "y": 0
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-testdata-datasource",
+            "uid": "trlxrdZVk"
+          },
+          "refId": "basic",
+          "scenarioId": "csv_content",
+          "csvContent": "device,rack,position,u_height,face,is_full_depth,role,model,status,value\npatch-hq-01,RACK-HQ-01,42,1,front,false,patch-panel,Panduit CP48,,\nfw-hq-01,RACK-HQ-01,40,1,front,true,firewall,FortiGate 100F,up,41\nsw-hq-core-01,RACK-HQ-01,38,1,front,true,switch,Cisco C9300-48P,up,45\nwlc-hq-01,RACK-HQ-01,35,1,front,true,wireless,Aruba 7210,up,62\nwlc-hq-02,RACK-HQ-01,34,1,front,true,wireless,Aruba 7210,down,\nsrv-hq-01,RACK-HQ-01,20,2,front,true,server,Dell R760,up,38\n"
+        }
+      ],
+      "options": {
+        "label": [
+          "name",
+          "value"
+        ]
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "celsius",
+          "decimals": 1,
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 50
+              },
+              {
+                "color": "red",
+                "value": 65
+              }
+            ]
+          },
+          "links": [
+            {
+              "title": "Open in NetBox",
+              "url": "https://netbox.example.com/dcim/devices/?q=${__data.fields.device}",
+              "targetBlank": true
+            },
+            {
+              "title": "Highlight in this dashboard",
+              "url": "/d/rack-elevation-demo/rack-elevation-demo?var-device=${__data.fields.device}&${role:queryparam}"
+            }
+          ]
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "racks"
+            },
+            "properties": [
+              {
+                "id": "links",
+                "value": [
+                  {
+                    "title": "Open rack in NetBox",
+                    "url": "https://netbox.example.com/dcim/racks/?q=${__data.fields.rack}",
+                    "targetBlank": true
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "current"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "amp"
+              },
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "green",
+                      "value": null
+                    },
+                    {
+                      "color": "yellow",
+                      "value": 10
+                    },
+                    {
+                      "color": "red",
+                      "value": 14
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": 2,
+      "type": "kentrow-rackelevation-panel",
+      "title": "Both faces",
+      "description": "Racks frame and alerts frame: badges on the devices with active alerts.",
+      "datasource": {
+        "type": "grafana-testdata-datasource",
+        "uid": "trlxrdZVk"
+      },
+      "gridPos": {
+        "h": 28,
+        "w": 18,
+        "x": 6,
+        "y": 0
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-testdata-datasource",
+            "uid": "trlxrdZVk"
+          },
+          "refId": "alerts",
+          "scenarioId": "csv_content",
+          "csvContent": "device,alertname,severity\nsw-a1-tor-02,HighTemperature,critical\nfw-par1-02,DeviceDown,critical\nsw-a3-tor-01,InterfaceErrors,warning\nsw-a3-tor-01,HighCpu,warning\nnas-a1-02,DiskFull,warning\n"
+        },
+        {
+          "datasource": {
+            "type": "grafana-testdata-datasource",
+            "uid": "trlxrdZVk"
+          },
+          "refId": "devices",
+          "scenarioId": "csv_content",
+          "csvContent": "device,rack,position,u_height,face,is_full_depth,role,model,status,value,current,serial\npatch-a3-01,PAR1-A3,48,1,front,false,patch-panel,Panduit CP48,,,,SN004711\nsw-a3-tor-01,PAR1-A3,46,1,front,true,switch,Arista 7050SX3,1,48.4,,SN004748\nsw-a3-tor-02,PAR1-A3,45,1,front,true,switch,Arista 7050SX3,1,55.1,,SN004785\nsrv-a3-01,PAR1-A3,38,2,front,true,server,Dell R760,,43.8,,SN004822\nsrv-a3-02,PAR1-A3,36,1,front,true,server,HPE DL360 Gen11,1,54,,SN004859\nnas-a3-03,PAR1-A3,34,2,front,true,storage,NetApp AFF A250,1,54.5,,SN004896\nsrv-a3-04,PAR1-A3,32,2,front,true,server,Lenovo SR650 V3,1,33.9,,SN004933\nsrv-a3-05,PAR1-A3,31,1,front,true,server,Dell R660,1,46.3,,SN004970\nsrv-a3-06,PAR1-A3,28,2,front,true,server,Dell R760,1,53.1,,SN005007\nups-a3-01,PAR1-A3,1,3,rear,true,ups,APC SRT5K,1,27,,SN005044\npdu-a3-a,PAR1-A3,,0,rear,false,pdu,APC AP8853,1,,10.3,SN005081\npdu-a3-b,PAR1-A3,,0,rear,false,pdu,APC AP8853,1,,2.4,SN005118\npatch-a1-01,PAR1-A1,42,1,front,false,patch-panel,Panduit CP48,,,,SN005155\nsw-a1-tor-01,PAR1-A1,40,1,front,true,switch,Arista 7050SX3,1,36.9,,SN005192\nsw-a1-tor-02,PAR1-A1,39,1,front,true,switch,Arista 7050SX3,1,58.5,,SN005229\nfw-par1-01,PAR1-A1,37,1,front,true,firewall,FortiGate 600F,1,48,,SN005266\nfw-par1-02,PAR1-A1,36,1,front,true,firewall,FortiGate 600F,0,,,SN005303\nsrv-a1-01,PAR1-A1,33,1,front,true,server,HPE DL360 Gen11,1,28.8,,SN005340\nnas-a1-02,PAR1-A1,30,2,front,true,storage,NetApp AFF A250,1,42.6,,SN005377\nsrv-a1-03,PAR1-A1,28,2,front,true,server,Lenovo SR650 V3,1,41.5,,SN005414\nsrv-a1-04,PAR1-A1,26,1,front,true,server,Dell R660,0,44.7,,SN005451\nsrv-a1-05,PAR1-A1,24,2,front,true,server,Dell R760,1,47.4,,SN005488\nsrv-a1-06,PAR1-A1,22,1,front,true,server,HPE DL360 Gen11,1,50.2,,SN005525\nnas-a1-07,PAR1-A1,20,2,front,true,storage,NetApp AFF A250,1,34.1,,SN005562\nups-a1-01,PAR1-A1,1,3,rear,true,ups,APC SRT5K,1,27,,SN005599\npdu-a1-a,PAR1-A1,,0,rear,false,pdu,APC AP8853,1,,6.1,SN005636\npdu-a1-b,PAR1-A1,,0,rear,false,pdu,APC AP8853,1,,3,SN005673\npatch-a2-01,PAR1-A2,42,1,front,false,patch-panel,Panduit CP48,,,,SN005710\nsw-a2-tor-01,PAR1-A2,40,1,front,true,switch,Arista 7050SX3,1,55.4,,SN005747\nsw-a2-tor-02,PAR1-A2,39,1,front,true,switch,Arista 7050SX3,1,62.8,,SN005784\nnas-a2-01,PAR1-A2,32,2,front,true,storage,NetApp AFF A250,0,56.3,,SN005821\nsrv-a2-02,PAR1-A2,30,2,front,true,server,Lenovo SR650 V3,1,32.1,,SN005858\nsrv-a2-03,PAR1-A2,28,1,front,true,server,Dell R660,0,38.8,,SN005895\nsrv-a2-04,PAR1-A2,26,2,front,true,server,Dell R760,1,55,,SN005932\nsrv-a2-05,PAR1-A2,24,1,front,true,server,HPE DL360 Gen11,1,56,,SN005969\nnas-a2-06,PAR1-A2,21,2,front,true,storage,NetApp AFF A250,1,33.4,,SN006006\nsrv-a2-07,PAR1-A2,19,2,front,true,server,Lenovo SR650 V3,1,31.6,,SN006043\nsrv-a2-08,PAR1-A2,18,1,front,true,server,Dell R660,1,55.5,,SN006080\nups-a2-01,PAR1-A2,1,3,rear,true,ups,APC SRT5K,1,27,,SN006117\npdu-a2-a,PAR1-A2,,0,rear,false,pdu,APC AP8853,1,,10.1,SN006154\npdu-a2-b,PAR1-A2,,0,rear,false,pdu,APC AP8853,1,,6.7,SN006191\npatch-a5-01,PAR1-A5,42,1,front,false,patch-panel,Panduit CP48,,,,SN006228\nsw-a5-tor-01,PAR1-A5,40,1,front,true,switch,Arista 7050SX3,1,44.7,,SN006265\nsw-a5-tor-02,PAR1-A5,39,1,front,true,switch,Arista 7050SX3,1,43.9,,SN006302\nsrv-a5-01,PAR1-A5,32,2,front,true,server,Lenovo SR650 V3,1,53.3,,SN006339\nsrv-a5-02,PAR1-A5,31,1,front,true,server,Dell R660,1,54.7,,SN006376\nsrv-a5-03,PAR1-A5,29,2,front,true,server,Dell R760,1,36.9,,SN006413\nsrv-a5-04,PAR1-A5,27,1,front,true,server,HPE DL360 Gen11,1,37.4,,SN006450\nnas-a5-05,PAR1-A5,25,2,front,true,storage,NetApp AFF A250,1,30.8,,SN006487\nsrv-a5-06,PAR1-A5,23,2,front,true,server,Lenovo SR650 V3,1,31.9,,SN006524\nups-a5-01,PAR1-A5,1,3,rear,true,ups,APC SRT5K,1,27,,SN006561\npdu-a5-a,PAR1-A5,,0,rear,false,pdu,APC AP8853,1,,4.5,SN006598\npdu-a5-b,PAR1-A5,,0,rear,false,pdu,APC AP8853,1,,11.9,SN006635\npatch-a4-01,PAR1-A4,24,1,front,false,patch-panel,Panduit CP48,,,,SN006672\nsw-a4-tor-01,PAR1-A4,22,1,front,true,switch,Arista 7050SX3,1,41.7,,SN006709\nsw-a4-tor-02,PAR1-A4,21,1,front,true,switch,Arista 7050SX3,1,39.9,,SN006746\nsrv-a4-01,PAR1-A4,15,1,front,true,server,Dell R660,1,38.1,,SN006783\nsrv-a4-02,PAR1-A4,12,2,front,true,server,Dell R760,1,54.6,,SN006820\nsrv-a4-03,PAR1-A4,10,1,front,true,server,HPE DL360 Gen11,1,39.8,,SN006857\npdu-a4-a,PAR1-A4,,0,rear,false,pdu,APC AP8853,1,,14.1,SN006894\npdu-a4-b,PAR1-A4,,0,rear,false,pdu,APC AP8853,1,,7.2,SN006931\n"
+        },
+        {
+          "datasource": {
+            "type": "grafana-testdata-datasource",
+            "uid": "trlxrdZVk"
+          },
+          "refId": "racks",
+          "scenarioId": "csv_content",
+          "csvContent": "rack,name,u_height,starting_unit,desc_units,site\nPAR1-A3,Paris A3,48,1,false,PAR1\nPAR1-A1,Paris A1,42,1,false,PAR1\nPAR1-A2,Paris A2,42,1,false,PAR1\nPAR1-A5,Paris A5,42,1,false,PAR1\nPAR1-A4,Paris A4,24,1,false,PAR1\n"
+        }
+      ],
+      "options": {
+        "face": "both",
+        "label": [
+          "name",
+          "value"
+        ],
+        "valueFields": [
+          "value",
+          "current"
+        ]
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "celsius",
+          "decimals": 1,
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 50
+              },
+              {
+                "color": "red",
+                "value": 65
+              }
+            ]
+          },
+          "links": [
+            {
+              "title": "Open in NetBox",
+              "url": "https://netbox.example.com/dcim/devices/?q=${__data.fields.device}",
+              "targetBlank": true
+            },
+            {
+              "title": "Highlight in this dashboard",
+              "url": "/d/rack-elevation-demo/rack-elevation-demo?var-device=${__data.fields.device}&${role:queryparam}"
+            }
+          ]
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "racks"
+            },
+            "properties": [
+              {
+                "id": "links",
+                "value": [
+                  {
+                    "title": "Open rack in NetBox",
+                    "url": "https://netbox.example.com/dcim/racks/?q=${__data.fields.rack}",
+                    "targetBlank": true
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "current"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "amp"
+              },
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "green",
+                      "value": null
+                    },
+                    {
+                      "color": "yellow",
+                      "value": 10
+                    },
+                    {
+                      "color": "red",
+                      "value": 14
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": 3,
+      "type": "kentrow-rackelevation-panel",
+      "title": "Filtered by role",
+      "datasource": {
+        "type": "grafana-testdata-datasource",
+        "uid": "trlxrdZVk"
+      },
+      "gridPos": {
+        "h": 28,
+        "w": 24,
+        "x": 0,
+        "y": 28
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-testdata-datasource",
+            "uid": "trlxrdZVk"
+          },
+          "refId": "alerts",
+          "scenarioId": "csv_content",
+          "csvContent": "device,alertname,severity\nsw-a1-tor-02,HighTemperature,critical\nfw-par1-02,DeviceDown,critical\nsw-a3-tor-01,InterfaceErrors,warning\nsw-a3-tor-01,HighCpu,warning\nnas-a1-02,DiskFull,warning\n"
+        },
+        {
+          "datasource": {
+            "type": "grafana-testdata-datasource",
+            "uid": "trlxrdZVk"
+          },
+          "refId": "devices",
+          "scenarioId": "csv_content",
+          "csvContent": "device,rack,position,u_height,face,is_full_depth,role,model,status,value,current,serial\npatch-a3-01,PAR1-A3,48,1,front,false,patch-panel,Panduit CP48,,,,SN004711\nsw-a3-tor-01,PAR1-A3,46,1,front,true,switch,Arista 7050SX3,1,48.4,,SN004748\nsw-a3-tor-02,PAR1-A3,45,1,front,true,switch,Arista 7050SX3,1,55.1,,SN004785\nsrv-a3-01,PAR1-A3,38,2,front,true,server,Dell R760,,43.8,,SN004822\nsrv-a3-02,PAR1-A3,36,1,front,true,server,HPE DL360 Gen11,1,54,,SN004859\nnas-a3-03,PAR1-A3,34,2,front,true,storage,NetApp AFF A250,1,54.5,,SN004896\nsrv-a3-04,PAR1-A3,32,2,front,true,server,Lenovo SR650 V3,1,33.9,,SN004933\nsrv-a3-05,PAR1-A3,31,1,front,true,server,Dell R660,1,46.3,,SN004970\nsrv-a3-06,PAR1-A3,28,2,front,true,server,Dell R760,1,53.1,,SN005007\nups-a3-01,PAR1-A3,1,3,rear,true,ups,APC SRT5K,1,27,,SN005044\npdu-a3-a,PAR1-A3,,0,rear,false,pdu,APC AP8853,1,,10.3,SN005081\npdu-a3-b,PAR1-A3,,0,rear,false,pdu,APC AP8853,1,,2.4,SN005118\npatch-a1-01,PAR1-A1,42,1,front,false,patch-panel,Panduit CP48,,,,SN005155\nsw-a1-tor-01,PAR1-A1,40,1,front,true,switch,Arista 7050SX3,1,36.9,,SN005192\nsw-a1-tor-02,PAR1-A1,39,1,front,true,switch,Arista 7050SX3,1,58.5,,SN005229\nfw-par1-01,PAR1-A1,37,1,front,true,firewall,FortiGate 600F,1,48,,SN005266\nfw-par1-02,PAR1-A1,36,1,front,true,firewall,FortiGate 600F,0,,,SN005303\nsrv-a1-01,PAR1-A1,33,1,front,true,server,HPE DL360 Gen11,1,28.8,,SN005340\nnas-a1-02,PAR1-A1,30,2,front,true,storage,NetApp AFF A250,1,42.6,,SN005377\nsrv-a1-03,PAR1-A1,28,2,front,true,server,Lenovo SR650 V3,1,41.5,,SN005414\nsrv-a1-04,PAR1-A1,26,1,front,true,server,Dell R660,0,44.7,,SN005451\nsrv-a1-05,PAR1-A1,24,2,front,true,server,Dell R760,1,47.4,,SN005488\nsrv-a1-06,PAR1-A1,22,1,front,true,server,HPE DL360 Gen11,1,50.2,,SN005525\nnas-a1-07,PAR1-A1,20,2,front,true,storage,NetApp AFF A250,1,34.1,,SN005562\nups-a1-01,PAR1-A1,1,3,rear,true,ups,APC SRT5K,1,27,,SN005599\npdu-a1-a,PAR1-A1,,0,rear,false,pdu,APC AP8853,1,,6.1,SN005636\npdu-a1-b,PAR1-A1,,0,rear,false,pdu,APC AP8853,1,,3,SN005673\npatch-a2-01,PAR1-A2,42,1,front,false,patch-panel,Panduit CP48,,,,SN005710\nsw-a2-tor-01,PAR1-A2,40,1,front,true,switch,Arista 7050SX3,1,55.4,,SN005747\nsw-a2-tor-02,PAR1-A2,39,1,front,true,switch,Arista 7050SX3,1,62.8,,SN005784\nnas-a2-01,PAR1-A2,32,2,front,true,storage,NetApp AFF A250,0,56.3,,SN005821\nsrv-a2-02,PAR1-A2,30,2,front,true,server,Lenovo SR650 V3,1,32.1,,SN005858\nsrv-a2-03,PAR1-A2,28,1,front,true,server,Dell R660,0,38.8,,SN005895\nsrv-a2-04,PAR1-A2,26,2,front,true,server,Dell R760,1,55,,SN005932\nsrv-a2-05,PAR1-A2,24,1,front,true,server,HPE DL360 Gen11,1,56,,SN005969\nnas-a2-06,PAR1-A2,21,2,front,true,storage,NetApp AFF A250,1,33.4,,SN006006\nsrv-a2-07,PAR1-A2,19,2,front,true,server,Lenovo SR650 V3,1,31.6,,SN006043\nsrv-a2-08,PAR1-A2,18,1,front,true,server,Dell R660,1,55.5,,SN006080\nups-a2-01,PAR1-A2,1,3,rear,true,ups,APC SRT5K,1,27,,SN006117\npdu-a2-a,PAR1-A2,,0,rear,false,pdu,APC AP8853,1,,10.1,SN006154\npdu-a2-b,PAR1-A2,,0,rear,false,pdu,APC AP8853,1,,6.7,SN006191\npatch-a5-01,PAR1-A5,42,1,front,false,patch-panel,Panduit CP48,,,,SN006228\nsw-a5-tor-01,PAR1-A5,40,1,front,true,switch,Arista 7050SX3,1,44.7,,SN006265\nsw-a5-tor-02,PAR1-A5,39,1,front,true,switch,Arista 7050SX3,1,43.9,,SN006302\nsrv-a5-01,PAR1-A5,32,2,front,true,server,Lenovo SR650 V3,1,53.3,,SN006339\nsrv-a5-02,PAR1-A5,31,1,front,true,server,Dell R660,1,54.7,,SN006376\nsrv-a5-03,PAR1-A5,29,2,front,true,server,Dell R760,1,36.9,,SN006413\nsrv-a5-04,PAR1-A5,27,1,front,true,server,HPE DL360 Gen11,1,37.4,,SN006450\nnas-a5-05,PAR1-A5,25,2,front,true,storage,NetApp AFF A250,1,30.8,,SN006487\nsrv-a5-06,PAR1-A5,23,2,front,true,server,Lenovo SR650 V3,1,31.9,,SN006524\nups-a5-01,PAR1-A5,1,3,rear,true,ups,APC SRT5K,1,27,,SN006561\npdu-a5-a,PAR1-A5,,0,rear,false,pdu,APC AP8853,1,,4.5,SN006598\npdu-a5-b,PAR1-A5,,0,rear,false,pdu,APC AP8853,1,,11.9,SN006635\npatch-a4-01,PAR1-A4,24,1,front,false,patch-panel,Panduit CP48,,,,SN006672\nsw-a4-tor-01,PAR1-A4,22,1,front,true,switch,Arista 7050SX3,1,41.7,,SN006709\nsw-a4-tor-02,PAR1-A4,21,1,front,true,switch,Arista 7050SX3,1,39.9,,SN006746\nsrv-a4-01,PAR1-A4,15,1,front,true,server,Dell R660,1,38.1,,SN006783\nsrv-a4-02,PAR1-A4,12,2,front,true,server,Dell R760,1,54.6,,SN006820\nsrv-a4-03,PAR1-A4,10,1,front,true,server,HPE DL360 Gen11,1,39.8,,SN006857\npdu-a4-a,PAR1-A4,,0,rear,false,pdu,APC AP8853,1,,14.1,SN006894\npdu-a4-b,PAR1-A4,,0,rear,false,pdu,APC AP8853,1,,7.2,SN006931\n"
+        },
+        {
+          "datasource": {
+            "type": "grafana-testdata-datasource",
+            "uid": "trlxrdZVk"
+          },
+          "refId": "racks",
+          "scenarioId": "csv_content",
+          "csvContent": "rack,name,u_height,starting_unit,desc_units,site\nPAR1-A3,Paris A3,48,1,false,PAR1\nPAR1-A1,Paris A1,42,1,false,PAR1\nPAR1-A2,Paris A2,42,1,false,PAR1\nPAR1-A5,Paris A5,42,1,false,PAR1\nPAR1-A4,Paris A4,24,1,false,PAR1\n"
+        }
+      ],
+      "options": {
+        "roles": [
+          "$role"
+        ],
+        "label": [
+          "name",
+          "role"
+        ]
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "celsius",
+          "decimals": 1,
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 50
+              },
+              {
+                "color": "red",
+                "value": 65
+              }
+            ]
+          },
+          "links": [
+            {
+              "title": "Open in NetBox",
+              "url": "https://netbox.example.com/dcim/devices/?q=${__data.fields.device}",
+              "targetBlank": true
+            },
+            {
+              "title": "Highlight in this dashboard",
+              "url": "/d/rack-elevation-demo/rack-elevation-demo?var-device=${__data.fields.device}&${role:queryparam}"
+            }
+          ]
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "racks"
+            },
+            "properties": [
+              {
+                "id": "links",
+                "value": [
+                  {
+                    "title": "Open rack in NetBox",
+                    "url": "https://netbox.example.com/dcim/racks/?q=${__data.fields.rack}",
+                    "targetBlank": true
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "current"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "amp"
+              },
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "green",
+                      "value": null
+                    },
+                    {
+                      "color": "yellow",
+                      "value": 10
+                    },
+                    {
+                      "color": "red",
+                      "value": 14
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

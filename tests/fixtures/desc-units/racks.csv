@@ -1,0 +1,3 @@
+rack,name,u_height,starting_unit,desc_units,site
+RACK-DESC,Descending rack,12,0,true,LAB
+RACK-ASC,Ascending rack,12,0,false,LAB

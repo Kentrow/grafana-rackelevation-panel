@@ -1,0 +1,248 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`fixtures auto-height 1`] = `
+"RACK-TALL [RACK-TALL] 47U U1-47 ascending (height not fixed)
+  front slot   0 U47      sw-tall-01 up value=42
+  front slot   1 U45-46   srv-tall-01 up value=48
+  front slot  45 U1-2     srv-tall-02 up value=36
+  rear  slot   0 U47      sw-tall-01 (back) up value=42
+  rear  slot   1 U45-46   srv-tall-01 (back) up value=48
+  rear  slot  45 U1-2     srv-tall-02 (back) up value=36"
+`;
+
+exports[`fixtures basic 1`] = `
+"RACK-HQ-01 [RACK-HQ-01] 42U U1-42 ascending (height not fixed)
+  front slot   0 U42      patch-hq-01 unknown
+  front slot   2 U40      fw-hq-01 up value=41
+  front slot   4 U38      sw-hq-core-01 up value=45
+  front slot   7 U35      wlc-hq-01 up value=62
+  front slot   8 U34      wlc-hq-02 down
+  front slot  21 U20-21   srv-hq-01 up value=38
+  rear  slot   2 U40      fw-hq-01 (back) up value=41
+  rear  slot   4 U38      sw-hq-core-01 (back) up value=45
+  rear  slot   7 U35      wlc-hq-01 (back) up value=62
+  rear  slot   8 U34      wlc-hq-02 (back) down
+  rear  slot  21 U20-21   srv-hq-01 (back) up value=38"
+`;
+
+exports[`fixtures children 1`] = `
+"RACK-BLADE [RACK-BLADE] 42U U1-42 ascending (height not fixed)
+  front slot  23 U10-19   chassis-01 up value=46 children=blade-01+blade-02+blade-03+blade-04
+  front slot   2 U40      sw-blade-01 up value=44
+  rear  slot  23 U10-19   chassis-01 (back) up value=46 children=blade-01+blade-02+blade-03+blade-04
+  rear  slot   2 U40      sw-blade-01 (back) up value=44
+Errors:
+  [orphan-child] blade-99 has parent chassis-99, which is not in the data."
+`;
+
+exports[`fixtures collisions 1`] = `
+"Conflicts [RACK-C] 24U U1-24 ascending site=LAB
+  front slot   4 U20      sw-a up value=40
+  front slot   3 U20-21   sw-b up value=43 CONFLICT=overlap
+  front slot  13 U10-11   srv-full-c up value=51
+  front slot  -2 U23-26   srv-big-c up value=60 CONFLICT=overflow
+  front slot  24 U0       nas-low-c up value=33 CONFLICT=overflow
+  rear  slot   4 U20      patch-rear-c unknown
+  rear  slot  13 U10-11   srv-full-c (back) up value=51
+  rear  slot  13 U11      psu-rear-c up CONFLICT=overlap
+  rear  slot  -2 U23-26   srv-big-c (back) up value=60 CONFLICT=overflow
+  rear  slot  24 U0       nas-low-c (back) up value=33 CONFLICT=overflow
+Errors:
+  [duplicate] sw-a appears more than once; row 8 is ignored.
+  [overflow] srv-big-c (U23-26) is outside Conflicts (U1-24).
+  [overflow] nas-low-c (U0) is outside Conflicts (U1-24).
+  [overlap] sw-b overlaps sw-a on the front of Conflicts.
+  [overlap] psu-rear-c overlaps srv-full-c on the rear of Conflicts."
+`;
+
+exports[`fixtures desc-units 1`] = `
+"Descending rack [RACK-DESC] 12U U0-11 descending site=LAB
+  front slot   0 U0       desc-unit0 up value=35
+  front slot   3 U3-4     desc-2u up value=41
+  front slot  11 U11      desc-unit11 unknown
+  rear  slot   0 U0       desc-unit0 (back) up value=35
+  rear  slot   3 U3-4     desc-2u (back) up value=41
+  rear  slot  11 U11      desc-unit11 (back) unknown
+Ascending rack [RACK-ASC] 12U U0-11 ascending site=LAB
+  front slot  11 U0       asc-unit0 up value=36
+  front slot   7 U3-4     asc-2u up value=40
+  front slot   0 U11      asc-unit11 unknown
+  rear  slot  11 U0       asc-unit0 (back) up value=36
+  rear  slot   7 U3-4     asc-2u (back) up value=40
+  rear  slot   0 U11      asc-unit11 (back) unknown"
+`;
+
+exports[`fixtures multi-rack 1`] = `
+"Paris A3 [PAR1-A3] 48U U1-48 ascending site=PAR1
+  front slot   0 U48      patch-a3-01 unknown
+  front slot   2 U46      sw-a3-tor-01 up value=48.4 alerts=InterfaceErrors+HighCpu
+  front slot   3 U45      sw-a3-tor-02 up value=55.1
+  front slot   9 U38-39   srv-a3-01 unknown value=43.8
+  front slot  12 U36      srv-a3-02 up value=54
+  front slot  13 U34-35   nas-a3-03 up value=54.5
+  front slot  15 U32-33   srv-a3-04 up value=33.9
+  front slot  17 U31      srv-a3-05 up value=46.3
+  front slot  19 U28-29   srv-a3-06 up value=53.1
+  front slot  45 U1-3     ups-a3-01 (back) up value=27
+  rear  slot   2 U46      sw-a3-tor-01 (back) up value=48.4 alerts=InterfaceErrors+HighCpu
+  rear  slot   3 U45      sw-a3-tor-02 (back) up value=55.1
+  rear  slot   9 U38-39   srv-a3-01 (back) unknown value=43.8
+  rear  slot  12 U36      srv-a3-02 (back) up value=54
+  rear  slot  13 U34-35   nas-a3-03 (back) up value=54.5
+  rear  slot  15 U32-33   srv-a3-04 (back) up value=33.9
+  rear  slot  17 U31      srv-a3-05 (back) up value=46.3
+  rear  slot  19 U28-29   srv-a3-06 (back) up value=53.1
+  rear  slot  45 U1-3     ups-a3-01 up value=27
+  0U    pdu-a3-a rear up
+  0U    pdu-a3-b rear up
+Paris A1 [PAR1-A1] 42U U1-42 ascending site=PAR1
+  front slot   0 U42      patch-a1-01 unknown
+  front slot   2 U40      sw-a1-tor-01 up value=36.9
+  front slot   3 U39      sw-a1-tor-02 up value=58.5 alerts=HighTemperature
+  front slot   5 U37      fw-par1-01 up value=48
+  front slot   6 U36      fw-par1-02 down alerts=DeviceDown
+  front slot   9 U33      srv-a1-01 up value=28.8
+  front slot  11 U30-31   nas-a1-02 up value=42.6 alerts=DiskFull
+  front slot  13 U28-29   srv-a1-03 up value=41.5
+  front slot  16 U26      srv-a1-04 down value=44.7
+  front slot  17 U24-25   srv-a1-05 up value=47.4
+  front slot  20 U22      srv-a1-06 up value=50.2
+  front slot  21 U20-21   nas-a1-07 up value=34.1
+  front slot  39 U1-3     ups-a1-01 (back) up value=27
+  rear  slot   2 U40      sw-a1-tor-01 (back) up value=36.9
+  rear  slot   3 U39      sw-a1-tor-02 (back) up value=58.5 alerts=HighTemperature
+  rear  slot   5 U37      fw-par1-01 (back) up value=48
+  rear  slot   6 U36      fw-par1-02 (back) down alerts=DeviceDown
+  rear  slot   9 U33      srv-a1-01 (back) up value=28.8
+  rear  slot  11 U30-31   nas-a1-02 (back) up value=42.6 alerts=DiskFull
+  rear  slot  13 U28-29   srv-a1-03 (back) up value=41.5
+  rear  slot  16 U26      srv-a1-04 (back) down value=44.7
+  rear  slot  17 U24-25   srv-a1-05 (back) up value=47.4
+  rear  slot  20 U22      srv-a1-06 (back) up value=50.2
+  rear  slot  21 U20-21   nas-a1-07 (back) up value=34.1
+  rear  slot  39 U1-3     ups-a1-01 up value=27
+  0U    pdu-a1-a rear up
+  0U    pdu-a1-b rear up
+Paris A2 [PAR1-A2] 42U U1-42 ascending site=PAR1
+  front slot   0 U42      patch-a2-01 unknown
+  front slot   2 U40      sw-a2-tor-01 up value=55.4
+  front slot   3 U39      sw-a2-tor-02 up value=62.8
+  front slot   9 U32-33   nas-a2-01 down value=56.3
+  front slot  11 U30-31   srv-a2-02 up value=32.1
+  front slot  14 U28      srv-a2-03 down value=38.8
+  front slot  15 U26-27   srv-a2-04 up value=55
+  front slot  18 U24      srv-a2-05 up value=56
+  front slot  20 U21-22   nas-a2-06 up value=33.4
+  front slot  22 U19-20   srv-a2-07 up value=31.6
+  front slot  24 U18      srv-a2-08 up value=55.5
+  front slot  39 U1-3     ups-a2-01 (back) up value=27
+  rear  slot   2 U40      sw-a2-tor-01 (back) up value=55.4
+  rear  slot   3 U39      sw-a2-tor-02 (back) up value=62.8
+  rear  slot   9 U32-33   nas-a2-01 (back) down value=56.3
+  rear  slot  11 U30-31   srv-a2-02 (back) up value=32.1
+  rear  slot  14 U28      srv-a2-03 (back) down value=38.8
+  rear  slot  15 U26-27   srv-a2-04 (back) up value=55
+  rear  slot  18 U24      srv-a2-05 (back) up value=56
+  rear  slot  20 U21-22   nas-a2-06 (back) up value=33.4
+  rear  slot  22 U19-20   srv-a2-07 (back) up value=31.6
+  rear  slot  24 U18      srv-a2-08 (back) up value=55.5
+  rear  slot  39 U1-3     ups-a2-01 up value=27
+  0U    pdu-a2-a rear up
+  0U    pdu-a2-b rear up
+Paris A5 [PAR1-A5] 42U U1-42 ascending site=PAR1
+  front slot   0 U42      patch-a5-01 unknown
+  front slot   2 U40      sw-a5-tor-01 up value=44.7
+  front slot   3 U39      sw-a5-tor-02 up value=43.9
+  front slot   9 U32-33   srv-a5-01 up value=53.3
+  front slot  11 U31      srv-a5-02 up value=54.7
+  front slot  12 U29-30   srv-a5-03 up value=36.9
+  front slot  15 U27      srv-a5-04 up value=37.4
+  front slot  16 U25-26   nas-a5-05 up value=30.8
+  front slot  18 U23-24   srv-a5-06 up value=31.9
+  front slot  39 U1-3     ups-a5-01 (back) up value=27
+  rear  slot   2 U40      sw-a5-tor-01 (back) up value=44.7
+  rear  slot   3 U39      sw-a5-tor-02 (back) up value=43.9
+  rear  slot   9 U32-33   srv-a5-01 (back) up value=53.3
+  rear  slot  11 U31      srv-a5-02 (back) up value=54.7
+  rear  slot  12 U29-30   srv-a5-03 (back) up value=36.9
+  rear  slot  15 U27      srv-a5-04 (back) up value=37.4
+  rear  slot  16 U25-26   nas-a5-05 (back) up value=30.8
+  rear  slot  18 U23-24   srv-a5-06 (back) up value=31.9
+  rear  slot  39 U1-3     ups-a5-01 up value=27
+  0U    pdu-a5-a rear up
+  0U    pdu-a5-b rear up
+Paris A4 [PAR1-A4] 24U U1-24 ascending site=PAR1
+  front slot   0 U24      patch-a4-01 unknown
+  front slot   2 U22      sw-a4-tor-01 up value=41.7
+  front slot   3 U21      sw-a4-tor-02 up value=39.9
+  front slot   9 U15      srv-a4-01 up value=38.1
+  front slot  11 U12-13   srv-a4-02 up value=54.6
+  front slot  14 U10      srv-a4-03 up value=39.8
+  rear  slot   2 U22      sw-a4-tor-01 (back) up value=41.7
+  rear  slot   3 U21      sw-a4-tor-02 (back) up value=39.9
+  rear  slot   9 U15      srv-a4-01 (back) up value=38.1
+  rear  slot  11 U12-13   srv-a4-02 (back) up value=54.6
+  rear  slot  14 U10      srv-a4-03 (back) up value=39.8
+  0U    pdu-a4-a rear up
+  0U    pdu-a4-b rear up"
+`;
+
+exports[`fixtures prometheus-auto 1`] = `
+"RACK-HQ-01 [RACK-HQ-01] 42U U1-42 ascending (height not fixed)
+  front slot   0 U42      patch-hq-01 unknown
+  front slot   2 U40      fw-hq-01 unknown
+  front slot   4 U38      sw-hq-core-01 unknown
+  front slot   7 U35      wlc-hq-01 unknown
+  front slot   8 U34      wlc-hq-02 unknown
+  front slot  21 U20-21   srv-hq-01 unknown
+  rear  slot   2 U40      fw-hq-01 (back) unknown
+  rear  slot   4 U38      sw-hq-core-01 (back) unknown
+  rear  slot   7 U35      wlc-hq-01 (back) unknown
+  rear  slot   8 U34      wlc-hq-02 (back) unknown
+  rear  slot  21 U20-21   srv-hq-01 (back) unknown
+Errors:
+  [unjoined-frame] Frame "temperature" also has a device column and is ignored. Join it to the devices frame with the "Join by field" transformation (mode OUTER (TABULAR), field device).
+  [unjoined-frame] Frame "up" also has a device column and is ignored. Join it to the devices frame with the "Join by field" transformation (mode OUTER (TABULAR), field device)."
+`;
+
+exports[`fixtures ten-inch 1`] = `
+"Lab 10-inch [LAB-10IN] 12U U1-12 ascending site=LAB 10-inch
+  front slot   0 U12      sw-lab-10-01 up value=38
+  front slot   1 U11      patch-lab-10-01 unknown
+  front slot   3 U8-9     nuc-lab-10-01 up value=51
+  front slot  10 U1-2     ups-lab-10-01 down
+  rear  slot   0 U12      sw-lab-10-01 (back) up value=38
+  rear  slot   3 U8-9     nuc-lab-10-01 (back) up value=51
+  rear  slot  10 U1-2     ups-lab-10-01 (back) down
+Lab 19-inch [LAB-19IN] 12U U1-12 ascending site=LAB
+  front slot   0 U12      sw-lab-19-01 up value=42
+  front slot   3 U8-9     srv-lab-19-01 up value=63
+  rear  slot   0 U12      sw-lab-19-01 (back) up value=42
+  rear  slot   3 U8-9     srv-lab-19-01 (back) up value=63"
+`;
+
+exports[`fixtures two-faces 1`] = `
+"RACK-2F [RACK-2F] 42U U1-42 ascending (height not fixed)
+  front slot   2 U40      sw-front-01 up value=39
+  front slot  11 U30-31   srv-full-01 up value=44
+  front slot  38 U2-4     ups-rear-01 (back) up value=31
+  front slot  22 U20      srv-noface-01 up value=52
+  front slot  32 U10      fw-rear-01 (back) down
+  rear  slot   2 U40      patch-rear-01 unknown
+  rear  slot  11 U30-31   srv-full-01 (back) up value=44
+  rear  slot  38 U2-4     ups-rear-01 up value=31
+  rear  slot  22 U20      srv-noface-01 (back) up value=52
+  rear  slot  32 U10      fw-rear-01 down"
+`;
+
+exports[`fixtures zero-u 1`] = `
+"RACK-PDU [RACK-PDU] 42U U1-42 ascending (height not fixed)
+  front slot   2 U40      sw-pdu-01 up value=47
+  front slot  11 U30-31   srv-pdu-01 up value=55
+  rear  slot   2 U40      sw-pdu-01 (back) up value=47
+  rear  slot  11 U30-31   srv-pdu-01 (back) up value=55
+  0U    pdu-a rear up
+  0U    pdu-b rear up
+  0U    cable-mgr-01 front unknown
+  0U    pdu-c rear down"
+`;

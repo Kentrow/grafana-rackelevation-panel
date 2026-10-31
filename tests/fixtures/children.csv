@@ -1,0 +1,8 @@
+device,rack,position,u_height,face,is_full_depth,role,model,status,value,parent_device
+chassis-01,RACK-BLADE,10,10,front,true,blade-chassis,Dell MX7000,up,46,
+blade-01,,,,,,blade-server,Dell MX760c,up,58,chassis-01
+blade-02,,,,,,blade-server,Dell MX760c,up,61,chassis-01
+blade-03,,,,,,blade-server,Dell MX760c,down,,chassis-01
+blade-04,,,,,,blade-server,Dell MX760c,,,chassis-01
+blade-99,,,,,,blade-server,Dell MX760c,up,40,chassis-99
+sw-blade-01,RACK-BLADE,40,1,front,true,switch,Dell S5248F-ON,up,44,

@@ -1,0 +1,3 @@
+rack,name,u_height,starting_unit,desc_units,site,width
+LAB-10IN,Lab 10-inch,12,1,false,LAB,10
+LAB-19IN,Lab 19-inch,12,1,false,LAB,19

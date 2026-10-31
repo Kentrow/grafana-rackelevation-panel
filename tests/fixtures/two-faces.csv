@@ -1,0 +1,7 @@
+device,rack,position,u_height,face,is_full_depth,role,model,status,value
+sw-front-01,RACK-2F,40,1,front,false,switch,Cisco C9200L-24T,up,39
+patch-rear-01,RACK-2F,40,1,rear,false,patch-panel,Panduit CP24,,
+srv-full-01,RACK-2F,30,2,front,true,server,Dell R760,up,44
+ups-rear-01,RACK-2F,2,3,rear,true,ups,APC SRT3000,up,31
+srv-noface-01,RACK-2F,20,1,,,server,HPE DL360 Gen11,up,52
+fw-rear-01,RACK-2F,10,1,rear,,firewall,FortiGate 60F,down,

@@ -1,0 +1,3 @@
+
+# Written by scripts/generate-dashboards.mjs
+provisioning/dashboards/*.json

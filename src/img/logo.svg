@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <title>Rack elevation</title>
+  <rect x="12" y="4" width="40" height="56" rx="4" fill="#22252b" stroke="#8e8e8e" stroke-width="2"/>
+  <rect x="17" y="10" width="30" height="6" rx="1.5" fill="#73bf69"/>
+  <rect x="17" y="18" width="30" height="6" rx="1.5" fill="#73bf69"/>
+  <rect x="17" y="26" width="30" height="6" rx="1.5" fill="#fade2a"/>
+  <rect x="17" y="34" width="30" height="12" rx="1.5" fill="#73bf69"/>
+  <rect x="17" y="48" width="30" height="6" rx="1.5" fill="#f2495c"/>
+  <circle cx="43" cy="51" r="2" fill="#22252b"/>
+</svg>

@@ -1,0 +1,37 @@
+services:
+  grafana:
+    extends:
+      file: .config/docker-compose-base.yaml
+      service: grafana
+    build:
+      args:
+        # Grafana OSS: lighter than the enterprise image of the scaffold, and what most users of the plugin run.
+        grafana_image: ${GRAFANA_IMAGE:-grafana}
+        grafana_version: ${GRAFANA_VERSION:-13.2.4}
+    environment:
+      # Grafana keeps the memory of each e2e run otherwise, until Docker kills it on a small Docker Desktop VM.
+      GOMEMLIMIT: 1GiB
+    # Ports can be moved with GRAFANA_PORT and PROMETHEUS_PORT, for instance in a .env file.
+    ports: !override
+      - 127.0.0.1:${GRAFANA_PORT:-3000}:3000/tcp
+    depends_on:
+      - prometheus
+
+  prometheus:
+    image: prom/prometheus:v3.5.0
+    container_name: rackelevation-prometheus
+    volumes:
+      - ./dev/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./dev/rules.yml:/etc/prometheus/rules.yml:ro
+    ports:
+      - 127.0.0.1:${PROMETHEUS_PORT:-9090}:9090/tcp
+    depends_on:
+      - exporter
+
+  exporter:
+    image: python:3.11-alpine
+    container_name: rackelevation-exporter
+    command: ['python', '-u', '/app/exporter.py']
+    volumes:
+      - ./dev/exporter/exporter.py:/app/exporter.py:ro
+      - ./tests/fixtures/multi-rack:/fixtures/multi-rack:ro

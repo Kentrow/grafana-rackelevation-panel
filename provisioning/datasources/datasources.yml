@@ -1,0 +1,17 @@
+apiVersion: 1
+
+datasources:
+  # Fixtures as CSV content, used by the e2e tests.
+  - name: TestData DB
+    type: testdata
+    uid: trlxrdZVk
+    isDefault: true
+
+  # Live metrics of dev/exporter, for the PromQL recipes.
+  - name: Prometheus
+    type: prometheus
+    uid: prometheus
+    url: http://prometheus:9090
+    access: proxy
+    jsonData:
+      timeInterval: 5s
