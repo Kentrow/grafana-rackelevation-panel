@@ -11,6 +11,16 @@ updates:
       exclude:
         - '@grafana/plugin-e2e'
     open-pull-requests-limit: 5
+    ignore:
+      # TypeScript 7 is not supported by typescript-eslint and @grafana/eslint-config yet.
+      - dependency-name: 'typescript'
+        update-types: ['version-update:semver-major']
+      # eslint 10 is not supported by eslint-plugin-react yet.
+      - dependency-name: 'eslint'
+        update-types: ['version-update:semver-major']
+      # Node types follow the oldest supported Node version (22), not the latest one.
+      - dependency-name: '@types/node'
+        update-types: ['version-update:semver-major']
     commit-message:
       prefix: 'chore'
       include: 'scope'
