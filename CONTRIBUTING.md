@@ -6,7 +6,7 @@ receives (Query inspector, Data tab) helps a lot.
 
 ## Development
 
-Requirements: Node.js 22 or later, and Docker.
+Requirements: Node.js 24.5 or later, and Docker.
 
 ```bash
 npm install

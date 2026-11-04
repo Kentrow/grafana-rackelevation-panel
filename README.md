@@ -14,7 +14,7 @@ NetBox and Prometheus. It is also the page of the plugin in the Grafana catalog.
 
 ## Try it locally
 
-Requirements: Node.js 22 or later, and Docker.
+Requirements: Node.js 24.5 or later, and Docker.
 
 ```bash
 npm install

@@ -18,7 +18,7 @@ updates:
       # eslint 10 is not supported by eslint-plugin-react yet.
       - dependency-name: 'eslint'
         update-types: ['version-update:semver-major']
-      # Node types follow the oldest supported Node version (22), not the latest one.
+      # Node types follow the oldest supported Node version (24, required by @grafana/sign-plugin), not the latest one.
       - dependency-name: '@types/node'
         update-types: ['version-update:semver-major']
     commit-message:

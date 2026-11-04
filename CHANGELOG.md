@@ -10,6 +10,7 @@
 
 - Build and test tooling updated: TypeScript 5.9.3, webpack-cli 7, sass-loader 17, eslint-plugin-jsdoc 65,
   @testing-library/jest-dom 7, @emotion/css 11.13, and the Grafana plugin actions of the CI. No change in the panel.
+- Development and CI on Node.js 24.5 or later, required by the signing tool.
 
 ## [1.0.0](https://github.com/Kentrow/grafana-rackelevation-panel/tree/v1.0.0) (2026-10-31)
 
