@@ -1,5 +1,7 @@
 # Rack elevation panel
 
+[![Catalog](https://img.shields.io/badge/dynamic/json?logo=grafana&label=catalog&prefix=v&color=F47A20&query=%24.version&url=https%3A%2F%2Fgrafana.com%2Fapi%2Fplugins%2Fkentrow-rackelevation-panel)](https://grafana.com/grafana/plugins/kentrow-rackelevation-panel/)
+[![Downloads](https://img.shields.io/badge/dynamic/json?logo=grafana&label=downloads&color=F47A20&query=%24.downloads&url=https%3A%2F%2Fgrafana.com%2Fapi%2Fplugins%2Fkentrow-rackelevation-panel)](https://grafana.com/grafana/plugins/kentrow-rackelevation-panel/)
 [![CI](https://github.com/Kentrow/grafana-rackelevation-panel/actions/workflows/ci.yml/badge.svg)](https://github.com/Kentrow/grafana-rackelevation-panel/actions/workflows/ci.yml)
 [![Grafana](https://img.shields.io/badge/dynamic/json?logo=grafana&label=Grafana&color=F47A20&query=%24.dependencies.grafanaDependency&url=https%3A%2F%2Fraw.githubusercontent.com%2FKentrow%2Fgrafana-rackelevation-panel%2Fmain%2Fsrc%2Fplugin.json)](https://grafana.com/docs/grafana/latest/)
 [![License](https://img.shields.io/github/license/Kentrow/grafana-rackelevation-panel)](https://github.com/Kentrow/grafana-rackelevation-panel/blob/main/LICENSE)
@@ -21,9 +23,14 @@ produce such a table works without extra code.
 - Device card on hover, data links on click, highlight of a device from a dashboard variable, role filter.
 - Overlapping or overflowing devices are drawn and listed, never hidden.
 
-## Requirements
+## Installation
 
-Grafana 13.2 or later.
+Grafana 13.2 or later. In Grafana, open **Administration > Plugins and data > Plugins**, search for **Rack
+elevation** and install it, or run:
+
+```bash
+grafana cli plugins install kentrow-rackelevation-panel
+```
 
 ## Quick start
 

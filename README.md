@@ -1,5 +1,7 @@
 # Rack elevation panel for Grafana
 
+[![Catalog](https://img.shields.io/badge/dynamic/json?logo=grafana&label=catalog&prefix=v&color=F47A20&query=%24.version&url=https%3A%2F%2Fgrafana.com%2Fapi%2Fplugins%2Fkentrow-rackelevation-panel)](https://grafana.com/grafana/plugins/kentrow-rackelevation-panel/)
+[![Downloads](https://img.shields.io/badge/dynamic/json?logo=grafana&label=downloads&color=F47A20&query=%24.downloads&url=https%3A%2F%2Fgrafana.com%2Fapi%2Fplugins%2Fkentrow-rackelevation-panel)](https://grafana.com/grafana/plugins/kentrow-rackelevation-panel/)
 [![CI](https://github.com/Kentrow/grafana-rackelevation-panel/actions/workflows/ci.yml/badge.svg)](https://github.com/Kentrow/grafana-rackelevation-panel/actions/workflows/ci.yml)
 [![Grafana](https://img.shields.io/badge/dynamic/json?logo=grafana&label=Grafana&color=F47A20&query=%24.dependencies.grafanaDependency&url=https%3A%2F%2Fraw.githubusercontent.com%2FKentrow%2Fgrafana-rackelevation-panel%2Fmain%2Fsrc%2Fplugin.json)](https://grafana.com/docs/grafana/latest/)
 [![License](https://img.shields.io/github/license/Kentrow/grafana-rackelevation-panel)](LICENSE)
@@ -8,6 +10,9 @@ Front and rear views of your racks, unit by unit, placed from your inventory dat
 coloured by device state or by any metric with the standard Grafana field config.
 
 ![Two faces of five racks with temperature colours and active alerts](src/img/screenshot-racks.png)
+
+**[Install it from the Grafana plugin catalog](https://grafana.com/grafana/plugins/kentrow-rackelevation-panel/)**, or with
+`grafana cli plugins install kentrow-rackelevation-panel`.
 
 **[User documentation](src/README.md)**: quick start, data contract, colours, interactions and recipes for CSV,
 NetBox and Prometheus. It is also the page of the plugin in the Grafana catalog.
