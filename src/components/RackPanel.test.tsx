@@ -108,6 +108,12 @@ describe('RackPanel faces, 0U band and conflicts', () => {
     expect(screen.getByTestId('device-srv-big-c')).toHaveAttribute('data-conflict', 'overflow');
     expect(screen.getByTestId('device-sw-a')).not.toHaveAttribute('data-conflict');
     expect(screen.getByTestId('rack-errors')).toHaveTextContent('5');
+    expect(screen.getByRole('button', { name: '5 data problems' })).toBeInTheDocument();
+  });
+
+  it('names a single problem in the singular', () => {
+    render(<RackPanel {...props([csvToFrame('device,rack,position\nsw-01,R1,1\nsw-01,R1,2\n', 'A')])} />);
+    expect(screen.getByRole('button', { name: '1 data problem' })).toBeInTheDocument();
   });
 
   it('shows no error indicator when the data is clean', () => {

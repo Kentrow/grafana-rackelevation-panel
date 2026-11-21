@@ -282,6 +282,10 @@ export const RackPanel = ({ data, options: saved, width, height, fieldConfig, id
 
   const onKeyDown = (event: React.KeyboardEvent) => {
     if (event.key === 'Escape') {
+      // Escape closes the card or the menu first; with nothing open, it goes on to Grafana (leaving the panel view).
+      if (hover || menu) {
+        event.stopPropagation();
+      }
       setHover(null);
       setMenu(null);
     } else if (event.key === 'Enter' || event.key === ' ') {

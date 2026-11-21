@@ -31,7 +31,7 @@ export const ErrorIndicator = ({ errors }: { errors: LayoutError[] }) => {
         type="button"
         className={styles.button}
         data-testid="rack-errors"
-        aria-label={`${errors.length} data problems`}
+        aria-label={`${errors.length} data ${errors.length === 1 ? 'problem' : 'problems'}`}
       >
         <Icon name="exclamation-triangle" />
         <span>{errors.length}</span>

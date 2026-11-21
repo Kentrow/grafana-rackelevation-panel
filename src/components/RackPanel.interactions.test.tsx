@@ -1,7 +1,7 @@
 import React from 'react';
 import { fireEvent, render, screen, within } from '@testing-library/react';
 import { DataFrame, LinkModel } from '@grafana/data';
-import { loadFixture } from '../testing/fixtures';
+import { csvToFrame, loadFixture } from '../testing/fixtures';
 import { panelProps } from '../testing/panel';
 import { Rack } from './Rack';
 import { locationService } from '@grafana/runtime';
@@ -81,6 +81,19 @@ describe('tooltip', () => {
     const card = screen.getByTestId('device-tooltip').parentElement!;
     expect([card.style.left, card.style.top]).toEqual(['178px', '158px']);
     spies.forEach((spy) => spy.mockRestore());
+  });
+
+  it('shows an extra column named like a row of the card, and the units of a half-unit device', () => {
+    const errors = jest.spyOn(console, 'error').mockImplementation(() => {});
+    render(
+      <RackPanel {...panelProps([csvToFrame('device,rack,position,u_height,Units\nhalf,R1,3,0.5,4 x 10G\n', 'A')])} />
+    );
+    hover('half');
+    const card = screen.getByTestId('device-tooltip');
+    expect(within(card).getByText('U3')).toBeInTheDocument();
+    expect(within(card).getByText('4 x 10G')).toBeInTheDocument();
+    expect(errors).not.toHaveBeenCalled();
+    errors.mockRestore();
   });
 
   it('can be switched off', () => {
@@ -217,6 +230,21 @@ describe('keyboard', () => {
     expect(screen.getByTestId('device-tooltip')).toHaveTextContent('fw-hq-01');
     fireEvent.keyDown(device, { key: 'Escape' });
     expect(screen.queryByTestId('device-tooltip')).toBeNull();
+  });
+
+  it('keeps the Escape that closes the card from Grafana, and lets the next one through', () => {
+    const outside = jest.fn();
+    render(
+      <div onKeyDown={outside}>
+        <RackPanel {...panelProps(loadFixture('basic'))} />
+      </div>
+    );
+    const device = screen.getByTestId('device-fw-hq-01');
+    fireEvent.focus(device);
+    fireEvent.keyDown(device, { key: 'Escape' });
+    expect(outside).not.toHaveBeenCalled();
+    fireEvent.keyDown(device, { key: 'Escape' });
+    expect(outside).toHaveBeenCalledTimes(1);
   });
 
   it('opens the links of a device with Enter', () => {
