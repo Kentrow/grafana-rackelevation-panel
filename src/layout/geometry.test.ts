@@ -5,6 +5,7 @@ import { loadFixture } from '../testing/fixtures';
 import { placeDevices } from './place';
 import {
   autoUnitHeight,
+  cardPosition,
   FACE_GAP,
   FRAME,
   freeUnits,
@@ -184,5 +185,24 @@ describe('autoUnitHeight', () => {
     );
     expect(autoUnitHeight(racks('basic'), 50)).toBe(MIN_UNIT_HEIGHT);
     expect(autoUnitHeight(racks('ten-inch'), 5000)).toBe(MAX_UNIT_HEIGHT);
+  });
+});
+
+describe('cardPosition', () => {
+  const panel = { width: 400, height: 300 };
+  const card = { width: 200, height: 120 };
+
+  it('puts the card below and right of the pointer when it fits', () => {
+    expect(cardPosition({ x: 50, y: 40 }, card, panel, 12)).toEqual({ left: 62, top: 52 });
+  });
+
+  it('flips the card to the left of and above the pointer near the right and bottom edges', () => {
+    expect(cardPosition({ x: 350, y: 280 }, card, panel, 12)).toEqual({ left: 138, top: 148 });
+  });
+
+  it('keeps a card wider or taller than the room on both sides inside the panel', () => {
+    // 360 px wide in a 400 px panel, pointer in the middle: neither side has room, the card stays within the margins.
+    expect(cardPosition({ x: 200, y: 150 }, { width: 360, height: 250 }, panel, 12)).toEqual({ left: 28, top: 38 });
+    expect(cardPosition({ x: 390, y: 290 }, { width: 380, height: 280 }, panel, 12)).toEqual({ left: 12, top: 12 });
   });
 });

@@ -1,7 +1,7 @@
 import React from 'react';
 import { fireEvent, render, screen, within } from '@testing-library/react';
 import { DataFrame, LinkModel } from '@grafana/data';
-import { loadFixture } from '../testing/fixtures';
+import { csvToFrame, loadFixture } from '../testing/fixtures';
 import { panelProps } from '../testing/panel';
 import { Rack } from './Rack';
 import { locationService } from '@grafana/runtime';
@@ -69,6 +69,31 @@ describe('tooltip', () => {
     hover('sw-hq-core-01');
     expect(screen.getByTestId('device-tooltip')).toHaveTextContent('sw-hq-core-01');
     expect(jest.mocked(Rack).mock.calls.length).toBe(renders);
+  });
+
+  it('keeps the card inside the panel near its bottom right corner', () => {
+    // jsdom has no layout: the card is 200 x 120 px, in the 400 x 300 px panel of panelProps.
+    const size = (name: 'offsetWidth' | 'offsetHeight', value: number) =>
+      jest.spyOn(HTMLElement.prototype, name, 'get').mockReturnValue(value);
+    const spies = [size('offsetWidth', 200), size('offsetHeight', 120)];
+    render(<RackPanel {...panelProps(loadFixture('basic'))} />);
+    fireEvent.mouseMove(screen.getByTestId('device-fw-hq-01').querySelector('rect')!, { clientX: 390, clientY: 290 });
+    const card = screen.getByTestId('device-tooltip').parentElement!;
+    expect([card.style.left, card.style.top]).toEqual(['178px', '158px']);
+    spies.forEach((spy) => spy.mockRestore());
+  });
+
+  it('shows an extra column named like a row of the card, and the units of a half-unit device', () => {
+    const errors = jest.spyOn(console, 'error').mockImplementation(() => {});
+    render(
+      <RackPanel {...panelProps([csvToFrame('device,rack,position,u_height,Units\nhalf,R1,3,0.5,4 x 10G\n', 'A')])} />
+    );
+    hover('half');
+    const card = screen.getByTestId('device-tooltip');
+    expect(within(card).getByText('U3')).toBeInTheDocument();
+    expect(within(card).getByText('4 x 10G')).toBeInTheDocument();
+    expect(errors).not.toHaveBeenCalled();
+    errors.mockRestore();
   });
 
   it('can be switched off', () => {
@@ -205,6 +230,21 @@ describe('keyboard', () => {
     expect(screen.getByTestId('device-tooltip')).toHaveTextContent('fw-hq-01');
     fireEvent.keyDown(device, { key: 'Escape' });
     expect(screen.queryByTestId('device-tooltip')).toBeNull();
+  });
+
+  it('keeps the Escape that closes the card from Grafana, and lets the next one through', () => {
+    const outside = jest.fn();
+    render(
+      <div onKeyDown={outside}>
+        <RackPanel {...panelProps(loadFixture('basic'))} />
+      </div>
+    );
+    const device = screen.getByTestId('device-fw-hq-01');
+    fireEvent.focus(device);
+    fireEvent.keyDown(device, { key: 'Escape' });
+    expect(outside).not.toHaveBeenCalled();
+    fireEvent.keyDown(device, { key: 'Escape' });
+    expect(outside).toHaveBeenCalledTimes(1);
   });
 
   it('opens the links of a device with Enter', () => {

@@ -46,7 +46,7 @@ export const DeviceTooltip = ({ device, rack, look, frame, columns, valueFields 
   const units =
     device.position === undefined || device.uHeight <= 0
       ? '0U'
-      : unitRange(device.position, device.position + device.uHeight - 1);
+      : unitRange(device.position, Math.max(device.position, device.position + device.uHeight - 1));
   const rows: Array<[string, string | undefined]> = [
     ['Model', device.model],
     ['Role', device.role],
@@ -66,8 +66,9 @@ export const DeviceTooltip = ({ device, rack, look, frame, columns, valueFields 
         <tbody>
           {rows
             .filter(([, value]) => value !== undefined && value !== '')
-            .map(([name, value]) => (
-              <tr key={name}>
+            // Keyed by position: an extra column can be named like a row of the card, such as Units.
+            .map(([name, value], i) => (
+              <tr key={i}>
                 <th>{name}</th>
                 <td>{value}</td>
               </tr>

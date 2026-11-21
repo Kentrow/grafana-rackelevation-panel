@@ -108,11 +108,24 @@ describe('RackPanel faces, 0U band and conflicts', () => {
     expect(screen.getByTestId('device-srv-big-c')).toHaveAttribute('data-conflict', 'overflow');
     expect(screen.getByTestId('device-sw-a')).not.toHaveAttribute('data-conflict');
     expect(screen.getByTestId('rack-errors')).toHaveTextContent('5');
+    expect(screen.getByRole('button', { name: '5 data problems' })).toBeInTheDocument();
+  });
+
+  it('names a single problem in the singular', () => {
+    render(<RackPanel {...props([csvToFrame('device,rack,position\nsw-01,R1,1\nsw-01,R1,2\n', 'A')])} />);
+    expect(screen.getByRole('button', { name: '1 data problem' })).toBeInTheDocument();
   });
 
   it('shows no error indicator when the data is clean', () => {
     render(<RackPanel {...props(loadFixture('basic'))} />);
     expect(screen.queryByTestId('rack-errors')).toBeNull();
+  });
+
+  it('counts in the legend only the devices drawn, without the hidden 0U band', () => {
+    const { rerender } = render(<RackPanel {...props(loadFixture('zero-u'))} />);
+    expect(screen.getByTestId('rack-legend')).toHaveTextContent('4 in service1 out of service1 not monitored');
+    rerender(<RackPanel {...props(loadFixture('zero-u'), { showZeroU: false })} />);
+    expect(screen.getByTestId('rack-legend')).toHaveTextContent('2 in service0 out of service0 not monitored');
   });
 
   it('scales the drawing to the panel with the fit option', () => {
