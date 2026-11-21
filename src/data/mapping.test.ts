@@ -126,6 +126,20 @@ describe('range queries', () => {
     ]);
     expect(errors).toEqual([]);
   });
+
+  it('treats a row without time as the oldest one', () => {
+    const frame = toDataFrame({
+      fields: [
+        { name: 'Time', type: FieldType.time, values: [null, 2000, 1000, null] },
+        { name: 'device', type: FieldType.string, values: ['sw-01', 'sw-01', 'sw-02', 'sw-02'] },
+        { name: 'rack', type: FieldType.string, values: ['R1', 'R1', 'R1', 'R1'] },
+      ],
+    });
+    expect(readDevices(frame, {}, DEFAULT_UP_VALUES).devices.map((d) => [d.name, d.row])).toEqual([
+      ['sw-01', 1],
+      ['sw-02', 2],
+    ]);
+  });
 });
 
 describe('extraFields', () => {

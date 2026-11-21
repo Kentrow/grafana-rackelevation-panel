@@ -129,7 +129,11 @@ function colourOf(colours: Array<{ field: Field; index: number }>, row: number):
   return {};
 }
 
-const toTime = (raw: unknown) => (raw instanceof Date ? raw.getTime() : (toNumber(raw) ?? Date.parse(String(raw))));
+/** Time of a row in milliseconds; a row without a valid time is the oldest. */
+function toTime(raw: unknown): number {
+  const time = raw instanceof Date ? raw.getTime() : (toNumber(raw) ?? Date.parse(String(raw)));
+  return Number.isFinite(time) ? time : -Infinity;
+}
 
 /**
  * Row of the most recent time of each device, when the frame has a time field: a range query gives one row per

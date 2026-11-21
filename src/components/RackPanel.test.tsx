@@ -2,7 +2,7 @@ import React from 'react';
 import { render, screen, within } from '@testing-library/react';
 import { DataFrame } from '@grafana/data';
 import { RackPanel } from './RackPanel';
-import { loadFixture } from '../testing/fixtures';
+import { csvToFrame, loadFixture } from '../testing/fixtures';
 import { panelProps } from '../testing/panel';
 import { RackElevationOptions } from '../types';
 
@@ -19,6 +19,17 @@ describe('RackPanel', () => {
     expect(within(rack).getByTestId('device-patch-hq-01')).toHaveAttribute('data-state', 'unknown');
     expect(within(rack).getByTestId('device-fw-hq-01')).toHaveTextContent('fw-hq-01');
     expect(rack.querySelectorAll('[data-testid^="device-"]')).toHaveLength(6);
+  });
+
+  it('numbers the overflow zone, except the units of a device drawn there far from its position', () => {
+    const series = [
+      csvToFrame('device,rack,position\ntypo,R1,1000\nnear,R1,44\n', 'A'),
+      csvToFrame('rack,u_height\nR1,42\n', 'B'),
+    ];
+    render(<RackPanel {...props(series)} />);
+    const numbers = within(screen.getByTestId('rack-R1')).getByTestId('overflow-numbers');
+    // Slots -1 to -4 above U42: U43, U44 and U45, then typo at the outer edge, without a number.
+    expect([...numbers.childNodes].map((n) => n.textContent)).toEqual(['43', '44', '45']);
   });
 
   it('numbers a descending rack from the top', () => {

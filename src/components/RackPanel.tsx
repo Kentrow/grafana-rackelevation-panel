@@ -3,6 +3,7 @@ import { css, cx } from '@emotion/css';
 import { GrafanaTheme2, LinkModel, PanelProps } from '@grafana/data';
 import { PanelDataErrorView } from '@grafana/runtime';
 import { ContextMenu, linkModelToContextMenuItems, MenuItem, useStyles2, useTheme2 } from '@grafana/ui';
+import { columnField } from '../data/mapping';
 import { autoUnitHeight as fittingUnitHeight, panelGeometry } from '../layout/geometry';
 import { buildModel } from '../model';
 import { DEFAULT_OPTIONS, Device, Rack as RackModel, RackElevationOptions } from '../types';
@@ -238,7 +239,8 @@ export const RackPanel = ({ data, options: saved, width, height, fieldConfig, id
   const linksAt = (target: EventTarget): LinkModel[] => {
     const hit = devices.get(deviceAt(target) ?? '');
     if (hit) {
-      return deviceLinks(model.devicesFrame, hit.device.row);
+      const deviceField = model.devicesFrame && columnField(model.devicesFrame, 'device', options.columns);
+      return deviceLinks(model.devicesFrame, hit.device.row, linkDefaults, deviceField);
     }
     const rackId = (target as Element).closest?.('[data-rack]')?.getAttribute('data-rack');
     const rack = model.racks.find((r) => r.rack.id === rackId)?.rack;

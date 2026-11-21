@@ -139,6 +139,25 @@ describe('placeDevices', () => {
     ]);
   });
 
+  it('draws a device far outside its rack at the edge of a 4U overflow zone, with its real units in the message', () => {
+    const { racks, errors } = placeDevices({
+      devices: [
+        device('typo', { position: 1000 }),
+        device('near', { position: 44 }),
+        device('deep', { position: -500, uHeight: 2 }),
+        device('tall', { position: 900, uHeight: 6 }),
+      ],
+      racks: [rack()],
+    });
+    expect(racks[0].front.map((p) => [p.device.name, p.top, p.clamped])).toEqual([
+      ['typo', -4, true],
+      ['near', -2, undefined],
+      ['deep', 44, true],
+      ['tall', -6, true],
+    ]);
+    expect(errors[0].message).toBe('typo (U1000) is outside R1 (U1-42).');
+  });
+
   it('sends devices without position or height to the 0U band', () => {
     const [layout] = placeDevices({
       devices: [device('pdu-a', { uHeight: 0 }), device('pdu-b', { position: 5, uHeight: 0 }), device('cm')],
@@ -166,6 +185,22 @@ describe('placeDevices', () => {
     expect(racks).toHaveLength(1);
     expect(racks[0].front[0].device.children.map((c) => c.name)).toEqual(['blade']);
     expect(errors.map((e) => e.kind)).toEqual(['orphan-child']);
+  });
+
+  it('reports the devices of a parent cycle instead of losing them silently', () => {
+    const { errors } = placeDevices({
+      devices: [
+        device('a', { parent: 'b', rack: '' }),
+        device('b', { parent: 'c', rack: '' }),
+        device('c', { parent: 'a', rack: '' }),
+        device('blade', { parent: 'a', rack: '' }),
+      ],
+    });
+    expect(errors.map((e) => [e.kind, e.message])).toEqual([
+      ['orphan-child', 'a is its own ancestor (a > b > c > a).'],
+      ['orphan-child', 'b is its own ancestor (b > c > a > b).'],
+      ['orphan-child', 'c is its own ancestor (c > a > b > c).'],
+    ]);
   });
 
   it('orders and filters racks with the options, by id or name', () => {

@@ -16,6 +16,12 @@ export const orphanError = (device: Device): LayoutError => ({
   device: device.name,
 });
 
+export const cycleError = (device: Device, chain: string[]): LayoutError => ({
+  kind: 'orphan-child',
+  message: `${device.name} is its own ancestor (${chain.join(' > ')}).`,
+  device: device.name,
+});
+
 export const unknownRackError = (rack: string, from: 'devices' | 'options'): LayoutError => ({
   kind: 'unknown-rack',
   message:
