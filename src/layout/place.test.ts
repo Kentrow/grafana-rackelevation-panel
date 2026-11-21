@@ -70,6 +70,42 @@ describe('placeDevices', () => {
     expect(errors.map((e) => e.message)).toEqual(['b overlaps a on the front of R1.']);
   });
 
+  it('flags devices that overlap by half a unit (NetBox 0.5U positions)', () => {
+    const { racks, errors } = placeDevices({
+      devices: [device('a', { position: 1 }, 0), device('b', { position: 1.5 }, 1)],
+    });
+    expect(racks[0].front.map((p) => [p.device.name, p.units, p.conflict])).toEqual([
+      ['a', [1, 1], undefined],
+      ['b', [1.5, 1.5], 'overlap'],
+    ]);
+    expect(errors.map((e) => e.message)).toEqual(['b overlaps a on the front of R1.']);
+  });
+
+  it('lets two half-unit devices share a unit, one above the other', () => {
+    const { racks, errors } = placeDevices({
+      devices: [device('low', { position: 3, uHeight: 0.5 }), device('high', { position: 3.5, uHeight: 0.5 })],
+      racks: [rack()],
+    });
+    expect(racks[0].front.map((p) => [p.device.name, p.units, p.top])).toEqual([
+      ['low', [3, 3], 39.5],
+      ['high', [3.5, 3.5], 39],
+    ]);
+    expect(errors).toEqual([]);
+  });
+
+  it('grows a rack to the unit holding the top of a device at a half position', () => {
+    const { racks, errors } = placeDevices({ devices: [device('half', { position: 42.5 })] });
+    expect(racks[0].rack.uHeight).toBe(43);
+    expect(racks[0].front[0].top).toBe(0.5);
+    expect(errors).toEqual([]);
+  });
+
+  it('flags a device that passes the top of a fixed rack by half a unit', () => {
+    const { racks, errors } = placeDevices({ devices: [device('half', { position: 42.5 })], racks: [rack()] });
+    expect(racks[0].front[0].conflict).toBe('overflow');
+    expect(errors.map((e) => e.message)).toEqual(['half (U42.5) is outside R1 (U1-42).']);
+  });
+
   it('lets half-depth devices share a unit on opposite faces', () => {
     const { errors } = placeDevices({
       devices: [
