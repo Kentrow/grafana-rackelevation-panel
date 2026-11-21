@@ -1,5 +1,16 @@
 # Changelog
 
+## Unreleased
+
+**Fixes:**
+
+- Half-unit positions and heights (NetBox 0.5U): overlaps, overflows and free units are computed on the real span of
+  each device, so a 1U device at U1.5 now conflicts with one at U1.
+- The racks frame is found when the device column is mapped to `name`, as for NetBox, although it has a `name` column
+  too.
+- A rack height of 0 or less is read as missing instead of drawing a negative rack.
+- Rack and device names with a comma, typed in the options or coming from a variable, are no longer split in two.
+
 ## [1.0.1](https://github.com/Kentrow/grafana-rackelevation-panel/tree/v1.0.1) (2026-11-04)
 
 **Changes:**
