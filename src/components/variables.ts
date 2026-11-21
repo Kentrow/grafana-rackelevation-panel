@@ -2,12 +2,21 @@ import { InterpolateFunction } from '@grafana/data';
 import { Device } from '../types';
 import { Emphasis } from './DeviceRect';
 
-/** Option list entries with variables replaced, multi-value variables split. */
-export function resolveList(values: string[] | undefined, replaceVariables: InterpolateFunction): string[] {
-  return (values ?? [])
-    .flatMap((v) => replaceVariables(v, undefined, 'csv').split(','))
+/** Between the values of a multi-value variable: names can hold commas, never this control character. */
+const SEPARATOR = '\u001f';
+
+/** Format of replaceVariables that keeps the values of a multi-value variable apart. */
+const keepApart = (value: unknown) => (Array.isArray(value) ? value.join(SEPARATOR) : String(value));
+
+const split = (text: string) =>
+  text
+    .split(SEPARATOR)
     .map((v) => v.trim())
     .filter(Boolean);
+
+/** Option list entries with variables replaced, multi-value variables split. */
+export function resolveList(values: string[] | undefined, replaceVariables: InterpolateFunction): string[] {
+  return (values ?? []).flatMap((v) => split(replaceVariables(v, undefined, keepApart)));
 }
 
 /** Variable name of an option, written with or without $ and braces. */
@@ -19,15 +28,9 @@ export function variableValues(name: string | undefined, replaceVariables: Inter
   if (!variable) {
     return [];
   }
-  const expression = `\${${variable}:csv}`;
-  const value = replaceVariables(expression);
-  if (value === expression) {
-    return [];
-  }
-  return value
-    .split(',')
-    .map((v) => v.trim())
-    .filter(Boolean);
+  const expression = `\${${variable}}`;
+  const value = replaceVariables(expression, undefined, keepApart);
+  return value === expression ? [] : split(value);
 }
 
 /**

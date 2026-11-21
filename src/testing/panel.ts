@@ -8,13 +8,19 @@ import {
 } from '@grafana/data';
 import { DEFAULT_OPTIONS, RackElevationOptions } from '../types';
 
-/** replaceVariables of a dashboard with these variables: $name, ${name} and ${name:csv} give the values joined by commas. */
+/**
+ * replaceVariables of a dashboard with these variables: $name, ${name} and ${name:csv} give the values joined by
+ * commas, or what a format function makes of them (a string for a single value, as Grafana gives).
+ */
 export const dashboardVariables =
   (variables: Record<string, string[]>): InterpolateFunction =>
-  (text: string) =>
+  (text, _scopedVars, format) =>
     text.replace(/\$\{(\w+)(?::csv)?\}|\$(\w+)/g, (match, braced, plain) => {
       const values = variables[braced ?? plain];
-      return values ? values.join(',') : match;
+      if (!values) {
+        return match;
+      }
+      return typeof format === 'function' ? format(values.length === 1 ? values[0] : values) : values.join(',');
     });
 
 /** Props of the panel in a 400 x 300 px panel of a dashboard with the given variables. */

@@ -10,6 +10,12 @@ describe('resolveList', () => {
   it('splits multi-value variables and drops empty entries', () => {
     expect(resolveList(['$rack', ' ', 'C'], dashboard({ rack: ['A', ' B'] }))).toEqual(['A', 'B', 'C']);
   });
+
+  it('keeps the commas of names, typed or in variables', () => {
+    expect(
+      resolveList(['Paris, DC1', '$rack', '$site'], dashboard({ rack: ['Lyon, B', 'Nice'], site: ['Lille, 2'] }))
+    ).toEqual(['Paris, DC1', 'Lyon, B', 'Nice', 'Lille, 2']);
+  });
 });
 
 describe('variableValues', () => {
@@ -19,6 +25,14 @@ describe('variableValues', () => {
     expect(variableValues('device', replace)).toEqual(['sw-01', 'sw-02']);
     expect(variableValues('$device', replace)).toEqual(['sw-01', 'sw-02']);
     expect(variableValues('${device}', replace)).toEqual(['sw-01', 'sw-02']);
+  });
+
+  it('keeps the commas of the values', () => {
+    expect(variableValues('device', dashboard({ device: ['Paris, sw-01', 'sw-02'] }))).toEqual([
+      'Paris, sw-01',
+      'sw-02',
+    ]);
+    expect(variableValues('device', dashboard({ device: ['Paris, sw-01'] }))).toEqual(['Paris, sw-01']);
   });
 
   it('returns nothing when the dashboard has no such variable, or it is empty', () => {
