@@ -16,6 +16,11 @@
 - Devices in a parent cycle (A's parent is B, B's parent is A) are listed as problems instead of vanishing.
 - A device far outside its rack (a wrong position such as U1000) is drawn at the edge of a 4U overflow zone instead
   of shrinking every rack of the panel.
+- The device card stays inside the panel, in narrow panels and with tall cards.
+- The legend no longer counts the devices of the 0U band when the band is hidden.
+- The card shows U3 for a 0.5U device at U3, and an extra column named like a row of the card (Units, Rack...) is
+  shown as well.
+- Escape closes the card or the menu without also leaving the panel view.
 
 ## [1.0.1](https://github.com/Kentrow/grafana-rackelevation-panel/tree/v1.0.1) (2026-11-04)
 
