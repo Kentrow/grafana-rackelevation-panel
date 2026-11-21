@@ -144,6 +144,35 @@ export function freeUnits(layout: RackLayout, face: Face): number {
   return uHeight - taken.size;
 }
 
+interface Size {
+  width: number;
+  height: number;
+}
+
+/** Start of a card along one axis: after the pointer, else before it, else as close as the panel allows. */
+function cardStart(pointer: number, card: number, panel: number, margin: number): number {
+  if (pointer + margin + card <= panel - margin) {
+    return pointer + margin;
+  }
+  if (pointer - margin - card >= margin) {
+    return pointer - margin - card;
+  }
+  return Math.max(margin, Math.min(pointer + margin, panel - margin - card));
+}
+
+/** Top left corner of the device card: next to the pointer, and always inside the panel. */
+export function cardPosition(
+  pointer: { x: number; y: number },
+  card: Size,
+  panel: Size,
+  margin: number
+): { left: number; top: number } {
+  return {
+    left: cardStart(pointer.x, card.width, panel.width, margin),
+    top: cardStart(pointer.y, card.height, panel.height, margin),
+  };
+}
+
 /** Unit number at a slot counted from the top of the rack; negative or past the bottom for overflow slots. */
 export const unitNumberAt = (rack: Rack, slot: number) =>
   rack.descUnits ? rack.startingUnit + slot : rack.startingUnit + rack.uHeight - 1 - slot;

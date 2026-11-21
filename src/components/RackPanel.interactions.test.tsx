@@ -71,6 +71,18 @@ describe('tooltip', () => {
     expect(jest.mocked(Rack).mock.calls.length).toBe(renders);
   });
 
+  it('keeps the card inside the panel near its bottom right corner', () => {
+    // jsdom has no layout: the card is 200 x 120 px, in the 400 x 300 px panel of panelProps.
+    const size = (name: 'offsetWidth' | 'offsetHeight', value: number) =>
+      jest.spyOn(HTMLElement.prototype, name, 'get').mockReturnValue(value);
+    const spies = [size('offsetWidth', 200), size('offsetHeight', 120)];
+    render(<RackPanel {...panelProps(loadFixture('basic'))} />);
+    fireEvent.mouseMove(screen.getByTestId('device-fw-hq-01').querySelector('rect')!, { clientX: 390, clientY: 290 });
+    const card = screen.getByTestId('device-tooltip').parentElement!;
+    expect([card.style.left, card.style.top]).toEqual(['178px', '158px']);
+    spies.forEach((spy) => spy.mockRestore());
+  });
+
   it('can be switched off', () => {
     render(<RackPanel {...panelProps(loadFixture('basic'), { showTooltip: false })} />);
     hover('fw-hq-01');

@@ -1,10 +1,10 @@
-import React, { useId, useMemo, useRef, useState } from 'react';
+import React, { useId, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { css, cx } from '@emotion/css';
 import { GrafanaTheme2, LinkModel, PanelProps } from '@grafana/data';
 import { PanelDataErrorView } from '@grafana/runtime';
 import { ContextMenu, linkModelToContextMenuItems, MenuItem, useStyles2, useTheme2 } from '@grafana/ui';
 import { columnField } from '../data/mapping';
-import { autoUnitHeight as fittingUnitHeight, panelGeometry } from '../layout/geometry';
+import { cardPosition, autoUnitHeight as fittingUnitHeight, panelGeometry } from '../layout/geometry';
 import { buildModel } from '../model';
 import { DEFAULT_OPTIONS, Device, Rack as RackModel, RackElevationOptions } from '../types';
 import { deviceLabel, deviceLooks } from './deviceLook';
@@ -46,6 +46,16 @@ export const RackPanel = ({ data, options: saved, width, height, fieldConfig, id
   const wrapper = useRef<HTMLDivElement>(null);
   const [hover, setHover] = useState<Hover | null>(null);
   const [menu, setMenu] = useState<Menu | null>(null);
+  const card = useRef<HTMLDivElement>(null);
+  // The card is measured once drawn, then moved next to the pointer inside the panel, before the browser paints it.
+  useLayoutEffect(() => {
+    if (hover && card.current) {
+      const size = { width: card.current.offsetWidth, height: card.current.offsetHeight };
+      const { left, top } = cardPosition(hover, size, { width, height }, TOOLTIP_OFFSET);
+      card.current.style.left = `${left}px`;
+      card.current.style.top = `${top}px`;
+    }
+  });
   const options = { ...DEFAULT_OPTIONS, ...saved };
   const {
     frames,
@@ -305,12 +315,9 @@ export const RackPanel = ({ data, options: saved, width, height, fieldConfig, id
       </div>
       {hover && hovered && (
         <div
+          ref={card}
           className={styles.tooltip}
           style={{
-            ...(hover.x < width / 2 ? { left: hover.x + TOOLTIP_OFFSET } : { right: width - hover.x + TOOLTIP_OFFSET }),
-            ...(hover.y < height / 2
-              ? { top: hover.y + TOOLTIP_OFFSET }
-              : { bottom: height - hover.y + TOOLTIP_OFFSET }),
             maxWidth: Math.min(360, width - 2 * TOOLTIP_OFFSET),
             maxHeight: height - 2 * TOOLTIP_OFFSET,
           }}
