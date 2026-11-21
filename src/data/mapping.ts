@@ -233,7 +233,7 @@ export function readRacks(frame: DataFrame, mapping: ColumnMapping): Rack[] {
     if (!rack) {
       continue;
     }
-    const uHeight = toNumber(at(height, row));
+    const uHeight = positive(toNumber(at(height, row)));
     racks.push({
       id: rack,
       name: toText(at(name, row)) ?? rack,

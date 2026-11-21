@@ -159,6 +159,14 @@ describe('readRacks', () => {
       { id: 'R2', name: 'Rack two', uHeight: 48, startingUnit: 0, descUnits: true, fixedHeight: true, width: 10 },
     ]);
   });
+
+  it('treats a rack height of 0 or less as missing', () => {
+    const frame = csvToFrame('rack,u_height\nR1,0\nR2,-5\n', 'B');
+    expect(readRacks(frame, {})).toMatchObject([
+      { id: 'R1', uHeight: 42, fixedHeight: false },
+      { id: 'R2', uHeight: 42, fixedHeight: false },
+    ]);
+  });
 });
 
 describe('readAlerts', () => {
