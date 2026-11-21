@@ -100,6 +100,7 @@ export const RackPanel = ({ data, options: saved, width, height, fieldConfig, id
     }
     return byName;
   }, [model]);
+  const zeroU = useMemo(() => new Set(model.racks.flatMap((r) => r.zeroU)), [model]);
   const looks = useMemo(
     () =>
       deviceLooks(
@@ -343,7 +344,11 @@ export const RackPanel = ({ data, options: saved, width, height, fieldConfig, id
         />
       )}
       {showLegend && (
-        <Legend devices={[...devices.values()].map((d) => d.device).filter((d) => emphasis(d) !== 'filtered')} />
+        <Legend
+          devices={[...devices.values()]
+            .map((d) => d.device)
+            .filter((d) => emphasis(d) !== 'filtered' && (showZeroU || !zeroU.has(d)))}
+        />
       )}
       <ErrorIndicator errors={model.errors} />
     </div>

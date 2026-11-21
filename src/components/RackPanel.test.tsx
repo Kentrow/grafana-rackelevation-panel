@@ -115,6 +115,13 @@ describe('RackPanel faces, 0U band and conflicts', () => {
     expect(screen.queryByTestId('rack-errors')).toBeNull();
   });
 
+  it('counts in the legend only the devices drawn, without the hidden 0U band', () => {
+    const { rerender } = render(<RackPanel {...props(loadFixture('zero-u'))} />);
+    expect(screen.getByTestId('rack-legend')).toHaveTextContent('4 in service1 out of service1 not monitored');
+    rerender(<RackPanel {...props(loadFixture('zero-u'), { showZeroU: false })} />);
+    expect(screen.getByTestId('rack-legend')).toHaveTextContent('2 in service0 out of service0 not monitored');
+  });
+
   it('scales the drawing to the panel with the fit option', () => {
     render(<RackPanel {...props(loadFixture('multi-rack'), { fitToPanel: true })} />);
     const svg = screen.getByTestId('rack-svg');
