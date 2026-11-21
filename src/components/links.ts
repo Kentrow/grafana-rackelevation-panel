@@ -1,28 +1,46 @@
 import React from 'react';
-import { DataFrame, DataLink, LinkModel, locationUtil } from '@grafana/data';
+import { DataFrame, DataLink, Field, LinkModel, locationUtil } from '@grafana/data';
 import { locationService } from '@grafana/runtime';
 
+const linkKey = (link: { title: string; url: string }) => `${link.title}\n${link.url}`;
+
 /**
- * Data links of a device row. Links set in the field config defaults are on every field, so they are
- * deduplicated; links set by an override on one field are kept too.
+ * Data links of a device row. Links of the field config defaults are on every field and can resolve differently on
+ * each, with ${__field.name} or ${__value.raw}: they are taken from the device field only, or from the first field
+ * that has them. Links set by an override on a field are kept too.
  */
-export function deviceLinks(frame: DataFrame | undefined, row: number): LinkModel[] {
+export function deviceLinks(
+  frame: DataFrame | undefined,
+  row: number,
+  defaults: DataLink[] = [],
+  deviceField?: Field
+): LinkModel[] {
   if (!frame) {
     return [];
   }
+  const inherited = new Set(defaults.map(linkKey));
+  const fields = deviceField ? [deviceField, ...frame.fields.filter((f) => f !== deviceField)] : frame.fields;
   const links: LinkModel[] = [];
   const seen = new Set<string>();
-  for (const field of frame.fields) {
-    if (!field.config.links?.length || !field.getLinks) {
+  let defaultsTaken = false;
+  for (const field of fields) {
+    const config = field.config.links ?? [];
+    if (config.length === 0 || !field.getLinks) {
       continue;
     }
-    for (const link of field.getLinks({ valueRowIndex: row })) {
+    const fromDefaults = config.map((l) => inherited.has(linkKey(l)));
+    const resolved = field.getLinks({ valueRowIndex: row });
+    // getLinks resolves the links of the config in order, but drops those it cannot build: without the same count,
+    // the links of the defaults cannot be told apart and they are only deduplicated.
+    const aligned = resolved.length === config.length;
+    resolved.forEach((link, i) => {
       const key = `${link.title}\n${link.href}`;
-      if (!seen.has(key)) {
+      if ((!aligned || !fromDefaults[i] || !defaultsTaken) && !seen.has(key)) {
         seen.add(key);
         links.push(link);
       }
-    }
+    });
+    defaultsTaken ||= fromDefaults.some(Boolean);
   }
   return links;
 }

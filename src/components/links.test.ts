@@ -21,6 +21,26 @@ describe('deviceLinks', () => {
     expect(hasLinks(frame)).toBe(true);
   });
 
+  it('takes the links of the defaults from the device field only, whatever their href on the other fields', () => {
+    const byField = { title: 'Field', url: '/d/x?var-field=${__field.name}' };
+    const own = { title: 'Dashboard', url: '/d/y' };
+    const frame = toDataFrame({
+      fields: [
+        { name: 'rack', type: FieldType.string, values: ['R1'], config: { links: [byField] } },
+        { name: 'device', type: FieldType.string, values: ['sw-01'], config: { links: [byField] } },
+        { name: 'value', type: FieldType.number, values: [1], config: { links: [byField, own] } },
+      ],
+    });
+    frame.fields.forEach((f) => {
+      f.getLinks = () => (f.config.links ?? []).map((l) => link(l.title, l.url.replace('${__field.name}', f.name)));
+    });
+
+    expect(deviceLinks(frame, 0, [byField], frame.fields[1]).map((l) => l.href)).toEqual([
+      '/d/x?var-field=device',
+      '/d/y',
+    ]);
+  });
+
   it('has no links without data links in the field config', () => {
     const frame = toDataFrame({ fields: [{ name: 'device', type: FieldType.string, values: ['sw-01'] }] });
     expect(deviceLinks(frame, 0)).toEqual([]);
