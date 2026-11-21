@@ -1,6 +1,14 @@
 import { DEFAULT_RACK_HEIGHT, DEFAULT_RACK_WIDTH } from '../data/mapping';
 import { Alert, Device, Face, Layout, LayoutError, Rack, RackLayout } from '../types';
-import { duplicateError, lastUnit, orphanError, overflowError, overlapError, unknownRackError } from './errors';
+import {
+  cycleError,
+  duplicateError,
+  lastUnit,
+  orphanError,
+  overflowError,
+  overlapError,
+  unknownRackError,
+} from './errors';
 
 export interface PlaceInput {
   devices: Device[];
@@ -33,6 +41,18 @@ const spanOf = (d: Device): [number, number] | undefined =>
 /** First and last unit numbers shown for a span: U3 for a 0.5U device at 3, U1-1.5 for a 1.5U device at 1. */
 const unitsOf = ([bottom, top]: [number, number]): [number, number] => [bottom, Math.max(bottom, top - 1)];
 
+/** Names from a device up its parents back to itself, when it is its own ancestor. */
+function cycleOf(device: Device, byName: Map<string, Device>): string[] | undefined {
+  const chain = [device.name];
+  for (let d = byName.get(device.parent ?? ''); d && chain.length <= byName.size; d = byName.get(d.parent ?? '')) {
+    chain.push(d.name);
+    if (d === device) {
+      return chain;
+    }
+  }
+  return undefined;
+}
+
 /** Keeps the first row of each device name and attaches children and alerts to their device. */
 function resolveDevices(input: PlaceInput, errors: LayoutError[]): Device[] {
   const byName = new Map<string, Device>();
@@ -50,7 +70,10 @@ function resolveDevices(input: PlaceInput, errors: LayoutError[]): Device[] {
       continue;
     }
     const parent = byName.get(device.parent);
-    if (parent && parent !== device) {
+    const cycle = cycleOf(device, byName);
+    if (cycle) {
+      errors.push(cycleError(device, cycle));
+    } else if (parent) {
       parent.children.push(device);
     } else {
       errors.push(orphanError(device));
