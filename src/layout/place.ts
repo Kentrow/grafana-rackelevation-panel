@@ -120,6 +120,24 @@ function resolveRacks(input: PlaceInput, byRack: Map<string, Device[]>, errors: 
   return ordered;
 }
 
+/** Overflow zones above and below a rack are this tall at most, or as tall as the device drawn in them. */
+export const MAX_OVERFLOW_UNITS = 4;
+
+/**
+ * Slot of a device, brought to the outer edge of the overflow zone when it is further away: one wrong position, such
+ * as U1000 in a 42U rack, would otherwise make a zone of 958 units and shrink every rack of the panel.
+ */
+function withinOverflowZone(top: number, uHeight: number, rack: Rack): { top: number; clamped: boolean } {
+  const zone = Math.max(MAX_OVERFLOW_UNITS, uHeight);
+  if (top < -zone) {
+    return { top: -zone, clamped: true };
+  }
+  if (top + uHeight > rack.uHeight + zone) {
+    return { top: rack.uHeight + zone - uHeight, clamped: true };
+  }
+  return { top, clamped: false };
+}
+
 function placeRack(rack: Rack, devices: Device[], errors: LayoutError[]): RackLayout {
   const layout: RackLayout = { rack, front: [], rear: [], zeroU: [] };
   const overflowing = new Set<Device>();
@@ -133,15 +151,20 @@ function placeRack(rack: Rack, devices: Device[], errors: LayoutError[]): RackLa
     spans.set(device, span);
     const units = unitsOf(span);
     // Slots are counted from the top of the rack: the starting unit is at the top in descending racks (NetBox).
-    const top = rack.descUnits ? span[0] - rack.startingUnit : lastUnit(rack) + 1 - span[1];
+    const { top, clamped } = withinOverflowZone(
+      rack.descUnits ? span[0] - rack.startingUnit : lastUnit(rack) + 1 - span[1],
+      device.uHeight,
+      rack
+    );
     if (span[0] < rack.startingUnit || span[1] > lastUnit(rack) + 1) {
       overflowing.add(device);
       errors.push(overflowError(device, units, rack));
     }
-    layout[device.face].push({ device, face: device.face, back: false, units, top });
+    const where = { units, top, ...(clamped && { clamped }) };
+    layout[device.face].push({ device, face: device.face, back: false, ...where });
     if (device.fullDepth) {
       const face = opposite(device.face);
-      layout[face].push({ device, face, back: true, units, top });
+      layout[face].push({ device, face, back: true, ...where });
     }
   }
 

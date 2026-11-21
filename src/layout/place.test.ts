@@ -139,6 +139,25 @@ describe('placeDevices', () => {
     ]);
   });
 
+  it('draws a device far outside its rack at the edge of a 4U overflow zone, with its real units in the message', () => {
+    const { racks, errors } = placeDevices({
+      devices: [
+        device('typo', { position: 1000 }),
+        device('near', { position: 44 }),
+        device('deep', { position: -500, uHeight: 2 }),
+        device('tall', { position: 900, uHeight: 6 }),
+      ],
+      racks: [rack()],
+    });
+    expect(racks[0].front.map((p) => [p.device.name, p.top, p.clamped])).toEqual([
+      ['typo', -4, true],
+      ['near', -2, undefined],
+      ['deep', 44, true],
+      ['tall', -6, true],
+    ]);
+    expect(errors[0].message).toBe('typo (U1000) is outside R1 (U1-42).');
+  });
+
   it('sends devices without position or height to the 0U band', () => {
     const [layout] = placeDevices({
       devices: [device('pdu-a', { uHeight: 0 }), device('pdu-b', { position: 5, uHeight: 0 }), device('cm')],

@@ -68,6 +68,12 @@ export const Rack = ({
   const slotsHeight = rack.uHeight * u;
   const numberSize = Math.min(10, Math.max(6, Math.round(u * 0.6)));
   const free = freeUnits(layout, face);
+  // Slots of the devices drawn at the edge of an overflow zone, far from their units: their numbers would be wrong.
+  const clampedSlots = new Set(
+    layout[face]
+      .filter((p) => p.clamped)
+      .flatMap((p) => Array.from({ length: Math.ceil(p.device.uHeight) }, (_, i) => Math.floor(p.top) + i))
+  );
   const subtitle = truncate(
     [rack.site, caption, showSummary ? `${free} U free` : undefined].filter(Boolean).join(' · '),
     innerWidth + 2 * FRAME + zeroUWidth,
@@ -182,11 +188,13 @@ export const Rack = ({
           {[
             ...Array.from({ length: overflow.above }, (_, i) => -1 - i),
             ...Array.from({ length: overflow.below }, (_, i) => rack.uHeight + i),
-          ].map((slot) => (
-            <text key={slot} x={numbersWidth - 4} y={slotsY + (slot + 0.5) * u} dominantBaseline="central">
-              {unitNumberAt(rack, slot)}
-            </text>
-          ))}
+          ]
+            .filter((slot) => !clampedSlots.has(slot))
+            .map((slot) => (
+              <text key={slot} x={numbersWidth - 4} y={slotsY + (slot + 0.5) * u} dominantBaseline="central">
+                {unitNumberAt(rack, slot)}
+              </text>
+            ))}
         </g>
       )}
       <g transform={`translate(${slotsX}, ${slotsY})`}>

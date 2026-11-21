@@ -118,6 +118,8 @@ export interface PlacedDevice {
   units: [number, number];
   /** Slot of the top of the device, in units from the top of the rack. Negative or past the bottom when overflowing. */
   top: number;
+  /** Far outside its rack: drawn at the outer edge of the overflow zone instead of at its units. */
+  clamped?: boolean;
   conflict?: Conflict;
 }
 
