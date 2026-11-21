@@ -23,9 +23,15 @@ const defaultRack = (id: string): Rack => ({
   width: DEFAULT_RACK_WIDTH,
 });
 
-/** First and last unit numbers occupied; undefined for 0U devices. */
-const unitsOf = (d: Device): [number, number] | undefined =>
-  d.position === undefined || d.uHeight <= 0 ? undefined : [d.position, d.position + d.uHeight - 1];
+/**
+ * Bottom and top of a device in units, top excluded: a 1U device at U1 spans [1, 2). Positions and heights can be
+ * halves of a unit in NetBox, so overlaps and overflows are computed on these spans; undefined for 0U devices.
+ */
+const spanOf = (d: Device): [number, number] | undefined =>
+  d.position === undefined || d.uHeight <= 0 ? undefined : [d.position, d.position + d.uHeight];
+
+/** First and last unit numbers shown for a span: U3 for a 0.5U device at 3, U1-1.5 for a 1.5U device at 1. */
+const unitsOf = ([bottom, top]: [number, number]): [number, number] => [bottom, Math.max(bottom, top - 1)];
 
 /** Keeps the first row of each device name and attaches children and alerts to their device. */
 function resolveDevices(input: PlaceInput, errors: LayoutError[]): Device[] {
@@ -69,9 +75,9 @@ function resolveRacks(input: PlaceInput, byRack: Map<string, Device[]>, errors: 
       continue;
     }
     for (const d of byRack.get(rack.id) ?? []) {
-      const units = unitsOf(d);
-      if (units && units[1] > lastUnit(rack)) {
-        rack.uHeight = units[1] - rack.startingUnit + 1;
+      const span = spanOf(d);
+      if (span && span[1] > lastUnit(rack) + 1) {
+        rack.uHeight = Math.ceil(span[1] - rack.startingUnit);
       }
     }
   }
@@ -94,15 +100,18 @@ function resolveRacks(input: PlaceInput, byRack: Map<string, Device[]>, errors: 
 function placeRack(rack: Rack, devices: Device[], errors: LayoutError[]): RackLayout {
   const layout: RackLayout = { rack, front: [], rear: [], zeroU: [] };
   const overflowing = new Set<Device>();
+  const spans = new Map<Device, [number, number]>();
   for (const device of devices) {
-    const units = unitsOf(device);
-    if (!units) {
+    const span = spanOf(device);
+    if (!span) {
       layout.zeroU.push(device);
       continue;
     }
+    spans.set(device, span);
+    const units = unitsOf(span);
     // Slots are counted from the top of the rack: the starting unit is at the top in descending racks (NetBox).
-    const top = rack.descUnits ? units[0] - rack.startingUnit : lastUnit(rack) - units[1];
-    if (units[0] < rack.startingUnit || units[1] > lastUnit(rack)) {
+    const top = rack.descUnits ? span[0] - rack.startingUnit : lastUnit(rack) + 1 - span[1];
+    if (span[0] < rack.startingUnit || span[1] > lastUnit(rack) + 1) {
       overflowing.add(device);
       errors.push(overflowError(device, units, rack));
     }
@@ -121,7 +130,8 @@ function placeRack(rack: Rack, devices: Device[], errors: LayoutError[]): RackLa
     for (let i = 0; i < placed.length; i++) {
       for (let j = 0; j < i; j++) {
         const [a, b] = [placed[j], placed[i]];
-        if (a.units[0] <= b.units[1] && b.units[0] <= a.units[1]) {
+        const [spanA, spanB] = [spans.get(a.device), spans.get(b.device)];
+        if (spanA && spanB && spanA[0] < spanB[1] && spanB[0] < spanA[1]) {
           const [first, second] = a.device.row <= b.device.row ? [a.device, b.device] : [b.device, a.device];
           overlapping.add(second);
           const key = `${first.name}\n${second.name}`;

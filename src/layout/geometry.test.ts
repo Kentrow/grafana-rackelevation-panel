@@ -1,7 +1,8 @@
-import { Rack } from '../types';
+import { Device, Rack } from '../types';
 import { DEFAULT_UP_VALUES } from '../data/status';
 import { buildModel } from '../model';
 import { loadFixture } from '../testing/fixtures';
+import { placeDevices } from './place';
 import {
   autoUnitHeight,
   FACE_GAP,
@@ -112,6 +113,18 @@ describe('panelGeometry', () => {
   });
 });
 
+const halfDevice: Device = {
+  name: '',
+  rack: 'R1',
+  uHeight: 1,
+  face: 'front',
+  fullDepth: true,
+  state: 'up',
+  row: 0,
+  children: [],
+  alerts: [],
+};
+
 describe('freeUnits', () => {
   const model = (fixture: string) =>
     buildModel(loadFixture(fixture), {
@@ -127,6 +140,19 @@ describe('freeUnits', () => {
     const [basic] = model('basic').racks;
     expect(freeUnits(basic, 'front')).toBe(42 - 7);
     expect(freeUnits(basic, 'rear')).toBe(42 - 6);
+  });
+
+  it('counts a unit as taken when part of it is, with half-unit devices', () => {
+    const { racks } = placeDevices({
+      devices: [
+        { ...halfDevice, name: 'a', position: 1.5 },
+        { ...halfDevice, name: 'b', position: 5, uHeight: 0.5 },
+        { ...halfDevice, name: 'c', position: 5.5, uHeight: 0.5 },
+      ],
+      racks: [{ id: 'R1', name: 'R1', uHeight: 10, startingUnit: 1, descUnits: false, fixedHeight: true, width: 19 }],
+    });
+    // a takes U1 and U2, b and c share U5.
+    expect(freeUnits(racks[0], 'front')).toBe(10 - 3);
   });
 
   it('ignores the units of overflowing devices outside the rack', () => {

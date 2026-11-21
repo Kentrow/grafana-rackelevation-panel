@@ -48,9 +48,13 @@ export function identifyFrames(
       ? undefined
       : (others.find((f) => has(f, 'device') && (has(f, 'position') || has(f, 'u_height'))) ??
         others.find((f) => has(f, 'device') && has(f, 'rack'))));
+  // The device column is looked for by its default name only: mapped to name for NetBox, it would also match the name
+  // column of the racks frame.
   const racks =
     pick('racks') ??
-    (selection.racks ? undefined : others.find((f) => f !== devices && has(f, 'rack') && !has(f, 'device')));
+    (selection.racks
+      ? undefined
+      : others.find((f) => f !== devices && has(f, 'rack') && findField(f, 'device') === undefined));
 
   if (!devices) {
     errors.push({

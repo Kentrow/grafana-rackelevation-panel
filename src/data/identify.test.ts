@@ -25,6 +25,15 @@ describe('identifyFrames', () => {
     );
   });
 
+  it('finds the racks frame when the device column is mapped to a column the racks frame also has', () => {
+    // NetBox: devices and racks both have a name column.
+    const inventory = csvToFrame('name,rack,position\nsw-01,R1,1\n', 'A');
+    const netboxRacks = csvToFrame('rack,name,u_height\nR1,Rack 1,42\n', 'B');
+    const found = identifyFrames([inventory, netboxRacks], {}, { device: 'name' });
+    expect([found.devices, found.racks]).toEqual([inventory, netboxRacks]);
+    expect(found.errors).toEqual([]);
+  });
+
   it('takes the frames picked in the options, by refId or name', () => {
     const other = csvToFrame('device,rack,position\nsw-02,R2,1\n', 'Z');
     const found = identifyFrames([devices, other], { devices: 'Z' }, {});

@@ -134,8 +134,11 @@ export function freeUnits(layout: RackLayout, face: Face): number {
   const { startingUnit, uHeight } = layout.rack;
   const taken = new Set<number>();
   for (const p of layout[face]) {
-    for (let u = Math.max(p.units[0], startingUnit); u <= Math.min(p.units[1], startingUnit + uHeight - 1); u++) {
-      taken.add(Math.floor(u));
+    // A unit is taken when any part of it is: half a free unit cannot hold a device.
+    const bottom = p.device.position ?? 0;
+    const top = bottom + p.device.uHeight;
+    for (let u = Math.max(Math.floor(bottom), startingUnit); u < Math.min(top, startingUnit + uHeight); u++) {
+      taken.add(u);
     }
   }
   return uHeight - taken.size;
