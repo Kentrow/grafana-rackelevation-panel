@@ -10,6 +10,12 @@
   too.
 - A rack height of 0 or less is read as missing instead of drawing a negative rack.
 - Rack and device names with a comma, typed in the options or coming from a variable, are no longer split in two.
+- Data links of the field config defaults written with `${__field.name}` or `${__value.raw}` are listed once in the
+  device menu, as resolved on the device field, instead of once per column.
+- In range queries, a row without time no longer stays the latest row of its device.
+- Devices in a parent cycle (A's parent is B, B's parent is A) are listed as problems instead of vanishing.
+- A device far outside its rack (a wrong position such as U1000) is drawn at the edge of a 4U overflow zone instead
+  of shrinking every rack of the panel.
 
 ## [1.0.1](https://github.com/Kentrow/grafana-rackelevation-panel/tree/v1.0.1) (2026-11-04)
 
