@@ -1,5 +1,5 @@
 import React from 'react';
-import { fireEvent, render, screen, within } from '@testing-library/react';
+import { act, fireEvent, render, screen, within } from '@testing-library/react';
 import { DataFrame, LinkModel } from '@grafana/data';
 import { csvToFrame, loadFixture } from '../testing/fixtures';
 import { panelProps } from '../testing/panel';
@@ -174,11 +174,11 @@ describe('highlight and role filter', () => {
 describe('alerts badge', () => {
   it('counts the active alerts of a device', () => {
     render(<RackPanel {...panelProps(loadFixture('multi-rack'))} />);
-    expect(within(screen.getByTestId('device-sw-a3-tor-01')).getByTestId('alert-badge')).toHaveAttribute(
+    expect(within(screen.getByTestId('device-sw-a3-tor-01').parentElement!).getByTestId('alert-badge')).toHaveAttribute(
       'data-count',
       '2'
     );
-    expect(within(screen.getByTestId('device-sw-a3-tor-02')).queryByTestId('alert-badge')).toBeNull();
+    expect(within(screen.getByTestId('device-sw-a3-tor-02').parentElement!).queryByTestId('alert-badge')).toBeNull();
   });
 });
 
@@ -232,7 +232,7 @@ describe('keyboard', () => {
   it('shows the card of the focused device and hides it on Escape', () => {
     render(<RackPanel {...panelProps(loadFixture('basic'))} />);
     const device = screen.getByTestId('device-fw-hq-01');
-    expect(device).toHaveAttribute('tabindex', '0');
+    expect(device).toHaveAttribute('tabindex');
     fireEvent.focus(device);
     expect(screen.getByTestId('device-tooltip')).toHaveTextContent('fw-hq-01');
     fireEvent.keyDown(device, { key: 'Escape' });
@@ -262,6 +262,68 @@ describe('keyboard', () => {
     expect(follow).toHaveBeenCalledTimes(1);
   });
 
+  const tabStops = () =>
+    [...document.querySelectorAll('[data-device][tabindex="0"]')].map((d) => d.getAttribute('data-device'));
+  const focused = () => document.activeElement?.getAttribute('data-device');
+  const press = (key: string) => fireEvent.keyDown(document.activeElement!, { key });
+  const focus = (element: Element) => act(() => (element as HTMLElement).focus());
+
+  it('puts the devices in the tab order once, at the top device of the first rack', () => {
+    render(<RackPanel {...panelProps(loadFixture('basic'))} />);
+    expect(tabStops()).toEqual(['patch-hq-01']);
+  });
+
+  it('moves from device to device with the arrow keys, Home and End, the focused one becoming the tab stop', () => {
+    render(<RackPanel {...panelProps(loadFixture('basic'))} />);
+    focus(screen.getByTestId('device-patch-hq-01'));
+    press('ArrowDown');
+    expect(focused()).toBe('fw-hq-01');
+    expect(tabStops()).toEqual(['fw-hq-01']);
+    press('End');
+    expect(focused()).toBe('srv-hq-01');
+    press('ArrowUp');
+    expect(focused()).toBe('wlc-hq-02');
+    press('Home');
+    expect(focused()).toBe('patch-hq-01');
+  });
+
+  it('moves to the nearest device of the next and previous rack with the left and right arrows', () => {
+    render(<RackPanel {...panelProps(loadFixture('two-faces'), { face: 'both' })} />);
+    const front = screen.getAllByTestId('device-srv-full-01').find((d) => d.getAttribute('data-face') === 'front');
+    focus(front!);
+    press('ArrowRight');
+    // The rear face: srv-full-01 (U30-31) is only a faded copy there; the nearest rear device is patch-rear-01 (U40).
+    expect(document.activeElement?.getAttribute('data-face')).toBe('rear');
+    expect(focused()).toBe('patch-rear-01');
+    press('ArrowLeft');
+    expect(document.activeElement?.getAttribute('data-face')).toBe('front');
+  });
+
+  it('leaves the faded copies of the other face out of the keyboard and of screen readers', () => {
+    render(<RackPanel {...panelProps(loadFixture('two-faces'), { face: 'both' })} />);
+    const copy = screen.getAllByTestId('device-ups-rear-01').find((d) => d.getAttribute('data-face') === 'front')!;
+    expect(copy).not.toHaveAttribute('tabindex');
+    expect(copy).toHaveAttribute('aria-hidden', 'true');
+  });
+
+  it('makes devices buttons only when they have links, and not focusable without card nor links', () => {
+    const { rerender } = render(<RackPanel {...panelProps(loadFixture('collisions'))} />);
+    expect(screen.getByTestId('device-sw-a')).toHaveAttribute('role', 'img');
+    const frames = withLinks(loadFixture('collisions'), (device) => [link('NetBox', `/nb/${device}`)]);
+    rerender(<RackPanel {...panelProps(frames)} />);
+    expect(screen.getByTestId('device-sw-a')).toHaveAttribute('role', 'button');
+    rerender(<RackPanel {...panelProps(loadFixture('collisions'), { showTooltip: false })} />);
+    expect(screen.getByTestId('device-sw-a')).not.toHaveAttribute('tabindex');
+  });
+
+  it('names each device with what is written on it, then its details', () => {
+    render(<RackPanel {...panelProps(loadFixture('multi-rack'), { racks: ['PAR1-A3'] })} />);
+    const device = screen.getByTestId('device-sw-a3-tor-01');
+    // What is written on the device first (label, then the badge), then the details.
+    expect(device.getAttribute('aria-label')).toMatch(/^sw-a3-tor-01 · 2 active alerts · Arista 7050SX3 · 48.4 · up$/);
+    device.querySelectorAll('text').forEach((t) => expect(t).toHaveAttribute('aria-hidden', 'true'));
+  });
+
   it('leaves filtered devices out of the tab order', () => {
     render(<RackPanel {...panelProps(loadFixture('basic'), { roles: ['switch'] })} />);
     expect(screen.getByTestId('device-fw-hq-01')).not.toHaveAttribute('tabindex');
@@ -285,8 +347,10 @@ describe('rack links', () => {
     );
     render(<RackPanel {...panelProps(frames)} />);
     const header = within(screen.getByTestId('rack-PAR1-A3')).getByTestId('rack-header');
-    expect(header).toHaveAttribute('role', 'button');
-    fireEvent.click(header.querySelector('text')!);
+    // The rack name is the button, named after what is written on it.
+    const name = within(header).getByRole('button');
+    expect(name.getAttribute('aria-label')).toMatch(/^Paris A3 · .*rack links$/);
+    fireEvent.click(name.querySelector('text')!);
     expect(follow).toHaveBeenCalledTimes(1);
   });
 

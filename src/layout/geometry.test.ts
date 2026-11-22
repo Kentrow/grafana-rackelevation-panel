@@ -58,7 +58,14 @@ describe('geometry', () => {
 
   it('cuts labels with an ellipsis', () => {
     expect(truncate('sw-hq-core-01', 200, 10)).toBe('sw-hq-core-01');
-    expect(truncate('sw-hq-core-01 · Cisco C9300-48P', 60, 10)).toBe('sw-hq-cor…');
+    expect(truncate('sw-hq-core-01 · Cisco C9300-48P', 60, 10)).toBe('sw-hq…');
+  });
+
+  it('cuts between words, so that what is written starts the accessible name word for word', () => {
+    expect(truncate('srv-hq-01 · Dell R760', 90, 10)).toBe('srv-hq-01…');
+    expect(truncate('nas-a1-02 · 42.6 °C', 95, 10)).toBe('nas-a1-02 · 42…');
+    // No boundary in the first half: cut inside the word rather than show almost nothing.
+    expect(truncate('verylongdevicename-01', 60, 10)).toBe('verylongd…');
   });
 });
 

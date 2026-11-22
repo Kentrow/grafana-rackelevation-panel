@@ -190,11 +190,29 @@ export function labelFontSize(unitHeight: number, uHeight: number): number {
   return Math.min(12, Math.round(unitHeight * (uHeight > 1 ? 0.75 : 0.65)));
 }
 
-/** Text cut to about `width` pixels with an ellipsis, for SVG text that cannot wrap or clip on its own. */
+const WORD = /[\p{L}\p{N}]/u;
+
+/**
+ * Text cut to about `width` pixels with an ellipsis, for SVG text that cannot wrap or clip on its own. The cut falls
+ * between words when that keeps half of the room, so that what is written is the start of the full text word for word,
+ * as voice control and the accessible name expect (WCAG 2.5.3).
+ */
 export function truncate(text: string, width: number, fontSize: number): string {
   const max = Math.floor(width / (fontSize * 0.58));
   if (text.length <= max) {
     return text;
   }
-  return max <= 1 ? '' : `${text.slice(0, max - 1).trimEnd()}…`;
+  if (max <= 1) {
+    return '';
+  }
+  const room = max - 1;
+  let cut = text.slice(0, room);
+  if (WORD.test(text[room]) && WORD.test(cut[cut.length - 1])) {
+    const start = cut.match(/^(.*[^\p{L}\p{N}])[\p{L}\p{N}]+$/u)?.[1];
+    if (start && start.length >= room / 2) {
+      cut = start;
+    }
+  }
+  cut = cut.replace(/[^\p{L}\p{N}]+$/u, '');
+  return cut ? `${cut}…` : '';
 }

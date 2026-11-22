@@ -2,6 +2,16 @@
 
 ## Unreleased
 
+**Accessibility:**
+
+- Keyboard: the devices are one stop in the tab order instead of one each (a thousand on a large room); the arrow
+  keys, Home and End move between them, and the faded copies of the other face are left out.
+- The focused device is drawn with a thick border in every browser; Firefox drew no outline around SVG groups.
+- Devices are named after what is written on them, then their alerts, model, value and state, and are buttons only
+  when they have links. Truncated labels and rack names are cut between words.
+- No axe violation (WCAG 2.1 A and AA) on the demo and fixtures dashboards, in both themes, checked in the end-to-end
+  tests.
+
 **Documentation:**
 
 - The NetBox recipe is checked on NetBox 4.7 with Infinity 4.1: the parent of a child device comes from

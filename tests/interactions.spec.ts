@@ -45,7 +45,8 @@ test('should show the device card and its alerts on hover', async ({
   const dashboardPage = await gotoDashboardPage(dashboard);
   const panel = dashboardPage.getPanelByTitle('Both faces').locator;
   const device = panel.getByTestId('device-sw-a3-tor-01').first();
-  await expect(device.getByTestId('alert-badge')).toHaveAttribute('data-count', '2');
+  // The badge is drawn beside the focusable group of the device.
+  await expect(device.locator('..').getByTestId('alert-badge')).toHaveAttribute('data-count', '2');
   await device.hover();
   await expect(page.getByTestId('device-tooltip')).toContainText('Paris A3');
   await expect(page.getByTestId('device-tooltip-alerts')).toContainText('InterfaceErrors');
@@ -118,3 +119,25 @@ for (const theme of ['light', 'dark']) {
     await info.attach(`demo-${theme}.png`, { body: await page.screenshot(), contentType: 'image/png' });
   });
 }
+
+test('should move between devices with the keyboard and show the focus', async ({
+  gotoDashboardPage,
+  readProvisionedDashboard,
+  page,
+}) => {
+  const dashboard = await readProvisionedDashboard({ fileName: 'demo.json' });
+  const dashboardPage = await gotoDashboardPage(dashboard);
+  const panel = dashboardPage.getPanelByTitle('Front').locator;
+  // One tab stop for all the devices: the top one of the rack.
+  await expect(panel.locator('[data-device][tabindex="0"]')).toHaveCount(1);
+  const top = panel.getByTestId('device-patch-hq-01');
+  await top.focus();
+  await page.keyboard.press('ArrowDown');
+  const next = panel.getByTestId('device-fw-hq-01');
+  await expect(next).toBeFocused();
+  await expect(next).toHaveAttribute('tabindex', '0');
+  await expect(top).toHaveAttribute('tabindex', '-1');
+  await expect(panel.getByTestId('device-tooltip')).toContainText('fw-hq-01');
+  // The focus border is drawn on the rectangle itself.
+  await expect(next.locator('rect').first()).toHaveCSS('stroke-width', '3px');
+});

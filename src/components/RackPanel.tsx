@@ -13,6 +13,7 @@ import { DeviceTooltip } from './DeviceTooltip';
 import { ErrorIndicator } from './ErrorIndicator';
 import { Legend, LEGEND_HEIGHT } from './Legend';
 import { deviceLinks, followLink, hasLinks, rackLinks } from './links';
+import { deviceFor, ensureTabStop, makeTabStop } from './keyboard';
 import { Rack } from './Rack';
 import { emphasisOf, matchingNames, resolveList, variableValues } from './variables';
 
@@ -47,6 +48,13 @@ export const RackPanel = ({ data, options: saved, width, height, fieldConfig, id
   const [hover, setHover] = useState<Hover | null>(null);
   const [menu, setMenu] = useState<Menu | null>(null);
   const card = useRef<HTMLDivElement>(null);
+  const scroller = useRef<HTMLDivElement>(null);
+  // The devices are one stop in the tab order: keep one, the last focused device or the top one of the first rack.
+  useLayoutEffect(() => {
+    if (scroller.current) {
+      ensureTabStop(scroller.current);
+    }
+  });
   // The card is measured once drawn, then moved next to the pointer inside the panel, before the browser paints it.
   useLayoutEffect(() => {
     if (hover && card.current) {
@@ -126,6 +134,8 @@ export const RackPanel = ({ data, options: saved, width, height, fieldConfig, id
   const drawHeight =
     height - (highlighted.length > 0 ? CLEAR_BAR_HEIGHT : 0) - (showLegend && model.racks.length ? LEGEND_HEIGHT : 0);
   const linkDefaults = fieldConfig.defaults.links;
+  // Devices with links are buttons; without, they still take the focus to show their card.
+  const keyboardRole = hasLinks(model.devicesFrame) ? 'button' : options.showTooltip ? 'img' : undefined;
   const racksWithLinks = useMemo(
     () =>
       new Set(
@@ -191,6 +201,7 @@ export const RackPanel = ({ data, options: saved, width, height, fieldConfig, id
               emphasis={emphasis}
               showSummary={showRackSummary}
               showState={showRackState}
+              keyboard={keyboardRole}
               hasLinks={racksWithLinks.has(view.layout.rack.id)}
               scale={scale}
             />
@@ -209,6 +220,7 @@ export const RackPanel = ({ data, options: saved, width, height, fieldConfig, id
     showZeroU,
     showRackSummary,
     showRackState,
+    keyboardRole,
     racksWithLinks,
     fitToPanel,
     width,
@@ -275,6 +287,9 @@ export const RackPanel = ({ data, options: saved, width, height, fieldConfig, id
   // Keyboard: the card follows the focus, Enter or Space opens the links, Escape closes the card and the menu.
   const onFocus = (event: React.FocusEvent) => {
     const name = deviceAt(event.target);
+    if (name && scroller.current) {
+      makeTabStop(scroller.current, event.target as HTMLElement);
+    }
     if (!name || !options.showTooltip) {
       return;
     }
@@ -284,7 +299,12 @@ export const RackPanel = ({ data, options: saved, width, height, fieldConfig, id
   };
 
   const onKeyDown = (event: React.KeyboardEvent) => {
-    if (event.key === 'Escape') {
+    const device = deviceAt(event.target) ? (event.target as Element).closest<HTMLElement>('[data-device]') : null;
+    const next = device && scroller.current ? deviceFor(scroller.current, device, event.key) : undefined;
+    if (next) {
+      event.preventDefault();
+      next.focus();
+    } else if (event.key === 'Escape') {
       // Escape closes the card or the menu first; with nothing open, it goes on to Grafana (leaving the panel view).
       if (hover || menu) {
         event.stopPropagation();
@@ -315,6 +335,7 @@ export const RackPanel = ({ data, options: saved, width, height, fieldConfig, id
         onMouseMove={onMouseMove}
         onMouseLeave={() => setHover(null)}
         onClick={onClick}
+        ref={scroller}
         onFocus={onFocus}
         onBlur={() => setHover(null)}
         onKeyDown={onKeyDown}
@@ -383,6 +404,16 @@ const getStyles = (theme: GrafanaTheme2) => ({
     '[data-device]:focus-visible, [data-rack]:focus-visible': {
       outline: `2px solid ${theme.colors.primary.main}`,
       outlineOffset: 1,
+    },
+    // Firefox draws no outline around SVG groups: the focused device gets a thick border, in the text colour so that
+    // it differs from the highlight, and the focused rack name an outline of its letters.
+    '[data-device]:focus-visible > rect:first-of-type': {
+      stroke: theme.colors.text.primary,
+      strokeWidth: 3,
+    },
+    '[data-rack]:focus-visible > text:first-of-type': {
+      stroke: theme.colors.primary.main,
+      strokeWidth: 0.6,
     },
   }),
   svg: css({

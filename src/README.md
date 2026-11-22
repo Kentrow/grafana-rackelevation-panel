@@ -164,8 +164,11 @@ an override **Fields with name**.
   of the field config defaults apply to every frame and are written for the devices, so give the racks their own with
   an override **Fields returned by query** on the racks query, such as
   `https://netbox.example.com/dcim/racks/?q=${__data.fields.rack}`.
-- **Keyboard**: Tab moves from device to device and shows the card, Enter or Space opens the links, Escape closes the
-  card and the menu.
+- **Keyboard**: the devices are one stop in the tab order. Tab reaches the top device of the first rack, or the last
+  one you were on; the arrow keys move up and down a rack and to the nearest device of the next or previous rack, Home
+  and End to the top and bottom of the rack. The focused device shows its card, Enter or Space opens its links, Escape
+  closes the card and the menu. Rack names with links are their own stops.
+- **Screen readers**: each device is named after what is written on it, then its alerts, model, value and state.
 
 ## Display
 
