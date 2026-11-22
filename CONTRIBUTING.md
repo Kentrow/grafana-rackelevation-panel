@@ -46,8 +46,9 @@ Changes to `src/plugin.json` need a restart of the Grafana server.
     for the highlight and a `role` variable for the filter.
   - `fixtures.json`: one panel per fixture, plus three Prometheus frames joined by field.
   - `live.json`: the PromQL recipes on the metrics of `dev/exporter`, which serves `netbox_rack_info`,
-    `netbox_device_info`, `device_up` and `device_temperature_celsius` for the `multi-rack` devices. Temperatures
-    move, devices go down now and then, and `dev/rules.yml` fires `DeviceDown` and `HighTemperature` alerts.
+    `netbox_device_info`, `device_up` and `device_temperature_celsius` for the `multi-rack` devices: with a group_left,
+    joined by a transformation, and read as labelled time series. Temperatures move, devices go down now and then,
+    and `dev/rules.yml` fires `DeviceDown` and `HighTemperature` alerts.
 - Never edit the generated fixtures or `provisioning/dashboards/*.json` by hand: change the scripts of `scripts/` and
   run them. The CI fails when the committed files differ from what the scripts write.
 

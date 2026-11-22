@@ -8,7 +8,7 @@ import {
   VisualizationSuggestionScore,
 } from '@grafana/data';
 import { RackPanel } from './components/RackPanel';
-import { identifyFrames } from './data/identify';
+import { buildModel } from './model';
 import { extraFields, findField, toText } from './data/mapping';
 import { DEFAULT_UP_VALUES } from './data/status';
 import { FrameSelect } from './editor/FrameSelect';
@@ -35,10 +35,33 @@ const LABEL_PARTS: Array<{ value: LabelPart; label: string }> = [
 ];
 
 /** Numeric fields of the data, offered as colour fields. */
-async function fieldNamesOf(frames: DataFrame[] | undefined) {
+/** Devices frame of the panel, with the columns of the labelled series, as the panel reads it. */
+function devicesFrameOf(frames: DataFrame[] | undefined, options: Partial<RackElevationOptions> | undefined) {
+  return buildModel(frames ?? [], {
+    ...DEFAULT_OPTIONS,
+    ...options,
+    racks: [],
+  }).devicesFrame;
+}
+
+/** Columns that a column of the contract can be mapped to: those of the devices frame, labelled series included. */
+async function columnNamesOf(frames: DataFrame[] | undefined, options: Partial<RackElevationOptions> | undefined) {
   const names = new Set<string>();
-  for (const frame of frames ?? []) {
-    frame.fields.filter((f) => f.type === FieldType.number).forEach((f) => names.add(f.config.displayName || f.name));
+  const devices = devicesFrameOf(frames, options);
+  for (const frame of [...(devices ? [devices] : []), ...(frames ?? [])]) {
+    frame.fields.filter((f) => !f.labels).forEach((f) => names.add(f.config.displayName || f.name));
+  }
+  return [...names].map((name) => ({ value: name, label: name }));
+}
+
+/** Numeric columns for the colour: those of the devices frame, labelled series included, and of the other tables. */
+async function fieldNamesOf(frames: DataFrame[] | undefined, options: Partial<RackElevationOptions> | undefined) {
+  const names = new Set<string>();
+  const devices = devicesFrameOf(frames, options);
+  for (const frame of [...(devices ? [devices] : []), ...(frames ?? [])]) {
+    frame.fields
+      .filter((f) => f.type === FieldType.number && !f.labels)
+      .forEach((f) => names.add(f.config.displayName || f.name));
   }
   return [...names].map((name) => ({ value: name, label: name }));
 }
@@ -46,9 +69,8 @@ async function fieldNamesOf(frames: DataFrame[] | undefined) {
 /** Roles found in the data, offered by the role filter. */
 /** Extra columns of the devices frame, found as the panel finds it: those the card can show. */
 async function cardColumnsOf(frames: DataFrame[] | undefined, options: Partial<RackElevationOptions> | undefined) {
-  const columns = options?.columns ?? {};
-  const devices = identifyFrames(frames ?? [], options?.frames ?? {}, columns).devices;
-  return (devices ? extraFields(devices, columns, options?.valueFields ?? []) : []).map((f) => {
+  const devices = devicesFrameOf(frames, options);
+  return (devices ? extraFields(devices, options?.columns ?? {}, options?.valueFields ?? []) : []).map((f) => {
     const name = f.config.displayName || f.name;
     return { value: name, label: name };
   });
@@ -127,6 +149,22 @@ export const plugin = new PanelPlugin<RackElevationOptions>(RackPanel)
         description: 'Status values that mean in service, ignoring case. Any other value means out of service.',
         category: DATA,
         defaultValue: DEFAULT_UP_VALUES,
+      })
+      .addTextInput({
+        path: 'seriesLabel',
+        name: 'Series device label',
+        description:
+          'Label of the time series that names their device, such as host for Zabbix: each series gives its device a column named after its metric (item, __name__), with its last value, without a join. Empty: the device column name, then host.',
+        category: DATA,
+        defaultValue: DEFAULT_OPTIONS.seriesLabel,
+        settings: { placeholder: 'device, then host' },
+      })
+      .addStringArray({
+        path: 'criticalSeverities',
+        name: 'Critical severities',
+        description: 'Severities of the alerts frame drawn as critical, in red, ignoring case: 4 and 5 for Zabbix.',
+        category: DATA,
+        defaultValue: DEFAULT_OPTIONS.criticalSeverities,
       });
     builder.addMultiSelect({
       path: 'valueFields',
@@ -138,17 +176,25 @@ export const plugin = new PanelPlugin<RackElevationOptions>(RackPanel)
       settings: {
         allowCustomValue: true,
         options: [],
-        getOptions: async (context) => multiOptions(await fieldNamesOf(context.data)),
+        getOptions: async (context) => multiOptions(await fieldNamesOf(context.data, context.options)),
       },
     });
     // The value column is replaced by the colour fields above.
+    // A select of our own rather than the field name picker of Grafana: it also offers the metrics of the labelled
+    // series, such as the "Device up" item of Zabbix, and accepts a typed name.
     for (const column of COLUMNS.filter((c) => c !== 'value')) {
-      builder.addFieldNamePicker({
+      builder.addSelect({
         path: `columns.${column}`,
         name: column,
         description: COLUMN_HELP[column],
         category: COLUMN_MAPPING,
-        settings: { placeholderText: `${column} (default)` },
+        settings: {
+          allowCustomValue: true,
+          isClearable: true,
+          placeholder: `${column} (default)`,
+          options: [],
+          getOptions: async (context) => columnNamesOf(context.data, context.options),
+        },
       });
     }
     return builder

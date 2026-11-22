@@ -69,6 +69,10 @@ export interface RackElevationOptions {
   showTooltip: boolean;
   /** Extra columns of the device card, in this order. Empty: all of them. */
   cardColumns: string[];
+  /** Label of the time series that names their device. Empty: the device column name, then host. */
+  seriesLabel: string;
+  /** Alert severities drawn as critical, ignoring case. */
+  criticalSeverities: string[];
 }
 
 export type Face = 'front' | 'rear';
@@ -79,6 +83,8 @@ export type DeviceState = 'up' | 'down' | 'unknown';
 export interface Alert {
   name?: string;
   severity?: string;
+  /** Severity among the critical ones of the options: a red badge. */
+  critical: boolean;
 }
 
 export interface Device {
@@ -196,4 +202,6 @@ export const DEFAULT_OPTIONS: RackElevationOptions = {
   highlightVariable: '$device',
   showTooltip: true,
   cardColumns: [],
+  seriesLabel: '',
+  criticalSeverities: ['critical'],
 };

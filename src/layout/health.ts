@@ -59,7 +59,7 @@ export function rackHealth(layout: RackLayout, counted: (device: Device) => bool
     down += device.state === 'down' ? 1 : 0;
     up += device.state === 'up' ? 1 : 0;
     alerts += device.alerts.length;
-    critical ||= device.alerts.some((a) => a.severity?.toLowerCase() === 'critical');
+    critical ||= device.alerts.some((a) => a.critical);
   }
   const state = down > 0 ? 'down' : up > 0 ? 'up' : devices.length > 0 ? 'unknown' : undefined;
   return { state, down, alerts, critical };
