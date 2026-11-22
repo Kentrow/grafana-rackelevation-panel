@@ -67,7 +67,9 @@ The catalog shows the screenshots of `src/img/` listed in `src/plugin.json`, and
 ## Pull requests
 
 Before opening one, run `npm run typecheck`, `npm run lint`, `npm run test:ci` and, for a change of the drawing or
-the interactions, `npm run e2e`. Add a line to `CHANGELOG.md` under the next version.
+the interactions, `npm run e2e`. Add a line to `CHANGELOG.md` under the next version. The CI also runs the full plugin
+validator on the archive, as the review of the catalog does; to run it yourself, zip `dist` in a folder named after the
+plugin id and run `npx -y @grafana/plugin-validator@latest -sourceCodeUri file://./ <archive>.zip`.
 
 ## Releases
 
