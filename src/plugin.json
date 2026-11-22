@@ -45,6 +45,10 @@
         "path": "img/screenshot-light.png"
       },
       {
+        "name": "Where a new 4U device fits: the free blocks of each rack, on both faces",
+        "path": "img/screenshot-free-space.png"
+      },
+      {
         "name": "Overlapping and overflowing devices, drawn and listed",
         "path": "img/screenshot-conflicts.png"
       }

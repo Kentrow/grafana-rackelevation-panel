@@ -236,7 +236,12 @@ write(
         {
           fixture: 'multi-rack',
           description: 'Racks frame and alerts frame: badges on the devices with active alerts.',
-          options: { face: 'both', label: ['name', 'value'], valueFields: ['value', 'current'] },
+          options: {
+            face: 'both',
+            label: ['name', 'value'],
+            valueFields: ['value', 'current'],
+            freeSpace: '$space',
+          },
           fieldConfig: demoFieldConfig,
         }
       ),
@@ -258,6 +263,14 @@ write(
             type: 'textbox',
             name: 'device',
             label: 'Highlighted device',
+            query: '',
+            current: { text: '', value: '' },
+            options: [],
+          },
+          {
+            type: 'textbox',
+            name: 'space',
+            label: 'Free space (U)',
             query: '',
             current: { text: '', value: '' },
             options: [],

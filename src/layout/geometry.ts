@@ -129,8 +129,8 @@ export function autoUnitHeight(racks: RackLayout[], availableHeight: number): nu
   return Math.min(MAX_UNIT_HEIGHT, Math.max(MIN_UNIT_HEIGHT, fitting));
 }
 
-/** Units of the rack with nothing in them on this face; a full-depth device of the other face fills them too. */
-export function freeUnits(layout: RackLayout, face: Face): number {
+/** Units of the rack taken on this face, by its devices or by full-depth devices of the other face. */
+function takenUnits(layout: RackLayout, face: Face): Set<number> {
   const { startingUnit, uHeight } = layout.rack;
   const taken = new Set<number>();
   for (const p of layout[face]) {
@@ -141,7 +141,44 @@ export function freeUnits(layout: RackLayout, face: Face): number {
       taken.add(u);
     }
   }
-  return uHeight - taken.size;
+  return taken;
+}
+
+/** Units of the rack with nothing in them on this face; a full-depth device of the other face fills them too. */
+export function freeUnits(layout: RackLayout, face: Face): number {
+  return layout.rack.uHeight - takenUnits(layout, face).size;
+}
+
+/** Run of free units, by unit number, both included. */
+export interface FreeBlock {
+  bottom: number;
+  top: number;
+}
+
+/**
+ * Runs of free units where a new device of `units` units fits, from the lowest unit number. A full-depth device needs
+ * the units free on both faces, a half-depth one on this face only.
+ */
+export function freeBlocks(layout: RackLayout, face: Face, units: number, fullDepth: boolean): FreeBlock[] {
+  const { startingUnit, uHeight } = layout.rack;
+  const taken = takenUnits(layout, face);
+  if (fullDepth) {
+    takenUnits(layout, face === 'front' ? 'rear' : 'front').forEach((u) => taken.add(u));
+  }
+  const blocks: FreeBlock[] = [];
+  let start: number | undefined;
+  for (let u = startingUnit; u <= startingUnit + uHeight; u++) {
+    const free = u < startingUnit + uHeight && !taken.has(u);
+    if (free && start === undefined) {
+      start = u;
+    } else if (!free && start !== undefined) {
+      if (u - start >= units) {
+        blocks.push({ bottom: start, top: u - 1 });
+      }
+      start = undefined;
+    }
+  }
+  return blocks;
 }
 
 interface Size {

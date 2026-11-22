@@ -75,6 +75,18 @@ await page.waitForTimeout(400);
 await page.getByTestId('clear-highlight').click();
 await page.waitForTimeout(1200);
 
+// Where does a new 4U device fit? The free blocks of the racks, from the space variable.
+const space = page.getByRole('textbox').nth(1);
+await moveTo(space);
+await space.click();
+await page.keyboard.type('4', { delay: 110 });
+await page.keyboard.press('Enter');
+await page.mouse.move(1100, 560, { steps: 12 });
+await page.waitForTimeout(2600);
+await space.fill('');
+await page.keyboard.press('Enter');
+await page.waitForTimeout(600);
+
 // A click opens the data links of the device.
 await moveTo(device('fw-par1-01'));
 await page.waitForTimeout(500);

@@ -58,7 +58,8 @@ The catalog shows the screenshots of `src/img/` listed in `src/plugin.json`, and
 
 - Screenshots: 1600 x 820 px at a device scale of 1, in kiosk mode (`&kiosk`): `screenshot-racks.png` is the panel
   Both faces of the demo dashboard, dark, with a device card; `screenshot-light.png` the panel Filtered by role, light,
-  with a highlight; `screenshot-conflicts.png` the collisions panel of the fixtures dashboard with its problems open.
+  with a highlight; `screenshot-free-space.png` the panel Both faces, dark, with `&var-space=4`;
+  `screenshot-conflicts.png` the collisions panel of the fixtures dashboard with its problems open.
 - Demo: `npm run demo` plays a scripted tour of the demo dashboard and saves its frames in `test-results/demo-frames/`;
   `scripts/make-gif.py` writes `src/img/demo.gif` from them. It needs Pillow, for instance in a virtual environment:
   `python3 -m venv /tmp/gif && /tmp/gif/bin/pip install pillow && /tmp/gif/bin/python scripts/make-gif.py`. Keep the

@@ -54,6 +54,32 @@ describe('RackPanel', () => {
     expect([...numbers.childNodes].map((n) => n.textContent)).toEqual(['43', '44', '45']);
   });
 
+  it('outlines the free blocks where a new device fits, from the option or a variable', () => {
+    // basic: U42 patch (half depth), U40, U38, U35, U34, U20-21 taken on the front of a 42U rack.
+    const space = (options: Partial<RackElevationOptions>, variables: Record<string, string[]> = {}) => {
+      const { unmount } = render(<RackPanel {...panelProps(loadFixture('basic'), options, variables)} />);
+      const blocks = [...screen.queryAllByTestId('free-block')].map((b) => b.getAttribute('data-units'));
+      unmount();
+      return blocks;
+    };
+    expect(space({})).toEqual([]);
+    const { unmount } = render(<RackPanel {...panelProps(loadFixture('basic'), { freeSpace: '4U' })} />);
+    expect(screen.getByTestId('rack-header').querySelector('title')).toHaveTextContent(
+      'a 4 U device fits in 2 free blocks'
+    );
+    unmount();
+    expect(space({ freeSpace: '4' })).toEqual(['U1-19', 'U22-33']);
+    expect(space({ freeSpace: '$space' }, { space: ['13'] })).toEqual(['U1-19']);
+    // From the rear, U41-42 is free behind the half-depth patch panel of the front: for a half-depth device only.
+    expect(space({ face: 'rear', freeSpace: '2' })).toEqual(['U1-19', 'U22-33', 'U36-37']);
+    expect(space({ face: 'rear', freeSpace: '2', freeSpaceFullDepth: false })).toEqual([
+      'U1-19',
+      'U22-33',
+      'U36-37',
+      'U41-42',
+    ]);
+  });
+
   it('numbers a descending rack from the top', () => {
     render(<RackPanel {...props(loadFixture('desc-units'), { racks: ['RACK-DESC'] })} />);
     const numbers = within(screen.getByTestId('rack-RACK-DESC')).getByTestId('unit-numbers');

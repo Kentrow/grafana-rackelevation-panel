@@ -141,3 +141,22 @@ test('should move between devices with the keyboard and show the focus', async (
   // The focus border is drawn on the rectangle itself.
   await expect(next.locator('rect').first()).toHaveCSS('stroke-width', '3px');
 });
+
+test('should outline the free blocks where a new device fits', async ({
+  gotoDashboardPage,
+  readProvisionedDashboard,
+}) => {
+  const dashboard = await readProvisionedDashboard({ fileName: 'demo.json' });
+  const dashboardPage = await gotoDashboardPage({
+    ...dashboard,
+    queryParams: new URLSearchParams({ 'var-space': '4' }),
+  });
+  const panel = dashboardPage.getPanelByTitle('Both faces').locator;
+  // PAR1-A1: U4-19 free on both faces, too small anywhere else for 4U.
+  await expect(panel.getByTestId('rack-PAR1-A1').first().getByTestId('free-block')).toHaveAttribute(
+    'data-units',
+    'U4-19'
+  );
+  const blocks = await panel.getByTestId('free-block').count();
+  expect(blocks).toBeGreaterThan(0);
+});
