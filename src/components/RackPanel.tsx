@@ -23,9 +23,6 @@ type Props = PanelProps<RackElevationOptions>;
 
 interface Hover {
   device: string;
-  /** Pointer position in the panel. */
-  x: number;
-  y: number;
 }
 
 interface Menu {
@@ -49,19 +46,21 @@ export const RackPanel = ({ data, options: saved, width, height, fieldConfig, id
   const [menu, setMenu] = useState<Menu | null>(null);
   const card = useRef<HTMLDivElement>(null);
   const scroller = useRef<HTMLDivElement>(null);
-  // The devices are one stop in the tab order: keep one, the last focused device or the top one of the first rack.
-  useLayoutEffect(() => {
-    if (scroller.current) {
-      ensureTabStop(scroller.current);
-    }
-  });
-  // The card is measured once drawn, then moved next to the pointer inside the panel, before the browser paints it.
-  useLayoutEffect(() => {
-    if (hover && card.current) {
+  // Pointer position in the panel. Moving within a device only moves the card, without rendering the panel again.
+  const pointer = useRef({ x: 0, y: 0 });
+  /** Measures the card once drawn and moves it next to the pointer, inside the panel. */
+  const placeCard = () => {
+    if (card.current) {
       const size = { width: card.current.offsetWidth, height: card.current.offsetHeight };
-      const { left, top } = cardPosition(hover, size, { width, height }, TOOLTIP_OFFSET);
+      const { left, top } = cardPosition(pointer.current, size, { width, height }, TOOLTIP_OFFSET);
       card.current.style.left = `${left}px`;
       card.current.style.top = `${top}px`;
+    }
+  };
+  // Before the browser paints the card of a new device.
+  useLayoutEffect(() => {
+    if (hover) {
+      placeCard();
     }
   });
   const options = { ...DEFAULT_OPTIONS, ...saved };
@@ -121,13 +120,27 @@ export const RackPanel = ({ data, options: saved, width, height, fieldConfig, id
     [devices, model.devicesFrame, columns, theme]
   );
   // Only the highlighted devices drawn in this panel count: a panel without them is left as it is.
-  const highlighted = highlightKey ? matchingNames(highlightKey.split('\n'), devices.keys()) : [];
+  const highlighted = useMemo(
+    () => (highlightKey ? matchingNames(highlightKey.split('\n'), devices.keys()) : []),
+    [highlightKey, devices]
+  );
   const highlightedKey = highlighted.join('\n');
   const emphasis = useMemo(() => {
     const names = new Set(highlightedKey ? highlightedKey.split('\n') : []);
     const roles = new Set(rolesKey ? rolesKey.split('\n') : []);
     return (device: Device) => emphasisOf(device, names, roles);
   }, [highlightedKey, rolesKey]);
+
+  // The legend counts the devices drawn: not those out of the role filter, nor those of a hidden 0U band.
+  const legendDevices = useMemo(
+    () =>
+      [...devices.values()]
+        .map((d) => d.device)
+        .filter((d) => emphasis(d) !== 'filtered' && (showZeroU || !zeroU.has(d))),
+    [devices, emphasis, showZeroU, zeroU]
+  );
+  // Ids of the hatch patterns, the same object for every render so that the memoized devices are not drawn again.
+  const hatch = useMemo(() => ({ unmonitored: `rack-unmonitored-${uid}`, conflict: `rack-conflict-${uid}` }), [uid]);
 
   // The clear button sits in a bar above the racks while devices are highlighted, and the legend below them: never
   // over them.
@@ -148,7 +161,6 @@ export const RackPanel = ({ data, options: saved, width, height, fieldConfig, id
 
   // The SVG only depends on the data, the options, the variables and the theme: hover state stays out of it.
   const svg = useMemo(() => {
-    const hatch = { unmonitored: `rack-unmonitored-${uid}`, conflict: `rack-conflict-${uid}` };
     const {
       views,
       width: contentWidth,
@@ -228,9 +240,17 @@ export const RackPanel = ({ data, options: saved, width, height, fieldConfig, id
     label,
     labelSeparator,
     theme,
-    uid,
+    hatch,
     styles.svg,
   ]);
+
+  // The devices are one stop in the tab order: keep one, the last focused device or the top one of the first rack.
+  // Only a new drawing can remove it: not checked on the other renders, such as hover.
+  useLayoutEffect(() => {
+    if (scroller.current) {
+      ensureTabStop(scroller.current);
+    }
+  }, [svg]);
 
   if (data.series.length === 0) {
     return <PanelDataErrorView fieldConfig={fieldConfig} panelId={id} data={data} needsStringField />;
@@ -258,7 +278,12 @@ export const RackPanel = ({ data, options: saved, width, height, fieldConfig, id
       return;
     }
     const box = wrapper.current!.getBoundingClientRect();
-    setHover({ device: name, x: event.clientX - box.left, y: event.clientY - box.top });
+    pointer.current = { x: event.clientX - box.left, y: event.clientY - box.top };
+    if (hover?.device === name) {
+      placeCard();
+    } else {
+      setHover({ device: name });
+    }
   };
 
   /** Links of the device or of the rack name under the pointer or the focus. */
@@ -295,7 +320,8 @@ export const RackPanel = ({ data, options: saved, width, height, fieldConfig, id
     }
     const box = wrapper.current!.getBoundingClientRect();
     const rect = (event.target as Element).getBoundingClientRect();
-    setHover({ device: name, x: rect.right - box.left, y: rect.top + rect.height / 2 - box.top });
+    pointer.current = { x: rect.right - box.left, y: rect.top + rect.height / 2 - box.top };
+    setHover({ device: name });
   };
 
   const onKeyDown = (event: React.KeyboardEvent) => {
@@ -371,13 +397,7 @@ export const RackPanel = ({ data, options: saved, width, height, fieldConfig, id
           }
         />
       )}
-      {showLegend && (
-        <Legend
-          devices={[...devices.values()]
-            .map((d) => d.device)
-            .filter((d) => emphasis(d) !== 'filtered' && (showZeroU || !zeroU.has(d)))}
-        />
-      )}
+      {showLegend && <Legend devices={legendDevices} />}
       <ErrorIndicator errors={model.errors} />
     </div>
   );

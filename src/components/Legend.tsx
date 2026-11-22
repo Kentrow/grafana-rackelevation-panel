@@ -25,7 +25,8 @@ export function legendCounts(devices: Device[]) {
 }
 
 /** One line at the bottom of the panel, to read the state of the racks before looking at them one by one. */
-export const Legend = ({ devices }: Props) => {
+/** Memoized: the panel renders again on hover, the counts only change with the data and the filters. */
+export const Legend = React.memo(({ devices }: Props) => {
   const styles = useStyles2(getStyles);
   const { up, down, unknown, alerts } = legendCounts(devices);
   return (
@@ -50,7 +51,8 @@ export const Legend = ({ devices }: Props) => {
       )}
     </div>
   );
-};
+});
+Legend.displayName = 'Legend';
 
 const getStyles = (theme: GrafanaTheme2) => ({
   legend: css({
