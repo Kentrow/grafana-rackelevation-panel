@@ -1,10 +1,8 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
-  <title>Rack elevation</title>
-  <rect x="12" y="4" width="40" height="56" rx="4" fill="#22252b" stroke="#8e8e8e" stroke-width="2"/>
-  <rect x="17" y="10" width="30" height="6" rx="1.5" fill="#73bf69"/>
-  <rect x="17" y="18" width="30" height="6" rx="1.5" fill="#73bf69"/>
-  <rect x="17" y="26" width="30" height="6" rx="1.5" fill="#fade2a"/>
-  <rect x="17" y="34" width="30" height="12" rx="1.5" fill="#73bf69"/>
-  <rect x="17" y="48" width="30" height="6" rx="1.5" fill="#f2495c"/>
-  <circle cx="43" cy="51" r="2" fill="#22252b"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64"><title>Rack elevation</title><rect x="2" y="2" width="60" height="60" rx="14" fill="#1e1f29"/><rect x="2.5" y="2.5" width="59" height="59" rx="13.5" fill="none" stroke="#ffffff" stroke-opacity="0.08"/>
+<rect x="19" y="9" width="26" height="37" rx="3" fill="none" stroke="#d8d9da" stroke-width="3"/>
+<rect x="23.5" y="14" width="17" height="5" rx="1.5" fill="#73bf69"/>
+<rect x="23.5" y="21" width="17" height="5" rx="1.5" fill="#73bf69"/>
+<rect x="23.5" y="28" width="17" height="5" rx="1.5" fill="#fade2a"/>
+<rect x="23.5" y="35" width="17" height="5" rx="1.5" fill="#f2495c"/>
+<line x1="19" y1="52" x2="45" y2="52" stroke="#bd93f9" stroke-width="2.5" stroke-linecap="round"/>
 </svg>
