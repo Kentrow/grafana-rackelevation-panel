@@ -30,3 +30,17 @@ test('should read three Prometheus frames joined by field', async ({ gotoDashboa
   await expect(joined.getByTestId('device-wlc-hq-02')).toHaveAttribute('data-state', 'down');
   await expect(joined.getByTestId('device-fw-hq-01')).toContainText('41.0 °C');
 });
+
+test('should offer only the standard options that the panel uses', async ({
+  gotoPanelEditPage,
+  readProvisionedDashboard,
+}) => {
+  const dashboard = await readProvisionedDashboard({ fileName: 'dashboard.json' });
+  const panelEditPage = await gotoPanelEditPage({ dashboard, id: '2' });
+  const standard = panelEditPage.getStandardOptions();
+  await standard.expand();
+  // Min and max place percent thresholds and continuous colour schemes; no value is never drawn.
+  await expect(standard.element).toContainText('Min');
+  await expect(standard.element).toContainText('Display name');
+  await expect(standard.element).not.toContainText('No value');
+});

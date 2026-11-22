@@ -85,7 +85,9 @@ export const plugin = new PanelPlugin<RackElevationOptions>(RackPanel)
   .setMigrationHandler(migrateOptions)
   // Standard options apply to the colour field: thresholds, colour scheme, value mappings, unit, decimals, links.
   .useFieldConfig({
-    disableStandardOptions: [FieldConfigProperty.Actions],
+    // The panel never draws an empty value, and has no actions. Min and max stay: they place the percent thresholds and
+    // the continuous colour schemes.
+    disableStandardOptions: [FieldConfigProperty.Actions, FieldConfigProperty.NoValue],
     standardOptions: {
       [FieldConfigProperty.Color]: {
         settings: { byValueSupport: true, bySeriesSupport: false, preferThresholdsMode: true },
