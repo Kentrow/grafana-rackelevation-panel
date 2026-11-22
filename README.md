@@ -9,7 +9,7 @@
 Front and rear views of your racks, unit by unit, placed from your inventory data (NetBox, Nautobot, SQL, CSV...) and
 coloured by device state or by any metric with the standard Grafana field config.
 
-![Two faces of five racks with their state, temperature colours and active alerts](src/img/screenshot-racks.png)
+![Tour of the demo dashboard: device card on hover, highlight with a wildcard, data links and keyboard](src/img/demo.gif)
 
 **[Install it from the Grafana plugin catalog](https://grafana.com/grafana/plugins/kentrow-rackelevation-panel/)**, or with
 `grafana cli plugins install kentrow-rackelevation-panel`.
