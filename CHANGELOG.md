@@ -47,6 +47,8 @@
 **Documentation:**
 
 - A Zabbix recipe, checked on Zabbix 7.0 with the Zabbix plugin 6.10, and a Prometheus recipe without transformation.
+- A LibreNMS recipe, checked on LibreNMS 26.11 with Infinity 4.1: the state and the alerts from its API, joined to the
+  inventory. The NetBox recipe no longer suggests **Rename by regex** to align device names: it renames columns.
 
 - A reference of every option with its default, and every problem message in the troubleshooting.
 

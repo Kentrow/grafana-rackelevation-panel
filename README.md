@@ -15,7 +15,7 @@ coloured by device state or by any metric with the standard Grafana field config
 `grafana cli plugins install kentrow-rackelevation-panel`.
 
 **[User documentation](src/README.md)**: quick start, data contract, colours, interactions and recipes for CSV,
-NetBox, Nautobot and Prometheus. It is also the page of the plugin in the Grafana catalog.
+NetBox, Nautobot, Prometheus, Zabbix and LibreNMS. It is also the page of the plugin in the Grafana catalog.
 
 ## Try it locally
 
