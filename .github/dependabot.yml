@@ -18,6 +18,10 @@ updates:
       # eslint 10 is not supported by eslint-plugin-react yet.
       - dependency-name: 'eslint'
         update-types: ['version-update:semver-major']
+      # @stylistic/eslint-plugin 6 removed type-annotation-spacing, which @grafana/eslint-config still sets: the lint
+      # fails on load. Wait for @grafana/eslint-config to move to it.
+      - dependency-name: '@stylistic/eslint-plugin'
+        update-types: ['version-update:semver-major']
       # Node types follow the oldest supported Node version (24, required by @grafana/sign-plugin), not the latest one.
       - dependency-name: '@types/node'
         update-types: ['version-update:semver-major']
