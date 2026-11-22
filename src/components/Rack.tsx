@@ -14,7 +14,7 @@ import {
 import { rackHealth } from '../layout/health';
 import { Device, Face, RackLayout } from '../types';
 import { DeviceLook } from './deviceLook';
-import { DeviceColors, DeviceRect, Emphasis, HatchIds } from './DeviceRect';
+import { DeviceColors, DeviceRect, Emphasis, HatchIds, KeyboardRole } from './DeviceRect';
 
 interface Props {
   layout: RackLayout;
@@ -33,6 +33,8 @@ interface Props {
   showSummary?: boolean;
   /** Worst device state and active alerts next to the rack name. */
   showState?: boolean;
+  /** What the devices are for the keyboard; undefined: not focusable. */
+  keyboard?: KeyboardRole;
   /** The racks frame has data links for this rack: its name opens them. */
   hasLinks?: boolean;
   /** Scale of the drawing on screen, below 1 when fitted to a small panel: labels follow the unit height on screen. */
@@ -61,6 +63,7 @@ export const Rack = ({
   emphasis,
   showSummary = false,
   showState = false,
+  keyboard,
   hasLinks = false,
   scale = 1,
 }: Props) => {
@@ -92,6 +95,7 @@ export const Rack = ({
   };
   const showDot = showState && health.state !== undefined;
   const showAlerts = showState && health.alerts > 0;
+  const alertCount = `${health.alerts} active alert${health.alerts > 1 ? 's' : ''}`;
   // Room taken by the dot and the alert count, in characters of the title.
   const extra = (showDot ? 2 : 0) + (showAlerts ? String(health.alerts).length + 2 : 0);
   const title = truncate(rack.name, innerWidth + 2 * FRAME + zeroUWidth - extra * 13 * 0.58, 13);
@@ -118,6 +122,7 @@ export const Rack = ({
         hatch={hatch}
         colors={colors}
         emphasis={emphasis(device)}
+        keyboard={keyboard}
         {...placement}
       />
     ) : null;
@@ -125,54 +130,61 @@ export const Rack = ({
 
   return (
     <g data-testid={`rack-${rack.id}`} data-face={face}>
-      <g
-        data-testid="rack-header"
-        data-rack={hasLinks ? rack.id : undefined}
-        tabIndex={hasLinks ? 0 : undefined}
-        role={hasLinks ? 'button' : undefined}
-        aria-label={hasLinks ? `Links of rack ${rack.name}` : undefined}
-      >
-        <title>
-          {[
-            rack.name,
-            rack.site,
-            `${free} U free of ${rack.uHeight}`,
-            health.down > 0 ? `${health.down} device${health.down > 1 ? 's' : ''} out of service` : undefined,
-            health.alerts > 0 ? `${health.alerts} active alert${health.alerts > 1 ? 's' : ''}` : undefined,
-          ]
-            .filter(Boolean)
-            .join(' · ')}
-        </title>
-        <text
-          x={slotsX + innerWidth / 2}
-          y={14}
-          textAnchor="middle"
-          fontSize={13}
-          fontWeight={500}
-          fill={hasLinks ? theme.colors.text.link : theme.colors.text.primary}
-          textDecoration={hasLinks ? 'underline' : undefined}
+      <g data-testid="rack-header">
+        {/* The rack name, with its state and alerts, is the button of the rack links; the subtitle stays out of it, so
+        that its accessible name starts with what is written on it (WCAG 2.5.3). */}
+        <g
+          data-rack={hasLinks ? rack.id : undefined}
+          tabIndex={hasLinks ? 0 : undefined}
+          role={hasLinks ? 'button' : undefined}
+          aria-label={
+            hasLinks
+              ? [rack.name, showAlerts ? alertCount : undefined, 'rack links'].filter(Boolean).join(' · ')
+              : undefined
+          }
         >
-          {showDot && health.state && (
-            <tspan
-              data-testid="rack-state"
-              data-state={health.state}
-              fill={stateColor[health.state]}
-              textDecoration="none"
-            >
-              {'● '}
-            </tspan>
-          )}
-          {title}
-          {showAlerts && (
-            <tspan
-              data-testid="rack-alerts"
-              fill={health.critical ? theme.colors.error.main : theme.colors.warning.main}
-              textDecoration="none"
-            >
-              {` ▲${health.alerts}`}
-            </tspan>
-          )}
-        </text>
+          <title>
+            {[
+              rack.name,
+              rack.site,
+              `${free} U free of ${rack.uHeight}`,
+              health.down > 0 ? `${health.down} device${health.down > 1 ? 's' : ''} out of service` : undefined,
+              health.alerts > 0 ? alertCount : undefined,
+            ]
+              .filter(Boolean)
+              .join(' · ')}
+          </title>
+          <text
+            x={slotsX + innerWidth / 2}
+            y={14}
+            textAnchor="middle"
+            fontSize={13}
+            fontWeight={500}
+            fill={hasLinks ? theme.colors.text.link : theme.colors.text.primary}
+            textDecoration={hasLinks ? 'underline' : undefined}
+          >
+            {showDot && health.state && (
+              <tspan
+                data-testid="rack-state"
+                data-state={health.state}
+                fill={stateColor[health.state]}
+                textDecoration="none"
+              >
+                {'● '}
+              </tspan>
+            )}
+            {title}
+            {showAlerts && (
+              <tspan
+                data-testid="rack-alerts"
+                fill={health.critical ? theme.colors.error.main : theme.colors.warning.main}
+                textDecoration="none"
+              >
+                {` ▲${health.alerts}`}
+              </tspan>
+            )}
+          </text>
+        </g>
         {subtitle && (
           <text
             data-testid="rack-subtitle"
