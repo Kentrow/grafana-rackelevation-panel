@@ -41,7 +41,7 @@ jobs:
         run: |
           npm run fixtures
           npm run dashboards
-          git diff --exit-code -- tests/fixtures provisioning/dashboards
+          git diff --exit-code -- tests/fixtures provisioning/dashboards examples/dashboards
 
       - name: Check types
         run: npm run typecheck

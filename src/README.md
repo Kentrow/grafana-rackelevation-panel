@@ -248,10 +248,30 @@ apply as described in [Colours](#colours) and [Interactions](#interactions).
 
 ## Recipes
 
+### Example dashboards
+
+Two dashboards to import in **Dashboards** > **New** > **Import**, by pasting the file or uploading it, then picking
+the data sources. They need the panel 1.2 or later.
+
+- [Rack elevation from CSV][csv-example]: the five racks of the demo, from three CSV files held inline by
+  [Infinity](https://grafana.com/grafana/plugins/yesoreyeram-infinity-datasource/) queries: devices, racks and alerts.
+  Set **Source** to **URL** in each query to read your own files. Both faces, free space and highlight variables, data
+  links.
+- [Rack elevation from NetBox and Prometheus][netbox-example]: the devices and racks of a NetBox site from its GraphQL
+  API through Infinity, as in the [NetBox recipe](#netbox-with-the-infinity-data-source), with a **Site** variable
+  listing the sites of NetBox; the state from the Prometheus metric `up` read by its `device` label, and the firing
+  alerts that have a `device` label. No transformation. Set the URL and the API token of NetBox in the Infinity data
+  source, and the URL of NetBox for the links in the hidden `netbox_url` variable.
+
+[csv-example]: https://raw.githubusercontent.com/Kentrow/grafana-rackelevation-panel/main/examples/dashboards/rack-elevation-csv.json
+[netbox-example]: https://raw.githubusercontent.com/Kentrow/grafana-rackelevation-panel/main/examples/dashboards/rack-elevation-netbox-prometheus.json
+
 ### CSV, no infrastructure
 
 Paste the CSV of the [quick start](#quick-start) in TestData, or serve a CSV file through the Infinity data source.
-A second query with the racks columns adds rack heights, names and widths.
+A second query with the racks columns adds rack heights, names and widths. With Infinity, declare the columns with
+their types, else every column is text: **number** for `position`, `u_height`, `value`..., and **string** for
+`is_full_depth` and `desc_units`, since Infinity reads `false` as empty in a CSV boolean column.
 
 ### NetBox with the Infinity data source
 

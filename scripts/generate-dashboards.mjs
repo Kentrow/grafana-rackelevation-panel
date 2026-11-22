@@ -1,6 +1,7 @@
-// Writes the provisioned dashboards from tests/fixtures, so that they never drift from the unit test fixtures.
-// Each CSV file becomes a TestData "CSV content" query whose refId is the file name. Run with `npm run dashboards`.
-import { readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
+// Writes the provisioned dashboards from tests/fixtures, so that they never drift from the unit test fixtures, and the
+// example dashboards of examples/dashboards that users import. Each CSV file becomes a TestData "CSV content" query
+// whose refId is the file name. Run with `npm run dashboards`.
+import { mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -101,8 +102,9 @@ function flow(sizes) {
   });
 }
 
-function write(name, content) {
-  writeFileSync(join(DASHBOARDS, name), JSON.stringify(content, null, 2) + '\n');
+function write(name, content, directory = DASHBOARDS) {
+  mkdirSync(directory, { recursive: true });
+  writeFileSync(join(directory, name), JSON.stringify(content, null, 2) + '\n');
 }
 
 // The README recipe for three Prometheus queries: Join by field on device, then status and value mapped to the
@@ -393,4 +395,338 @@ write(
     ],
     { refresh: '10s', time: { from: 'now-15m', to: 'now' } }
   )
+);
+
+// examples/dashboards: dashboards to download from the README and import, in the format of a dashboard exported for
+// sharing externally: the data sources are inputs picked at import.
+const EXAMPLES = join(ROOT, 'examples', 'dashboards');
+const INFINITY = 'yesoreyeram-infinity-datasource';
+/** First version of the panel with every option the examples use. */
+const PANEL_VERSION = '1.2.0';
+const DOCS = 'https://github.com/Kentrow/grafana-rackelevation-panel/blob/main/src/README.md';
+const MIXED = { type: 'datasource', uid: '-- Mixed --' };
+
+function exported(content, inputs) {
+  return {
+    __inputs: inputs.map(({ name, label, pluginId, pluginName, description }) => ({
+      name,
+      label,
+      description,
+      type: 'datasource',
+      pluginId,
+      pluginName,
+    })),
+    __elements: {},
+    __requires: [
+      { type: 'grafana', id: 'grafana', name: 'Grafana', version: '13.2.0' },
+      { type: 'panel', id: PANEL_TYPE, name: 'Rack elevation', version: PANEL_VERSION },
+      { type: 'panel', id: 'text', name: 'Text', version: '' },
+      ...inputs.map(({ pluginId, pluginName, version }) => ({
+        type: 'datasource',
+        id: pluginId,
+        name: pluginName,
+        version,
+      })),
+    ],
+    id: null,
+    ...content,
+  };
+}
+
+function textPanel(id, gridPos, content) {
+  return { id, type: 'text', title: '', gridPos, options: { mode: 'markdown', content } };
+}
+
+const textbox = (name, label) => ({
+  type: 'textbox',
+  name,
+  label,
+  query: '',
+  current: { text: '', value: '' },
+  options: [],
+});
+
+/** Grafana colours of the multi-rack fixture: temperature, and current for the PDUs. */
+const exampleFieldConfig = (links) => ({
+  defaults: { ...TEMPERATURE.defaults, links },
+  overrides: demoFieldConfig.overrides.filter((o) => o.matcher.id === 'byName'),
+});
+
+// CSV: the multi-rack fixture inline in Infinity queries, to switch to the URL of a CSV file.
+const CSV_UID = 'rack-elevation-csv-example';
+const INFINITY_CSV = { type: INFINITY, uid: '${DS_INFINITY}' };
+const CSV_NUMBERS = new Set(['position', 'u_height', 'value', 'power', 'current', 'starting_unit', 'power_capacity']);
+/** Infinity query of a fixture file, with typed columns: Infinity reads every CSV cell as a string otherwise. */
+function csvQuery(refId, file) {
+  const data = readFileSync(join(FIXTURES, 'multi-rack', `${file}.csv`), 'utf8');
+  return {
+    datasource: INFINITY_CSV,
+    refId,
+    type: 'csv',
+    source: 'inline',
+    format: 'table',
+    parser: 'backend',
+    root_selector: '',
+    data,
+    // Booleans stay strings: Infinity reads "false" as empty in a CSV boolean column, and the panel reads the text.
+    columns: data
+      .split('\n')[0]
+      .split(',')
+      .map((name) => ({ selector: name, text: name, type: CSV_NUMBERS.has(name) ? 'number' : 'string' })),
+  };
+}
+write(
+  'rack-elevation-csv.json',
+  exported(
+    dashboard(
+      CSV_UID,
+      'Rack elevation from CSV',
+      [
+        textPanel(
+          1,
+          { h: 4, w: 24, x: 0, y: 0 },
+          [
+            'The three queries of the panel hold their CSV inline: **devices**, **racks** and **alerts**. To read your',
+            'own files, edit a query, set **Source** to **URL** and give the URL of the CSV file. Keep the typed columns:',
+            'numbers for the positions, heights and values, **string** for `is_full_depth` and `desc_units`. The columns',
+            `are described in the [data contract](${DOCS}#data-contract).`,
+          ].join(' ')
+        ),
+        panel(
+          2,
+          'Racks',
+          { h: 28, w: 24, x: 0, y: 4 },
+          {
+            targets: [csvQuery('devices', 'devices'), csvQuery('racks', 'racks'), csvQuery('alerts', 'alerts')],
+            options: { face: 'both', label: ['name', 'value'], valueFields: ['value', 'current'], freeSpace: '$space' },
+            fieldConfig: exampleFieldConfig([
+              {
+                title: 'Highlight in this dashboard',
+                url: `/d/${CSV_UID}/rack-elevation-from-csv?var-device=\${__data.fields.device}`,
+              },
+            ]),
+          }
+        ),
+      ].map((p) => (p.type === PANEL_TYPE ? { ...p, datasource: INFINITY_CSV } : p)),
+      { templating: { list: [textbox('device', 'Highlighted device'), textbox('space', 'Free space (U)')] } }
+    ),
+    [
+      {
+        name: 'DS_INFINITY',
+        label: 'Infinity',
+        description: 'Infinity data source, which reads the CSV',
+        pluginId: INFINITY,
+        pluginName: 'Infinity',
+        version: '4.1.0',
+      },
+    ]
+  ),
+  EXAMPLES
+);
+
+// NetBox and Prometheus: the inventory from the GraphQL API of NetBox, the state and the alerts from Prometheus, read
+// by their device label: no transformation.
+const NETBOX_UID = 'rack-elevation-netbox-prometheus';
+const NETBOX = { type: INFINITY, uid: '${DS_NETBOX}' };
+const PROMETHEUS_INPUT = { type: 'prometheus', uid: '${DS_PROMETHEUS}' };
+const column = (selector, text, type = 'string') => ({ selector, text, type });
+function graphql(refId, rootSelector, query, columns) {
+  return {
+    datasource: NETBOX,
+    refId,
+    type: 'graphql',
+    source: 'url',
+    format: 'table',
+    parser: 'backend',
+    url: '/graphql/',
+    url_options: { method: 'POST', body_type: 'graphql', body_graphql_query: query },
+    root_selector: rootSelector,
+    columns,
+  };
+}
+const DEVICES_GRAPHQL = `query {
+  device_list(filters: { site: { slug: { exact: "$site" } } }) {
+    name
+    position
+    face
+    status
+    rack {
+      name
+    }
+    role {
+      name
+    }
+    device_type {
+      model
+      u_height
+      is_full_depth
+    }
+    parent_bay {
+      device {
+        name
+      }
+    }
+  }
+}`;
+const RACKS_GRAPHQL = `query {
+  rack_list(filters: { site: { slug: { exact: "$site" } } }) {
+    name
+    u_height
+    starting_unit
+    desc_units
+    width
+    site {
+      name
+    }
+  }
+}`;
+const SITES_GRAPHQL = `query {
+  site_list {
+    name
+    slug
+  }
+}`;
+write(
+  'rack-elevation-netbox-prometheus.json',
+  exported(
+    dashboard(
+      NETBOX_UID,
+      'Rack elevation from NetBox and Prometheus',
+      [
+        textPanel(
+          1,
+          { h: 4, w: 24, x: 0, y: 0 },
+          [
+            'The **devices** and **racks** come from the GraphQL API of NetBox, through Infinity: set the URL of NetBox',
+            'in the Infinity data source, with an `Authorization` header holding the API token. The state comes from',
+            'the Prometheus series of **health**, read by their `device` label: replace `up` with the 0/1 metric of your',
+            'devices and map **status** to its name in the **Columns** options, or clear it to take the NetBox status.',
+            'The **alerts** are the firing alerts with a `device` label. Set the `netbox_url` variable in the settings',
+            `for the links. See the [NetBox recipe](${DOCS}#netbox-with-the-infinity-data-source).`,
+          ].join(' ')
+        ),
+        {
+          ...panel(
+            2,
+            'Racks',
+            { h: 28, w: 24, x: 0, y: 4 },
+            {
+              targets: [
+                graphql('devices', 'data.device_list', DEVICES_GRAPHQL, [
+                  column('name', 'device'),
+                  column('rack.name', 'rack'),
+                  column('position', 'position', 'number'),
+                  column('device_type.u_height', 'u_height', 'number'),
+                  column('face', 'face'),
+                  column('status', 'status'),
+                  column('device_type.is_full_depth', 'is_full_depth', 'boolean'),
+                  column('role.name', 'role'),
+                  column('device_type.model', 'model'),
+                  column('parent_bay.device.name', 'parent_device'),
+                ]),
+                graphql('racks', 'data.rack_list', RACKS_GRAPHQL, [
+                  column('name', 'rack'),
+                  column('u_height', 'u_height', 'number'),
+                  column('starting_unit', 'starting_unit', 'number'),
+                  column('desc_units', 'desc_units', 'boolean'),
+                  column('width', 'width', 'number'),
+                  column('site.name', 'site'),
+                ]),
+                {
+                  datasource: PROMETHEUS_INPUT,
+                  refId: 'health',
+                  expr: 'up{device!=""}',
+                  legendFormat: '{{device}}',
+                  instant: false,
+                  range: true,
+                  format: 'time_series',
+                },
+                {
+                  datasource: PROMETHEUS_INPUT,
+                  refId: 'alerts',
+                  expr: 'ALERTS{alertstate="firing", device!=""}',
+                  instant: true,
+                  range: false,
+                  format: 'table',
+                },
+              ],
+              options: { face: 'both', columns: { status: 'up' } },
+              fieldConfig: {
+                defaults: {
+                  links: [
+                    {
+                      title: 'Open in NetBox',
+                      url: '${netbox_url}/dcim/devices/?q=${__data.fields.device}',
+                      targetBlank: true,
+                    },
+                    {
+                      title: 'Highlight in this dashboard',
+                      url: `/d/${NETBOX_UID}/rack-elevation-from-netbox-and-prometheus?var-device=\${__data.fields.device}&\${site:queryparam}`,
+                    },
+                  ],
+                },
+                overrides: [],
+              },
+            }
+          ),
+          datasource: MIXED,
+        },
+      ],
+      {
+        time: { from: 'now-15m', to: 'now' },
+        refresh: '1m',
+        templating: {
+          list: [
+            {
+              type: 'query',
+              name: 'site',
+              label: 'Site',
+              datasource: NETBOX,
+              query: {
+                queryType: 'infinity',
+                refId: 'variable',
+                infinityQuery: {
+                  ...graphql('variable', 'data.site_list', SITES_GRAPHQL, [
+                    column('name', '__text'),
+                    column('slug', '__value'),
+                  ]),
+                  datasource: undefined,
+                },
+              },
+              refresh: 1,
+              current: {},
+              options: [],
+            },
+            textbox('device', 'Highlighted device'),
+            {
+              type: 'constant',
+              name: 'netbox_url',
+              query: 'https://netbox.example.com',
+              hide: 2,
+              options: [],
+            },
+          ],
+        },
+      }
+    ),
+    [
+      {
+        name: 'DS_NETBOX',
+        label: 'NetBox',
+        description: 'Infinity data source set up with the URL and the API token of NetBox',
+        pluginId: INFINITY,
+        pluginName: 'Infinity',
+        version: '4.1.0',
+      },
+      {
+        name: 'DS_PROMETHEUS',
+        label: 'Prometheus',
+        description: 'Prometheus with the health metric and the alerts of the devices',
+        pluginId: 'prometheus',
+        pluginName: 'Prometheus',
+        version: '1.0.0',
+      },
+    ]
+  ),
+  EXAMPLES
 );
