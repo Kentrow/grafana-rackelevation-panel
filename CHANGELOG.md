@@ -25,6 +25,8 @@
 
 **Documentation:**
 
+- A reference of every option with its default, and every problem message in the troubleshooting.
+
 - An animated tour of the demo dashboard in the README: device card, highlight with a wildcard, data links and
   keyboard. `npm run demo` and `scripts/make-gif.py` make it again when the drawing changes.
 

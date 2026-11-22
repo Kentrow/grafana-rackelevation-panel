@@ -192,6 +192,36 @@ an override **Fields with name**.
 - The legend at the bottom counts the devices in service (or with a value), out of service and not monitored, and the
   active alerts.
 
+## Options
+
+| Category     | Option             | Default                     | What it does                                                                                      |
+| ------------ | ------------------ | --------------------------- | ------------------------------------------------------------------------------------------------- |
+| Data         | Devices frame      | found by its columns        | Query refId or frame name of the devices, see [Which frame is which](#which-frame-is-which)       |
+| Data         | Racks frame        | found by its columns        | Same for the optional racks frame                                                                 |
+| Data         | Alerts frame       | found by its columns        | Same for the optional alerts frame                                                                |
+| Data         | In service values  | `up`, `1`, `true`, `active` | Status values meaning in service, ignoring case; any other value means out of service             |
+| Data         | Colour fields      | `value`                     | Fields giving the colour, the first one with a value for each device, see [Colours](#colours)     |
+| Columns      | One per column     | the contract name           | The field to read for each column of the [data contract](#data-contract) when it has another name |
+| Display      | Racks              | all                         | Racks to draw, in this order, by id or name; variables allowed, multi-value included              |
+| Display      | Face               | Front                       | Front, rear, or both faces side by side                                                           |
+| Display      | Auto unit height   | on                          | The tallest rack fills the panel height; the racks scroll sideways when too wide                  |
+| Display      | Unit height        | 16 px                       | Height of a unit when auto unit height is off; labels are hidden below 10 px                      |
+| Display      | Fit to panel       | off                         | Scales everything down to the panel instead of scrolling                                          |
+| Display      | Show 0U band       | on                          | Devices without position, such as PDUs, in a band right of the rack                               |
+| Display      | Show unit numbers  | on                          | Unit numbers left of each rack                                                                    |
+| Display      | Show free units    | on                          | Free units of the face under the rack name                                                        |
+| Display      | Show rack state    | on                          | State dot and active alerts next to the rack name                                                 |
+| Display      | Show legend        | on                          | Counts by state and active alerts at the bottom                                                   |
+| Labels       | Label template     | empty                       | `{column}` placeholders, such as `{device} · {ip}`; replaces the two options below                |
+| Labels       | Label              | name                        | Parts of the label in the order picked: name, model, value, role                                  |
+| Labels       | Separator          | `·`                         | Between the parts of the label                                                                    |
+| Interactions | Role filter        | none                        | Roles to keep, the others fade and stop reacting; accepts a variable such as `$role`              |
+| Interactions | Highlight variable | `$device`                   | Dashboard variable whose devices are highlighted, `*` wildcards allowed                           |
+| Interactions | Tooltip            | on                          | Device card on hover and on focus                                                                 |
+
+The standard options of the field config (unit, decimals, colour scheme, thresholds, value mappings, data links)
+apply as described in [Colours](#colours) and [Interactions](#interactions).
+
 ## Recipes
 
 ### CSV, no infrastructure
@@ -318,7 +348,14 @@ with its **Apply to** filter on the other queries.
 
 ## Troubleshooting
 
+The problems of the data are listed under the warning icon in the top right corner of the panel:
+
 - **No rack to draw**: no frame has `device` and `rack` columns. Check the column names, or map them in **Columns**.
+- **Devices frame has no "rack" column**, **No frame named "B" for the racks**: a column or a frame picked in the
+  options does not exist; check its name in the Query inspector.
+- **Row 12 has no device name**, **x has no rack**: rows that cannot be placed; they are skipped.
+- **Rack x is not in the racks frame; drawn with default values**, **Rack x from the options is not in the data**:
+  the rack names of the devices, the racks frame and the **Racks** option differ.
 - **Frame "B" also has a device column and is ignored**: join it to the devices frame with **Join by field**.
 - **x appears more than once**: the same device is on several rows of a frame without time field; only the first
   one is drawn.
