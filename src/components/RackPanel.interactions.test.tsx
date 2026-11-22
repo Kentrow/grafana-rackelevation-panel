@@ -134,6 +134,13 @@ describe('highlight and role filter', () => {
     expect(screen.getByTestId('device-fw-hq-01')).toHaveAttribute('data-emphasis', 'dim');
   });
 
+  it('highlights the devices matching a value with a * wildcard', () => {
+    render(<RackPanel {...panelProps(loadFixture('basic'), {}, { device: ['wlc-*'] })} />);
+    expect(screen.getByTestId('device-wlc-hq-01')).toHaveAttribute('data-emphasis', 'highlight');
+    expect(screen.getByTestId('device-wlc-hq-02')).toHaveAttribute('data-emphasis', 'highlight');
+    expect(screen.getByTestId('device-fw-hq-01')).toHaveAttribute('data-emphasis', 'dim');
+  });
+
   it('does nothing when the dashboard has no highlight variable', () => {
     render(<RackPanel {...panelProps(loadFixture('basic'))} />);
     expect(screen.getByTestId('device-fw-hq-01')).not.toHaveAttribute('data-emphasis');

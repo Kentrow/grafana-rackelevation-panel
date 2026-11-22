@@ -150,7 +150,8 @@ an override **Fields with name**.
   row are available, for instance `https://netbox.example.com/dcim/devices/?q=${__data.fields.device}` or
   `/d/my-device-dashboard?var-device=${__data.fields.device}`. With one link the click follows it directly.
 - **Highlight**: the devices named in the **Highlight variable** (`$device` by default) get a thick border and the
-  others fade. A link from an alert to the dashboard with `var-device=<name>` lands on the device. A button above the
+  others fade. A `*` in a value stands for any characters: `sw-a1-*` highlights every device whose name starts with
+  `sw-a1-`. A link from an alert to the dashboard with `var-device=<name>` lands on the device. A button above the
   racks clears the highlight.
 - **Role filter**: devices of other roles fade and stop reacting, the racks keep their shape. It accepts a variable
   such as `$role`. The legend counts only the devices of the filter.

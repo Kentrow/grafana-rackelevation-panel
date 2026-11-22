@@ -241,7 +241,7 @@ export const plugin = new PanelPlugin<RackElevationOptions>(RackPanel)
         path: 'highlightVariable',
         name: 'Highlight variable',
         description:
-          'Dashboard variable holding device names, written with its $ so that the panel follows its changes: those devices get a thick border and the others fade, for instance when arriving from an alert with var-device=<name>. Nothing happens if the dashboard has no such variable.',
+          'Dashboard variable holding device names, written with its $ so that the panel follows its changes: those devices get a thick border and the others fade, for instance when arriving from an alert with var-device=<name>. A * in a value stands for any characters, as in sw-a1-*. Nothing happens if the dashboard has no such variable.',
         category: INTERACTIONS,
         defaultValue: DEFAULT_OPTIONS.highlightVariable,
       })

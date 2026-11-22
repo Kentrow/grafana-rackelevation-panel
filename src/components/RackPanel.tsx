@@ -14,7 +14,7 @@ import { ErrorIndicator } from './ErrorIndicator';
 import { Legend, LEGEND_HEIGHT } from './Legend';
 import { deviceLinks, followLink, hasLinks, rackLinks } from './links';
 import { Rack } from './Rack';
-import { emphasisOf, resolveList, variableValues } from './variables';
+import { emphasisOf, matchingNames, resolveList, variableValues } from './variables';
 
 export { resolveList } from './variables';
 
@@ -112,7 +112,7 @@ export const RackPanel = ({ data, options: saved, width, height, fieldConfig, id
     [devices, model.devicesFrame, columns, theme]
   );
   // Only the highlighted devices drawn in this panel count: a panel without them is left as it is.
-  const highlighted = highlightKey ? highlightKey.split('\n').filter((name) => devices.has(name)) : [];
+  const highlighted = highlightKey ? matchingNames(highlightKey.split('\n'), devices.keys()) : [];
   const highlightedKey = highlighted.join('\n');
   const emphasis = useMemo(() => {
     const names = new Set(highlightedKey ? highlightedKey.split('\n') : []);

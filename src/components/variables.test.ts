@@ -1,6 +1,6 @@
 import { dashboardVariables } from '../testing/panel';
 import { Device } from '../types';
-import { emphasisOf, resolveList, variableValues } from './variables';
+import { emphasisOf, matchingNames, resolveList, variableValues } from './variables';
 
 const dashboard = dashboardVariables;
 
@@ -55,5 +55,20 @@ describe('emphasisOf', () => {
     expect(emphasisOf(device('sw-01', 'Switch'), new Set(), roles)).toBeUndefined();
     expect(emphasisOf(device('srv-01', 'server'), new Set(['srv-01']), roles)).toBe('filtered');
     expect(emphasisOf(device('pp-01'), new Set(), roles)).toBe('filtered');
+  });
+});
+
+describe('matchingNames', () => {
+  const names = ['sw-a1-tor-01', 'sw-a1-tor-02', 'srv-a1-01', 'sw.core', 'swXcore'];
+
+  it('keeps the names given in full, in the order of the devices', () => {
+    expect(matchingNames(['srv-a1-01', 'sw-a1-tor-01', 'nope'], names)).toEqual(['sw-a1-tor-01', 'srv-a1-01']);
+  });
+
+  it('matches * as any run of characters, the rest of the value literally', () => {
+    expect(matchingNames(['sw-a1-*'], names)).toEqual(['sw-a1-tor-01', 'sw-a1-tor-02']);
+    expect(matchingNames(['*-01'], names)).toEqual(['sw-a1-tor-01', 'srv-a1-01']);
+    expect(matchingNames(['sw.*'], names)).toEqual(['sw.core']);
+    expect(matchingNames(['*'], names)).toEqual(names);
   });
 });

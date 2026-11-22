@@ -33,6 +33,22 @@ export function variableValues(name: string | undefined, replaceVariables: Inter
   return value === expression ? [] : split(value);
 }
 
+/** Pattern of a variable value: * stands for any run of characters, the rest is literal. */
+const patternOf = (value: string) =>
+  new RegExp(
+    `^${value
+      .split('*')
+      .map((part) => part.replace(/[.+?^${}()|[\]\\]/g, '\\$&'))
+      .join('.*')}$`
+  );
+
+/** Names, in their order, given in full by one of the values or matching one with a * wildcard, such as sw-a1-*. */
+export function matchingNames(values: string[], names: Iterable<string>): string[] {
+  const exact = new Set(values.filter((v) => !v.includes('*')));
+  const patterns = values.filter((v) => v.includes('*')).map(patternOf);
+  return [...names].filter((name) => exact.has(name) || patterns.some((p) => p.test(name)));
+}
+
 /**
  * Emphasis of a device: out of the role filter it is faded and inert, so that the rack keeps its shape;
  * otherwise, while some devices are highlighted, the others are faded.
