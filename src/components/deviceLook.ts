@@ -1,7 +1,7 @@
-import { DataFrame, formattedValueToString, GrafanaTheme2 } from '@grafana/data';
-import { deviceFields } from '../data/mapping';
+import { DataFrame, Field, formattedValueToString, GrafanaTheme2 } from '@grafana/data';
+import { columnField, deviceFields, findField } from '../data/mapping';
 import { mappedStatusColor } from '../data/status';
-import { ColumnMapping, Device, LabelPart } from '../types';
+import { Column, COLUMNS, ColumnMapping, Device, LabelPart } from '../types';
 
 /** How a device is drawn: its visual state. */
 export interface DeviceLook {
@@ -112,4 +112,53 @@ export function deviceLabel(
     .map((p) => values[p])
     .filter(Boolean)
     .join(separator ? ` ${separator} ` : ' ');
+}
+
+/** Text of a field at a row, as Grafana displays it: unit, decimals and value mappings. */
+function fieldText(field: Field, row: number): string {
+  const raw = field.values[row];
+  if (raw === null || raw === undefined || raw === '') {
+    return '';
+  }
+  return field.display ? formattedValueToString(field.display(raw)) : String(raw);
+}
+
+/**
+ * Separators left at the ends of a label when the columns around them are empty: a separator alone between spaces,
+ * not a sign written against a number.
+ */
+const LOOSE_ENDS = /^(\s*[·|,;:/\-–—](\s+|$))+|((^|\s+)[·|,;:/\-–—]\s*)+$/g;
+
+/**
+ * Label of each device from a template such as `{device} · {ip}`: `{value}` is the colour value with its unit, any
+ * other name a column of the device row, the columns of the contract by their contract name even when mapped to
+ * another one. Unknown or empty columns are empty. The template is read once, then applied to every device.
+ */
+export function labelTemplate(
+  template: string,
+  frame: DataFrame | undefined,
+  columns: ColumnMapping
+): (device: Device, look: DeviceLook | undefined) => string {
+  const parts = template.split(/(\{[^{}]+\})/);
+  const resolvers = parts.map((part): ((device: Device, look: DeviceLook | undefined) => string) => {
+    const name = /^\{([^{}]+)\}$/.exec(part)?.[1].trim();
+    if (name === undefined) {
+      return () => part;
+    }
+    if (name.toLowerCase() === 'value') {
+      return (_, look) => look?.valueText ?? '';
+    }
+    if (name.toLowerCase() === 'device') {
+      return (device) => device.name;
+    }
+    const column = COLUMNS.find((c) => c === name.toLowerCase()) as Column | undefined;
+    const field = frame && ((column && columnField(frame, column, columns)) || findField(frame, name));
+    return field ? (device) => fieldText(field, device.row) : () => '';
+  });
+  return (device, look) =>
+    resolvers
+      .map((resolve) => resolve(device, look))
+      .join('')
+      .replace(LOOSE_ENDS, '')
+      .trim();
 }

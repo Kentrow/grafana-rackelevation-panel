@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+**Features:**
+
+- Label templates: a **Label template** such as `{device} · {ip}` writes any column of the device row in the label,
+  formatted as Grafana displays it, `{value}` being the colour value with its unit.
+
 **Performance:**
 
 - Moving the pointer over a device no longer renders the panel again, only the card moves; going from device to

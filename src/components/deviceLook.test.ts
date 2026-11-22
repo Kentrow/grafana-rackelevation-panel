@@ -11,7 +11,7 @@ import { DEFAULT_UP_VALUES } from '../data/status';
 import { buildModel } from '../model';
 import { csvToFrame, loadFixture } from '../testing/fixtures';
 import { Device } from '../types';
-import { deviceLabel, deviceLooks } from './deviceLook';
+import { deviceLabel, deviceLooks, labelTemplate } from './deviceLook';
 
 const theme = createTheme();
 
@@ -112,5 +112,42 @@ describe('deviceLabel', () => {
     const { device, look } = looksOf(withFieldConfig(loadFixture('basic'), THRESHOLDS))('sw-hq-core-01');
     expect(deviceLabel(device, look, ['name', 'value', 'model'], '·')).toBe('sw-hq-core-01 · 45 °C · Cisco C9300-48P');
     expect(deviceLabel(device, look, ['role', 'name'], '')).toBe('switch sw-hq-core-01');
+  });
+});
+
+describe('labelTemplate', () => {
+  const frames = withFieldConfig(
+    [csvToFrame('name,rack,position,ip,power\nsw-01,R1,40,10.0.1.11,120\npp-01,R1,42,,\n', 'A')],
+    {},
+    { power: { unit: 'watt' } }
+  );
+  const label = (template: string, name: string) => {
+    const model = buildModel(frames, {
+      frames: {},
+      columns: { device: 'name' },
+      valueFields: [],
+      upValues: [],
+      racks: [],
+    });
+    const devices = model.racks.flatMap((r) => r.front.map((p) => p.device));
+    const looks = deviceLooks(devices, model.devicesFrame, { device: 'name' }, theme);
+    const device = devices.find((d) => d.name === name)!;
+    return labelTemplate(template, model.devicesFrame, { device: 'name' })(device, looks.get(device));
+  };
+
+  it('replaces {column} with the contract columns, mapped names included, and any other column', () => {
+    expect(label('{device} · {ip}', 'sw-01')).toBe('sw-01 · 10.0.1.11');
+    expect(label('{rack}/{position} {IP}', 'sw-01')).toBe('R1/40 10.0.1.11');
+  });
+
+  it('formats the values as Grafana displays them, with their unit', () => {
+    expect(label('{device} {power}', 'sw-01')).toBe('sw-01 120 W');
+  });
+
+  it('leaves unknown or empty columns empty, without separators left at the ends', () => {
+    expect(label('{device} · {ip}', 'pp-01')).toBe('pp-01');
+    expect(label('{nope} - {device}', 'pp-01')).toBe('pp-01');
+    // A sign is not a separator.
+    expect(label('-{position} {device}', 'sw-01')).toBe('-40 sw-01');
   });
 });

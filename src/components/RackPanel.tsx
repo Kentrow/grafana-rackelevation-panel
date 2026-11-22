@@ -7,7 +7,7 @@ import { columnField } from '../data/mapping';
 import { cardPosition, autoUnitHeight as fittingUnitHeight, panelGeometry } from '../layout/geometry';
 import { buildModel } from '../model';
 import { DEFAULT_OPTIONS, Device, Rack as RackModel, RackElevationOptions } from '../types';
-import { deviceLabel, deviceLooks } from './deviceLook';
+import { DeviceLook, deviceLabel, deviceLooks, labelTemplate } from './deviceLook';
 import { ClearHighlight } from './ClearHighlight';
 import { DeviceTooltip } from './DeviceTooltip';
 import { ErrorIndicator } from './ErrorIndicator';
@@ -81,6 +81,7 @@ export const RackPanel = ({ data, options: saved, width, height, fieldConfig, id
     label,
     labelSeparator,
   } = options;
+  const template = options.labelTemplate.trim();
   // Lists resolved from variables are compared as strings, so that memoization survives a re-render.
   const racksKey = resolveList(options.racks, replaceVariables).join('\n');
   const rolesKey = resolveList(options.roles, replaceVariables)
@@ -138,6 +139,14 @@ export const RackPanel = ({ data, options: saved, width, height, fieldConfig, id
         .map((d) => d.device)
         .filter((d) => emphasis(d) !== 'filtered' && (showZeroU || !zeroU.has(d))),
     [devices, emphasis, showZeroU, zeroU]
+  );
+  // The template, when set, is read once for all the devices.
+  const labelOf = useMemo(
+    () =>
+      template
+        ? labelTemplate(template, model.devicesFrame, columns)
+        : (device: Device, look: DeviceLook | undefined) => deviceLabel(device, look, label, labelSeparator),
+    [template, model.devicesFrame, columns, label, labelSeparator]
   );
   // Ids of the hatch patterns, the same object for every render so that the memoized devices are not drawn again.
   const hatch = useMemo(() => ({ unmonitored: `rack-unmonitored-${uid}`, conflict: `rack-conflict-${uid}` }), [uid]);
@@ -207,7 +216,7 @@ export const RackPanel = ({ data, options: saved, width, height, fieldConfig, id
               overflow={view.overflow}
               caption={face === 'both' ? (view.face === 'front' ? 'Front' : 'Rear') : undefined}
               looks={looks}
-              label={(device, look) => deviceLabel(device, look, label, labelSeparator)}
+              label={labelOf}
               theme={theme}
               hatch={hatch}
               emphasis={emphasis}
@@ -237,8 +246,7 @@ export const RackPanel = ({ data, options: saved, width, height, fieldConfig, id
     fitToPanel,
     width,
     drawHeight,
-    label,
-    labelSeparator,
+    labelOf,
     theme,
     hatch,
     styles.svg,
