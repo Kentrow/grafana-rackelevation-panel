@@ -213,12 +213,22 @@ export const plugin = new PanelPlugin<RackElevationOptions>(RackPanel)
         category: DISPLAY,
         defaultValue: DEFAULT_OPTIONS.showLegend,
       })
+      .addTextInput({
+        path: 'labelTemplate',
+        name: 'Label template',
+        description:
+          'Optional. {column} is replaced with any column of the device row, such as {device} · {ip}; {value} is the colour value with its unit. Replaces the label parts below.',
+        category: LABELS,
+        defaultValue: DEFAULT_OPTIONS.labelTemplate,
+        settings: { placeholder: '{device} · {value}' },
+      })
       .addMultiSelect({
         path: 'label',
         name: 'Label',
         description: 'Parts of the device label, in the order picked, on one line.',
         category: LABELS,
         defaultValue: DEFAULT_OPTIONS.label,
+        showIf: (options) => !options.labelTemplate?.trim(),
         // addMultiSelect types its options with the type of the whole value, an array, not of one item.
         settings: { options: LABEL_PARTS as unknown as Array<SelectableValue<LabelPart[]>> },
       })
@@ -227,6 +237,7 @@ export const plugin = new PanelPlugin<RackElevationOptions>(RackPanel)
         name: 'Separator',
         category: LABELS,
         defaultValue: DEFAULT_OPTIONS.labelSeparator,
+        showIf: (options) => !options.labelTemplate?.trim(),
       })
       .addMultiSelect({
         path: 'roles',

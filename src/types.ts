@@ -57,6 +57,8 @@ export interface RackElevationOptions {
   showLegend: boolean;
   label: LabelPart[];
   labelSeparator: string;
+  /** Replaces label and labelSeparator when set: {column} placeholders, such as {device} · {ip}. */
+  labelTemplate: string;
   roles: string[];
   highlightVariable: string;
   showTooltip: boolean;
@@ -175,6 +177,7 @@ export const DEFAULT_OPTIONS: RackElevationOptions = {
   showLegend: true,
   label: ['name'],
   labelSeparator: '·',
+  labelTemplate: '',
   roles: [],
   // With the $, Grafana knows that the panel depends on the variable and redraws it when the variable changes.
   highlightVariable: '$device',

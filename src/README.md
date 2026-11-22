@@ -175,6 +175,12 @@ an override **Fields with name**.
 - **Auto unit height** (default): the tallest rack fills the panel height, and the racks scroll sideways when they do
   not fit in the width. Turn it off to set the unit height in pixels, or use **Fit to panel** to scale everything
   down to the panel.
+- **Labels**: the parts picked in **Label** (name, model, value, role) joined by the **Separator**, or a **Label
+  template** such as `{device} · {ip}`: `{column}` is replaced with any column of the device row, formatted as
+  Grafana displays it, and `{value}` with the colour value and its unit. The contract columns keep their contract name
+  even when they are mapped to another one. An unknown or empty column leaves nothing, and a separator left at an end
+  of the label is removed. Labels are cut to the width of the device and hidden below a unit height of 10 px; the card
+  always shows everything.
 - Under each rack name, the number of free units of the face, a full-depth device of the other face counting as
   taken.
 - Next to each rack name, the state of the rack at a glance: a red dot when one of its devices is out of service, a

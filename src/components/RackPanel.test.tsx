@@ -71,6 +71,12 @@ describe('RackPanel', () => {
     expect(screen.getByTestId('device-srv-hq-01').querySelector('text')).toBeNull();
   });
 
+  it('writes the labels from the template when one is set', () => {
+    const fixed = { autoUnitHeight: false, unitHeight: 30 };
+    render(<RackPanel {...props(loadFixture('basic'), { ...fixed, labelTemplate: '{device} ({role})' })} />);
+    expect(screen.getByTestId('device-srv-hq-01').querySelector('text')).toHaveTextContent('srv-hq-01 (server)');
+  });
+
   it('fits the tallest rack to the panel height with the auto unit height', () => {
     // 300 px panel, legend included: a 12U rack gets units of 18 px, a 42U rack units of 5 px.
     const tenInch = render(<RackPanel {...props(loadFixture('ten-inch'))} />);
