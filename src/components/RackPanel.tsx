@@ -1,166 +1,59 @@
-import React, { useId, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import React, { useId, useMemo } from 'react';
 import { css, cx } from '@emotion/css';
-import { GrafanaTheme2, LinkModel, PanelProps } from '@grafana/data';
+import { GrafanaTheme2, PanelProps } from '@grafana/data';
 import { PanelDataErrorView } from '@grafana/runtime';
 import { ContextMenu, linkModelToContextMenuItems, MenuItem, useStyles2, useTheme2 } from '@grafana/ui';
-import { columnField } from '../data/mapping';
-import { cardPosition, autoUnitHeight as fittingUnitHeight, panelGeometry } from '../layout/geometry';
-import { buildModel } from '../model';
-import { DEFAULT_OPTIONS, Device, Rack as RackModel, RackElevationOptions } from '../types';
-import { DeviceLook, deviceLabel, deviceLooks, labelTemplate } from './deviceLook';
+import { DEFAULT_OPTIONS, RackElevationOptions } from '../types';
 import { ClearHighlight } from './ClearHighlight';
 import { DeviceTooltip } from './DeviceTooltip';
 import { ErrorIndicator } from './ErrorIndicator';
 import { Legend, LEGEND_HEIGHT } from './Legend';
-import { deviceLinks, followLink, hasLinks, rackLinks } from './links';
-import { deviceFor, ensureTabStop, makeTabStop } from './keyboard';
-import { Rack } from './Rack';
-import { emphasisOf, matchingNames, resolveList, variableValues } from './variables';
+import { hasLinks, rackLinks } from './links';
+import { RackDrawing } from './RackDrawing';
+import { useEmphasis } from './useEmphasis';
+import { TOOLTIP_OFFSET, useRackInteractions } from './useRackInteractions';
+import { useRackModel } from './useRackModel';
+import { resolveList, variableValues } from './variables';
 
 export { resolveList } from './variables';
 
 type Props = PanelProps<RackElevationOptions>;
 
-interface Hover {
-  device: string;
-}
-
-interface Menu {
-  x: number;
-  y: number;
-  links: LinkModel[];
-}
-
-const TOOLTIP_OFFSET = 12;
 const CLEAR_BAR_HEIGHT = 30;
 
-/** Name of the device under the pointer, from the data-device attribute of its group. */
-const deviceAt = (target: EventTarget) => (target as Element).closest?.('[data-device]')?.getAttribute('data-device');
-
+/**
+ * The panel: the racks drawn from the data, with the bar of the highlight above them, the legend below, the card and
+ * the menu of the links on top, and the problems in the corner.
+ */
 export const RackPanel = ({ data, options: saved, width, height, fieldConfig, id, replaceVariables }: Props) => {
   const theme = useTheme2();
   const styles = useStyles2(getStyles);
   const uid = useId().replace(/:/g, '');
-  const wrapper = useRef<HTMLDivElement>(null);
-  const [hover, setHover] = useState<Hover | null>(null);
-  const [menu, setMenu] = useState<Menu | null>(null);
-  const card = useRef<HTMLDivElement>(null);
-  const scroller = useRef<HTMLDivElement>(null);
-  // Pointer position in the panel. Moving within a device only moves the card, without rendering the panel again.
-  const pointer = useRef({ x: 0, y: 0 });
-  /** Measures the card once drawn and moves it next to the pointer, inside the panel. */
-  const placeCard = () => {
-    if (card.current) {
-      const size = { width: card.current.offsetWidth, height: card.current.offsetHeight };
-      const { left, top } = cardPosition(pointer.current, size, { width, height }, TOOLTIP_OFFSET);
-      card.current.style.left = `${left}px`;
-      card.current.style.top = `${top}px`;
-    }
-  };
-  // Before the browser paints the card of a new device.
-  useLayoutEffect(() => {
-    if (hover) {
-      placeCard();
-    }
-  });
   const options = { ...DEFAULT_OPTIONS, ...saved };
-  const {
-    frames,
-    columns,
-    valueFields,
-    upValues,
-    face,
-    unitHeight,
-    autoUnitHeight,
-    fitToPanel,
-    showZeroU,
-    showUnitNumbers,
-    showRackSummary,
-    showRackState,
-    freeSpaceFullDepth,
-    showLegend,
-    label,
-    labelSeparator,
-  } = options;
-  const template = options.labelTemplate.trim();
-  // Units of a new device, typed or from a variable such as $space; anything else turns the free blocks off.
-  const freeSpaceUnits = parseFloat(replaceVariables(options.freeSpace ?? '')) || 0;
+  const { columns, valueFields, showZeroU, showLegend, showTooltip } = options;
   // Lists resolved from variables are compared as strings, so that memoization survives a re-render.
   const racksKey = resolveList(options.racks, replaceVariables).join('\n');
   const rolesKey = resolveList(options.roles, replaceVariables)
     .map((r) => r.toLowerCase())
     .join('\n');
   const highlightKey = variableValues(options.highlightVariable, replaceVariables).join('\n');
+  // Units of a new device, typed or from a variable such as $space; anything else turns the free blocks off.
+  const freeSpaceUnits = parseFloat(replaceVariables(options.freeSpace ?? '')) || 0;
 
-  const model = useMemo(
-    () =>
-      buildModel(data.series, {
-        frames,
-        columns,
-        valueFields,
-        upValues,
-        racks: racksKey ? racksKey.split('\n') : [],
-      }),
-    [data.series, frames, columns, valueFields, upValues, racksKey]
-  );
-  const devices = useMemo(() => {
-    const byName = new Map<string, { device: Device; rack: RackModel }>();
-    for (const r of model.racks) {
-      for (const device of [...r.front.map((p) => p.device), ...r.rear.map((p) => p.device), ...r.zeroU]) {
-        byName.set(device.name, { device, rack: r.rack });
-      }
-    }
-    return byName;
-  }, [model]);
-  const zeroU = useMemo(() => new Set(model.racks.flatMap((r) => r.zeroU)), [model]);
-  const looks = useMemo(
-    () =>
-      deviceLooks(
-        [...devices.values()].map((d) => d.device),
-        model.devicesFrame,
-        columns,
-        theme
-      ),
-    [devices, model.devicesFrame, columns, theme]
-  );
-  // Only the highlighted devices drawn in this panel count: a panel without them is left as it is.
-  const highlighted = useMemo(
-    () => (highlightKey ? matchingNames(highlightKey.split('\n'), devices.keys()) : []),
-    [highlightKey, devices]
-  );
-  const highlightedKey = highlighted.join('\n');
-  const emphasis = useMemo(() => {
-    const names = new Set(highlightedKey ? highlightedKey.split('\n') : []);
-    const roles = new Set(rolesKey ? rolesKey.split('\n') : []);
-    return (device: Device) => emphasisOf(device, names, roles);
-  }, [highlightedKey, rolesKey]);
-
-  // The legend counts the devices drawn: not those out of the role filter, nor those of a hidden 0U band.
-  const legendDevices = useMemo(
-    () =>
-      [...devices.values()]
-        .map((d) => d.device)
-        .filter((d) => emphasis(d) !== 'filtered' && (showZeroU || !zeroU.has(d))),
-    [devices, emphasis, showZeroU, zeroU]
-  );
-  // The template, when set, is read once for all the devices.
-  const labelOf = useMemo(
-    () =>
-      template
-        ? labelTemplate(template, model.devicesFrame, columns)
-        : (device: Device, look: DeviceLook | undefined) => deviceLabel(device, look, label, labelSeparator),
-    [template, model.devicesFrame, columns, label, labelSeparator]
-  );
-  // Ids of the hatch patterns, the same object for every render so that the memoized devices are not drawn again.
-  const hatch = useMemo(() => ({ unmonitored: `rack-unmonitored-${uid}`, conflict: `rack-conflict-${uid}` }), [uid]);
-
-  // The clear button sits in a bar above the racks while devices are highlighted, and the legend below them: never
-  // over them.
-  const drawHeight =
-    height - (highlighted.length > 0 ? CLEAR_BAR_HEIGHT : 0) - (showLegend && model.racks.length ? LEGEND_HEIGHT : 0);
+  const { model, devices, zeroU, looks, labelOf } = useRackModel(data.series, options, racksKey, theme);
+  const { highlighted, emphasis, legendDevices } = useEmphasis(devices, highlightKey, rolesKey, zeroU, showZeroU);
   const linkDefaults = fieldConfig.defaults.links;
+  const { wrapperRef, scrollerRef, cardRef, hovered, menu, closeMenu, ...handlers } = useRackInteractions({
+    model,
+    devices,
+    columns,
+    linkDefaults,
+    showTooltip,
+    width,
+    height,
+  });
   // Devices with links are buttons; without, they still take the focus to show their card.
-  const keyboardRole = hasLinks(model.devicesFrame) ? 'button' : options.showTooltip ? 'img' : undefined;
+  const keyboardRole = hasLinks(model.devicesFrame) ? 'button' : showTooltip ? 'img' : undefined;
   const racksWithLinks = useMemo(
     () =>
       new Set(
@@ -170,101 +63,8 @@ export const RackPanel = ({ data, options: saved, width, height, fieldConfig, id
       ),
     [model, linkDefaults]
   );
-
-  // The SVG only depends on the data, the options, the variables and the theme: hover state stays out of it.
-  const svg = useMemo(() => {
-    const {
-      views,
-      width: contentWidth,
-      height: contentHeight,
-    } = panelGeometry(
-      model.racks,
-      face,
-      autoUnitHeight && !fitToPanel ? fittingUnitHeight(model.racks, drawHeight) : unitHeight,
-      showUnitNumbers,
-      showZeroU
-    );
-    const size = fitToPanel
-      ? { width, height: drawHeight, viewBox: `0 0 ${contentWidth} ${contentHeight}` }
-      : { width: contentWidth, height: contentHeight };
-    const scale = fitToPanel && contentWidth > 0 ? Math.min(width / contentWidth, drawHeight / contentHeight) : 1;
-    return (
-      <svg {...size} className={styles.svg} fontFamily={theme.typography.fontFamily} data-testid="rack-svg">
-        <defs>
-          <pattern
-            id={hatch.unmonitored}
-            patternUnits="userSpaceOnUse"
-            width={6}
-            height={6}
-            patternTransform="rotate(45)"
-          >
-            <line x1={0} y1={0} x2={0} y2={6} stroke={theme.colors.border.medium} strokeWidth={2} />
-          </pattern>
-          <pattern
-            id={hatch.conflict}
-            patternUnits="userSpaceOnUse"
-            width={8}
-            height={8}
-            patternTransform="rotate(-45)"
-          >
-            <line x1={0} y1={0} x2={0} y2={8} stroke={theme.colors.warning.main} strokeWidth={3} />
-          </pattern>
-        </defs>
-        {views.map((view) => (
-          <g key={`${view.layout.rack.id}-${view.face}`} transform={`translate(${view.x}, ${view.y})`}>
-            <Rack
-              layout={view.layout}
-              face={view.face}
-              geometry={view.geometry}
-              overflow={view.overflow}
-              caption={face === 'both' ? (view.face === 'front' ? 'Front' : 'Rear') : undefined}
-              looks={looks}
-              label={labelOf}
-              theme={theme}
-              hatch={hatch}
-              emphasis={emphasis}
-              showSummary={showRackSummary}
-              showState={showRackState}
-              freeSpace={freeSpaceUnits > 0 ? { units: freeSpaceUnits, fullDepth: freeSpaceFullDepth } : undefined}
-              keyboard={keyboardRole}
-              hasLinks={racksWithLinks.has(view.layout.rack.id)}
-              scale={scale}
-            />
-          </g>
-        ))}
-      </svg>
-    );
-  }, [
-    model,
-    looks,
-    emphasis,
-    face,
-    unitHeight,
-    autoUnitHeight,
-    showUnitNumbers,
-    showZeroU,
-    showRackSummary,
-    showRackState,
-    freeSpaceUnits,
-    freeSpaceFullDepth,
-    keyboardRole,
-    racksWithLinks,
-    fitToPanel,
-    width,
-    drawHeight,
-    labelOf,
-    theme,
-    hatch,
-    styles.svg,
-  ]);
-
-  // The devices are one stop in the tab order: keep one, the last focused device or the top one of the first rack.
-  // Only a new drawing can remove it: not checked on the other renders, such as hover.
-  useLayoutEffect(() => {
-    if (scroller.current) {
-      ensureTabStop(scroller.current);
-    }
-  }, [svg]);
+  // Ids of the hatch patterns, the same object for every render so that the memoized devices are not drawn again.
+  const hatch = useMemo(() => ({ unmonitored: `rack-unmonitored-${uid}`, conflict: `rack-conflict-${uid}` }), [uid]);
 
   if (data.series.length === 0) {
     return <PanelDataErrorView fieldConfig={fieldConfig} panelId={id} data={data} needsStringField />;
@@ -285,85 +85,11 @@ export const RackPanel = ({ data, options: saved, width, height, fieldConfig, id
     );
   }
 
-  const onMouseMove = (event: React.MouseEvent) => {
-    const name = deviceAt(event.target);
-    if (!name || !options.showTooltip || menu) {
-      setHover(null);
-      return;
-    }
-    const box = wrapper.current!.getBoundingClientRect();
-    pointer.current = { x: event.clientX - box.left, y: event.clientY - box.top };
-    if (hover?.device === name) {
-      placeCard();
-    } else {
-      setHover({ device: name });
-    }
-  };
-
-  /** Links of the device or of the rack name under the pointer or the focus. */
-  const linksAt = (target: EventTarget): LinkModel[] => {
-    const hit = devices.get(deviceAt(target) ?? '');
-    if (hit) {
-      const deviceField = model.devicesFrame && columnField(model.devicesFrame, 'device', options.columns);
-      return deviceLinks(model.devicesFrame, hit.device.row, linkDefaults, deviceField);
-    }
-    const rackId = (target as Element).closest?.('[data-rack]')?.getAttribute('data-rack');
-    const rack = model.racks.find((r) => r.rack.id === rackId)?.rack;
-    return rack ? rackLinks(model.racksFrame, rack.row, linkDefaults) : [];
-  };
-
-  const open = (links: LinkModel[], event: React.MouseEvent | React.KeyboardEvent, x: number, y: number) => {
-    if (links.length === 1) {
-      followLink(links[0], event as React.MouseEvent);
-    } else if (links.length > 1) {
-      setHover(null);
-      setMenu({ x, y, links });
-    }
-  };
-
-  const onClick = (event: React.MouseEvent) => open(linksAt(event.target), event, event.clientX, event.clientY);
-
-  // Keyboard: the card follows the focus, Enter or Space opens the links, Escape closes the card and the menu.
-  const onFocus = (event: React.FocusEvent) => {
-    const name = deviceAt(event.target);
-    if (name && scroller.current) {
-      makeTabStop(scroller.current, event.target as HTMLElement);
-    }
-    if (!name || !options.showTooltip) {
-      return;
-    }
-    const box = wrapper.current!.getBoundingClientRect();
-    const rect = (event.target as Element).getBoundingClientRect();
-    pointer.current = { x: rect.right - box.left, y: rect.top + rect.height / 2 - box.top };
-    setHover({ device: name });
-  };
-
-  const onKeyDown = (event: React.KeyboardEvent) => {
-    const device = deviceAt(event.target) ? (event.target as Element).closest<HTMLElement>('[data-device]') : null;
-    const next = device && scroller.current ? deviceFor(scroller.current, device, event.key) : undefined;
-    if (next) {
-      event.preventDefault();
-      next.focus();
-    } else if (event.key === 'Escape') {
-      // Escape closes the card or the menu first; with nothing open, it goes on to Grafana (leaving the panel view).
-      if (hover || menu) {
-        event.stopPropagation();
-      }
-      setHover(null);
-      setMenu(null);
-    } else if (event.key === 'Enter' || event.key === ' ') {
-      const links = linksAt(event.target);
-      if (links.length > 0) {
-        event.preventDefault();
-        const rect = (event.target as Element).getBoundingClientRect();
-        open(links, event, rect.left + rect.width / 2, rect.bottom);
-      }
-    }
-  };
-
-  const hovered = hover ? devices.get(hover.device) : undefined;
+  // The clear button sits in a bar above the racks while devices are highlighted, and the legend below them: never
+  // over them.
+  const drawHeight = height - (highlighted.length > 0 ? CLEAR_BAR_HEIGHT : 0) - (showLegend ? LEGEND_HEIGHT : 0);
   return (
-    <div ref={wrapper} className={styles.wrapper} style={{ width, height }} data-testid="rack-panel">
+    <div ref={wrapperRef} className={styles.wrapper} style={{ width, height }} data-testid="rack-panel">
       {highlighted.length > 0 && (
         <div className={styles.bar} style={{ height: CLEAR_BAR_HEIGHT }}>
           <ClearHighlight variable={options.highlightVariable} highlighted={highlighted} />
@@ -371,20 +97,36 @@ export const RackPanel = ({ data, options: saved, width, height, fieldConfig, id
       )}
       <div
         className={cx(styles.scroll, styles.focus, hasLinks(model.devicesFrame) && styles.clickable)}
-        style={{ height: drawHeight, overflow: fitToPanel ? 'hidden' : 'auto' }}
-        onMouseMove={onMouseMove}
-        onMouseLeave={() => setHover(null)}
-        onClick={onClick}
-        ref={scroller}
-        onFocus={onFocus}
-        onBlur={() => setHover(null)}
-        onKeyDown={onKeyDown}
+        style={{ height: drawHeight, overflow: options.fitToPanel ? 'hidden' : 'auto' }}
+        ref={scrollerRef}
+        {...handlers}
       >
-        {svg}
+        <RackDrawing
+          racks={model.racks}
+          face={options.face}
+          looks={looks}
+          label={labelOf}
+          emphasis={emphasis}
+          theme={theme}
+          hatch={hatch}
+          unitHeight={options.unitHeight}
+          autoUnitHeight={options.autoUnitHeight}
+          fitToPanel={options.fitToPanel}
+          showUnitNumbers={options.showUnitNumbers}
+          showZeroU={showZeroU}
+          showRackSummary={options.showRackSummary}
+          showRackState={options.showRackState}
+          freeSpaceUnits={freeSpaceUnits}
+          freeSpaceFullDepth={options.freeSpaceFullDepth}
+          keyboard={keyboardRole}
+          racksWithLinks={racksWithLinks}
+          width={width}
+          height={drawHeight}
+        />
       </div>
-      {hover && hovered && (
+      {hovered && (
         <div
-          ref={card}
+          ref={cardRef}
           className={styles.tooltip}
           style={{
             maxWidth: Math.min(360, width - 2 * TOOLTIP_OFFSET),
@@ -405,7 +147,7 @@ export const RackPanel = ({ data, options: saved, width, height, fieldConfig, id
         <ContextMenu
           x={menu.x}
           y={menu.y}
-          onClose={() => setMenu(null)}
+          onClose={closeMenu}
           renderMenuItems={() =>
             linkModelToContextMenuItems(() => menu.links).map((item, i) => <MenuItem key={i} {...item} />)
           }
@@ -449,12 +191,6 @@ const getStyles = (theme: GrafanaTheme2) => ({
       stroke: theme.colors.primary.main,
       strokeWidth: 0.6,
     },
-  }),
-  svg: css({
-    display: 'block',
-    // Centred when it fits, scrolled from the left when it does not.
-    margin: '0 auto',
-    userSelect: 'none',
   }),
   empty: css({
     display: 'flex',
