@@ -333,11 +333,12 @@ in service and the others (`offline`, `planned`, `failed`...) out of service. Ad
 service values** to keep them out of the red, or leave `status` out of the query to draw every device as not
 monitored.
 
-Live state and colour come from your monitoring (Prometheus, Zabbix, LibreNMS...): add its queries, time series
-labelled with the device as in the [Prometheus](#prometheus) and [Zabbix](#zabbix) recipes, or a table joined to the
-inventory with **Join by field** on `device`. To take the state from the monitoring rather than from NetBox, map
-**status** to its column in the **Columns** options. The device names of NetBox and of the monitoring usually match on
-the hostname; otherwise align them with the **Rename by regex** transformation or, in PromQL, with `label_replace`.
+Live state and colour come from your monitoring (Prometheus, Zabbix, LibreNMS...): add its queries, time series labelled
+with the device as in the [Prometheus](#prometheus) and [Zabbix](#zabbix) recipes, or a table joined to the inventory
+with **Join by field** on `device` as in the [LibreNMS](#librenms) recipe. To take the state from the monitoring rather
+than from NetBox, map **status** to its column in the **Columns** options. The device names of NetBox and of the
+monitoring usually match on the hostname; otherwise align them in the queries, for instance with `label_replace` in
+PromQL. The **Rename by regex** transformation renames columns, not the values in them.
 
 ### Nautobot with the Infinity data source
 
@@ -458,6 +459,29 @@ the panel takes the state, the colour and the alerts from Zabbix in the same pan
   and `5`, High and Disaster, for red badges.
 
 The host names of Zabbix must be the device names of the inventory. Checked on Zabbix 7.0 with the Zabbix plugin 6.10.
+
+### LibreNMS
+
+LibreNMS has no rack positions: the inventory comes from another source, NetBox or a CSV file for instance, and the
+panel takes the state and the alerts from the API of LibreNMS, in the same panel with the **Mixed** data source. Create
+an API token in LibreNMS (**API** > **API Tokens** in the settings menu, or `lnms api:token-create <user>`) and set up
+an [Infinity](https://grafana.com/grafana/plugins/yesoreyeram-infinity-datasource/) data source for your LibreNMS URL,
+with an `X-Auth-Token` header holding the token, kept as a secure header. Then:
+
+- A: the inventory, a table with `device`, `rack`, `position`...
+- B: Infinity, type **JSON**, source **URL**, URL `https://librenms.example.com/api/v0/devices`, parser **Backend**,
+  root selector `devices`, with the columns `hostname` as `device` (string) and `status` as `status` (number). The
+  status is 1 when the device answers and 0 when it is down, and `1` is a default **In service value**.
+- C: Infinity, the same way, URL `https://librenms.example.com/api/v0/alerts` with the URL parameter `state` = `1`
+  for the active alerts, root selector `alerts`, with the columns `hostname` as `device`, `name` as `alertname` and
+  `severity` as `severity` (strings). The `critical` alerts of LibreNMS get red badges, the `warning` ones orange.
+
+Join A and B with **Join by field** on `device`, mode **OUTER (TABULAR)**, with its **Apply to** filter on A and B so
+that C stays apart as the alerts frame. If the inventory has its own `status` column, name the LibreNMS one
+differently, `librenms_status` for instance, and map **status** to it in the **Columns** options.
+
+The hostnames of LibreNMS must be the device names of the inventory. When the devices were added by IP address, take
+`sysName` as `device` in B, and `details.rule.0.sysName` in C. Checked on LibreNMS 26.11 with Infinity 4.1.
 
 ### Power
 
