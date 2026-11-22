@@ -123,11 +123,12 @@ jobs:
           ARCHIVE: ${{ steps.metadata.outputs.archive }}
           PLUGIN_ID: ${{ steps.metadata.outputs.plugin-id }}
 
-      - name: Check plugin.json
-        run: |
-          docker run --pull=always \
-            -v $PWD/${ARCHIVE}:/archive.zip \
-            grafana/plugin-validator-cli -analyzer=metadatavalid /archive.zip
+      # The full validator, with the source code, as the release workflow and the review of the catalog run it: its
+      # errors fail the build, its warnings show as annotations. The latest version, as Grafana advises, so that a new
+      # check shows up here before the next release. Not strict: the pull requests of Dependabot cannot sign, and an
+      # unsigned plugin is a warning.
+      - name: Validate plugin
+        run: npx -y @grafana/plugin-validator@latest -ghaOutput -sourceCodeUri file://./ ${ARCHIVE}
         env:
           ARCHIVE: ${{ steps.metadata.outputs.archive }}
 
