@@ -199,6 +199,14 @@ export const plugin = new PanelPlugin<RackElevationOptions>(RackPanel)
         defaultValue: DEFAULT_OPTIONS.showRackSummary,
       })
       .addBooleanSwitch({
+        path: 'showRackState',
+        name: 'Show rack state',
+        description:
+          'A dot next to the rack name: red when a device is out of service, green when all monitored devices are in service, grey when none is monitored; and the count of active alerts.',
+        category: DISPLAY,
+        defaultValue: DEFAULT_OPTIONS.showRackState,
+      })
+      .addBooleanSwitch({
         path: 'showLegend',
         name: 'Show legend',
         description: 'Devices in service, out of service and not monitored, and active alerts, at the bottom.',
@@ -241,7 +249,7 @@ export const plugin = new PanelPlugin<RackElevationOptions>(RackPanel)
         path: 'highlightVariable',
         name: 'Highlight variable',
         description:
-          'Dashboard variable holding device names, written with its $ so that the panel follows its changes: those devices get a thick border and the others fade, for instance when arriving from an alert with var-device=<name>. Nothing happens if the dashboard has no such variable.',
+          'Dashboard variable holding device names, written with its $ so that the panel follows its changes: those devices get a thick border and the others fade, for instance when arriving from an alert with var-device=<name>. A * in a value stands for any characters, as in sw-a1-*. Nothing happens if the dashboard has no such variable.',
         category: INTERACTIONS,
         defaultValue: DEFAULT_OPTIONS.highlightVariable,
       })

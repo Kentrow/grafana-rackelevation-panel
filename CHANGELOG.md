@@ -1,6 +1,13 @@
 # Changelog
 
-## Unreleased
+## [1.1.0](https://github.com/Kentrow/grafana-rackelevation-panel/tree/v1.1.0) (2026-11-22)
+
+**Features:**
+
+- The state of each rack at a glance, next to its name: a red dot when one of its devices is out of service, green
+  when its monitored devices are in service, grey when none is monitored, and the count of its active alerts. As in
+  the legend, only the devices of the role filter count. The new **Show rack state** option turns it off.
+- `*` wildcards in the highlight variable: `sw-a1-*` highlights every device whose name starts with `sw-a1-`.
 
 **Fixes:**
 

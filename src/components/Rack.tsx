@@ -11,6 +11,7 @@ import {
   unitNumberAt,
   ZERO_U_GAP,
 } from '../layout/geometry';
+import { rackHealth } from '../layout/health';
 import { Device, Face, RackLayout } from '../types';
 import { DeviceLook } from './deviceLook';
 import { DeviceColors, DeviceRect, Emphasis, HatchIds } from './DeviceRect';
@@ -30,6 +31,8 @@ interface Props {
   emphasis: (device: Device) => Emphasis | undefined;
   /** Free units of the face after the site. */
   showSummary?: boolean;
+  /** Worst device state and active alerts next to the rack name. */
+  showState?: boolean;
   /** The racks frame has data links for this rack: its name opens them. */
   hasLinks?: boolean;
   /** Scale of the drawing on screen, below 1 when fitted to a small panel: labels follow the unit height on screen. */
@@ -57,6 +60,7 @@ export const Rack = ({
   hatch,
   emphasis,
   showSummary = false,
+  showState = false,
   hasLinks = false,
   scale = 1,
 }: Props) => {
@@ -79,7 +83,18 @@ export const Rack = ({
     innerWidth + 2 * FRAME + zeroUWidth,
     11
   );
-  const title = truncate(rack.name, innerWidth + 2 * FRAME + zeroUWidth, 13);
+  // As in the legend: devices out of the role filter, and those of a hidden 0U band, do not count.
+  const health = rackHealth(layout, (d) => emphasis(d) !== 'filtered' && (zeroUWidth > 0 || !layout.zeroU.includes(d)));
+  const stateColor = {
+    down: theme.colors.error.main,
+    up: theme.colors.success.main,
+    unknown: theme.colors.text.disabled,
+  };
+  const showDot = showState && health.state !== undefined;
+  const showAlerts = showState && health.alerts > 0;
+  // Room taken by the dot and the alert count, in characters of the title.
+  const extra = (showDot ? 2 : 0) + (showAlerts ? String(health.alerts).length + 2 : 0);
+  const title = truncate(rack.name, innerWidth + 2 * FRAME + zeroUWidth - extra * 13 * 0.58, 13);
   const warning = theme.colors.warning.main;
   const colors: DeviceColors = {
     warning,
@@ -117,7 +132,17 @@ export const Rack = ({
         role={hasLinks ? 'button' : undefined}
         aria-label={hasLinks ? `Links of rack ${rack.name}` : undefined}
       >
-        <title>{[rack.name, rack.site, `${free} U free of ${rack.uHeight}`].filter(Boolean).join(' · ')}</title>
+        <title>
+          {[
+            rack.name,
+            rack.site,
+            `${free} U free of ${rack.uHeight}`,
+            health.down > 0 ? `${health.down} device${health.down > 1 ? 's' : ''} out of service` : undefined,
+            health.alerts > 0 ? `${health.alerts} active alert${health.alerts > 1 ? 's' : ''}` : undefined,
+          ]
+            .filter(Boolean)
+            .join(' · ')}
+        </title>
         <text
           x={slotsX + innerWidth / 2}
           y={14}
@@ -127,7 +152,26 @@ export const Rack = ({
           fill={hasLinks ? theme.colors.text.link : theme.colors.text.primary}
           textDecoration={hasLinks ? 'underline' : undefined}
         >
+          {showDot && health.state && (
+            <tspan
+              data-testid="rack-state"
+              data-state={health.state}
+              fill={stateColor[health.state]}
+              textDecoration="none"
+            >
+              {'● '}
+            </tspan>
+          )}
           {title}
+          {showAlerts && (
+            <tspan
+              data-testid="rack-alerts"
+              fill={health.critical ? theme.colors.error.main : theme.colors.warning.main}
+              textDecoration="none"
+            >
+              {` ▲${health.alerts}`}
+            </tspan>
+          )}
         </text>
         {subtitle && (
           <text

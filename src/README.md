@@ -9,7 +9,7 @@
 Front and rear views of your racks, unit by unit, drawn from your inventory data and coloured by device state or by
 any metric.
 
-![Two faces of five racks with temperature colours and active alerts](https://raw.githubusercontent.com/Kentrow/grafana-rackelevation-panel/main/src/img/screenshot-racks.png)
+![Two faces of five racks with their state, temperature colours and active alerts](https://raw.githubusercontent.com/Kentrow/grafana-rackelevation-panel/main/src/img/screenshot-racks.png)
 
 The placement comes from the data: when the inventory changes (NetBox, Nautobot, a CMDB, a SQL table, a CSV file),
 the view changes. The panel knows no data source; it reads tables with documented columns, so anything that can
@@ -18,9 +18,10 @@ produce such a table works without extra code.
 - One or several racks side by side, front, rear or both faces, 10-inch or 19-inch, sized to fill the panel.
 - NetBox placement rules: lowest unit, descending numbering, full-depth devices, 0U devices.
 - Colour, unit, value mappings, data links and variables come from the standard Grafana field config.
-- In service, out of service and not monitored states; active alerts badge; free units of each rack; a legend with
-  the counts.
-- Device card on hover, data links on click, highlight of a device from a dashboard variable, role filter.
+- In service, out of service and not monitored states; active alerts badge; the worst state, alerts and free units
+  of each rack; a legend with the counts.
+- Device card on hover, data links on click, highlight of devices from a dashboard variable (wildcards allowed), role
+  filter.
 - Overlapping or overflowing devices are drawn and listed, never hidden.
 
 ## Installation
@@ -96,7 +97,8 @@ When the frame has a time field, as with a Prometheus range query, only the late
 
 Without a racks frame, each rack of the devices is drawn with these defaults and grows to fit its highest device.
 With a racks frame, devices outside the rack are drawn in a dashed overflow zone and listed as problems. The racks
-are drawn in the order of the **Racks** option, then of the racks frame, then of the devices.
+are drawn in the order of the **Racks** option, then of the racks frame, then of the devices. When the **Racks**
+option lists racks, by id or name and with variables if needed, only those are drawn.
 
 ### Alerts (optional)
 
@@ -117,13 +119,16 @@ lists the frames it ignores.
 
 The rules follow NetBox, so that the view matches the rack page of NetBox or Nautobot:
 
-- A device occupies the units from `position` to `position + u_height - 1`.
+- A device occupies the units from `position` to `position + u_height - 1`. Positions and heights can be halves of a
+  unit, as in NetBox: a unit partly taken is not free.
 - With `desc_units`, unit 1 (or `starting_unit`) is at the top, and a device goes down from its position.
 - A full-depth device is drawn on both faces, faded on the opposite face.
 - Devices without position, such as PDUs, go to the 0U band right of the rack.
 - Two overlapping devices are both drawn; the second one in the data is hatched and takes the right half.
-- Problems (overlaps, overflows, duplicates, orphan child devices, unknown racks, ignored frames) are listed under the
-  warning icon in the top right corner. They never stop the drawing.
+- A device further than 4 units from its rack, such as a wrong position U1000 in a 42U rack, is drawn at the outer
+  edge of the overflow zone, without unit numbers; its card and the problems list give its real units.
+- Problems (overlaps, overflows, duplicates, orphan child devices and parent cycles, unknown racks, ignored frames)
+  are listed under the warning icon in the top right corner. They never stop the drawing.
 
 ## Colours
 
@@ -150,7 +155,8 @@ an override **Fields with name**.
   row are available, for instance `https://netbox.example.com/dcim/devices/?q=${__data.fields.device}` or
   `/d/my-device-dashboard?var-device=${__data.fields.device}`. With one link the click follows it directly.
 - **Highlight**: the devices named in the **Highlight variable** (`$device` by default) get a thick border and the
-  others fade. A link from an alert to the dashboard with `var-device=<name>` lands on the device. A button above the
+  others fade. A `*` in a value stands for any characters: `sw-a1-*` highlights every device whose name starts with
+  `sw-a1-`. A link from an alert to the dashboard with `var-device=<name>` lands on the device. A button above the
   racks clears the highlight.
 - **Role filter**: devices of other roles fade and stop reacting, the racks keep their shape. It accepts a variable
   such as `$role`. The legend counts only the devices of the filter.
@@ -158,8 +164,8 @@ an override **Fields with name**.
   of the field config defaults apply to every frame and are written for the devices, so give the racks their own with
   an override **Fields returned by query** on the racks query, such as
   `https://netbox.example.com/dcim/racks/?q=${__data.fields.rack}`.
-- **Keyboard**: Tab moves from device to device and shows the card, Enter opens the links, Escape closes the card and
-  the menu.
+- **Keyboard**: Tab moves from device to device and shows the card, Enter or Space opens the links, Escape closes the
+  card and the menu.
 
 ## Display
 
@@ -168,6 +174,10 @@ an override **Fields with name**.
   down to the panel.
 - Under each rack name, the number of free units of the face, a full-depth device of the other face counting as
   taken.
+- Next to each rack name, the state of the rack at a glance: a red dot when one of its devices is out of service, a
+  green one when its monitored devices are in service, a grey one when none is monitored, and ▲ with the count of
+  its active alerts, red when one is critical. As in the legend, only the devices of the role filter count. Hover
+  the name for the counts; **Show rack state** turns it off.
 - The legend at the bottom counts the devices in service (or with a value), out of service and not monitored, and the
   active alerts.
 
@@ -292,6 +302,8 @@ with its **Apply to** filter on the other queries.
   one is drawn.
 - **x overlaps y** or **x is outside rack**: the inventory places two devices on the same units, or past the rack
   height given by the racks frame.
+- **x has parent y, which is not in the data** or **x is its own ancestor**: the `parent_device` column names a
+  device missing from the frame, or devices are each other's parents.
 - **The highlight does not follow the variable**: write the variable with its `$` in **Highlight variable**.
 
 ## Feedback and contributing

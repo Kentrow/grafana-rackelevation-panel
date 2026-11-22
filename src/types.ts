@@ -51,6 +51,8 @@ export interface RackElevationOptions {
   showUnitNumbers: boolean;
   /** Free units of the face under the rack name. */
   showRackSummary: boolean;
+  /** Worst device state and active alerts of each rack next to its name. */
+  showRackState: boolean;
   /** Device counts by state at the bottom of the panel. */
   showLegend: boolean;
   label: LabelPart[];
@@ -169,6 +171,7 @@ export const DEFAULT_OPTIONS: RackElevationOptions = {
   showZeroU: true,
   showUnitNumbers: true,
   showRackSummary: true,
+  showRackState: true,
   showLegend: true,
   label: ['name'],
   labelSeparator: '·',
