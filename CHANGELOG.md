@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+**Performance:**
+
+- Moving the pointer over a device no longer renders the panel again, only the card moves; going from device to
+  device is about 14 times faster on a room of 1000 devices.
+- A change of highlight draws again only the devices whose emphasis changes, about twice as fast.
+
 **Accessibility:**
 
 - Keyboard: the devices are one stop in the tab order instead of one each (a thousand on a large room); the arrow

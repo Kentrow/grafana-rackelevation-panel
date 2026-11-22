@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { GrafanaTheme2 } from '@grafana/data';
 import {
   FRAME,
@@ -100,13 +100,17 @@ export const Rack = ({
   const extra = (showDot ? 2 : 0) + (showAlerts ? String(health.alerts).length + 2 : 0);
   const title = truncate(rack.name, innerWidth + 2 * FRAME + zeroUWidth - extra * 13 * 0.58, 13);
   const warning = theme.colors.warning.main;
-  const colors: DeviceColors = {
-    warning,
-    critical: theme.colors.error.main,
-    highlight: theme.colors.primary.main,
-    badgeText: theme.colors.getContrastText(warning),
-    badgeRing: theme.colors.background.primary,
-  };
+  // The same object while the theme does not change, so that the memoized devices are not drawn again.
+  const colors: DeviceColors = useMemo(
+    () => ({
+      warning,
+      critical: theme.colors.error.main,
+      highlight: theme.colors.primary.main,
+      badgeText: theme.colors.getContrastText(warning),
+      badgeRing: theme.colors.background.primary,
+    }),
+    [theme, warning]
+  );
   const fontSize = (uHeight: number) => (labelFontSize(u * scale, uHeight) > 0 ? labelFontSize(u, uHeight) : 0);
   // Free units: one background and one path for all the separators, not one element per unit.
   const separators = Array.from({ length: rack.uHeight - 1 }, (_, i) => `M0 ${(i + 1) * u}H${innerWidth}`).join('');
