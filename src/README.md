@@ -331,6 +331,79 @@ monitoring rather than from NetBox, map **status** to its column in the **Column
 monitoring usually match on the hostname; otherwise align them with the **Rename by regex** transformation or, in
 PromQL, with `label_replace`.
 
+### Nautobot with the Infinity data source
+
+Set up the [Infinity](https://grafana.com/grafana/plugins/yesoreyeram-infinity-datasource/) data source for your
+Nautobot URL, with an `Authorization` header holding `Token <token>`, kept as a secure header. Add a query of type
+**GraphQL**, source **URL**, URL `https://nautobot.example.com/api/graphql/`, parser **Backend**, root selector
+`data.devices`, and the query:
+
+```graphql
+query {
+  devices(location: "$location") {
+    name
+    position
+    face
+    status {
+      name
+    }
+    rack {
+      name
+    }
+    role {
+      name
+    }
+    device_type {
+      model
+      u_height
+      is_full_depth
+    }
+    parent_bay {
+      device {
+        name
+      }
+    }
+  }
+}
+```
+
+with the columns:
+
+| Selector                    | As              | Type    |
+| --------------------------- | --------------- | ------- |
+| `name`                      | `device`        | string  |
+| `rack.name`                 | `rack`          | string  |
+| `position`                  | `position`      | number  |
+| `device_type.u_height`      | `u_height`      | number  |
+| `face`                      | `face`          | string  |
+| `status.name`               | `status`        | string  |
+| `device_type.is_full_depth` | `is_full_depth` | boolean |
+| `role.name`                 | `role`          | string  |
+| `device_type.model`         | `model`         | string  |
+| `parent_bay.device.name`    | `parent_device` | string  |
+
+A second GraphQL query, root selector `data.racks`, gives the racks frame:
+
+```graphql
+query {
+  racks(location: "$location") {
+    name
+    u_height
+    desc_units
+    width
+    location {
+      name
+    }
+  }
+}
+```
+
+with `name` as `rack`, `u_height`, `desc_units`, `width` and `location.name` as `site`. Keep `width` a **string**:
+Nautobot sends it as `A_19` or `A_10`, which the panel reads as 19 or 10 inches, as it reads `FRONT` and `REAR` for
+the faces. Nautobot racks always start at unit 1. The `Active` status is a default **In service value**.
+
+These queries were checked on Nautobot 3.2. For the state and the colour from the monitoring, join it as for NetBox.
+
 ### Prometheus
 
 If an exporter or recording rule publishes the inventory as an info metric, for instance
