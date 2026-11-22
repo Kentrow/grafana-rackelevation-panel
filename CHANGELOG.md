@@ -44,6 +44,11 @@
 - No axe violation (WCAG 2.1 A and AA) on the demo and fixtures dashboards, in both themes, checked in the end-to-end
   tests.
 
+**Changes:**
+
+- Visual regression tests: the demo panels and a device card, in the dark and light themes, compared with their
+  baselines in the CI, in the Playwright image of Docker. No change in the panel.
+
 **Documentation:**
 
 - Example dashboards to import, linked from the README: from CSV files through Infinity, and from NetBox and

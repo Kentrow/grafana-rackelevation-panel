@@ -18,6 +18,7 @@ npm run lint
 npm run test       # unit tests, watch mode; npm run test:ci for one run
 npm run test:perf  # performance budget of large.csv, run apart and in band
 npm run e2e        # Playwright tests against the running server
+npm run e2e:visual # screenshots of the demo dashboard compared with their baselines, in Docker
 ```
 
 Changes to `src/plugin.json` need a restart of the Grafana server.
@@ -66,12 +67,27 @@ The catalog shows the screenshots of `src/img/` listed in `src/plugin.json`, and
   `python3 -m venv /tmp/gif && /tmp/gif/bin/pip install pillow && /tmp/gif/bin/python scripts/make-gif.py`. Keep the
   GIF under a megabyte or two: the catalog page loads it.
 
+## Visual regression tests
+
+`tests/visual.spec.ts` compares the three panels of the demo dashboard and a device card, in the dark and light themes,
+with the baselines of `tests/visual.spec.ts-snapshots/`. Text is rendered differently from one system to another, so
+`npm run e2e:visual` runs them in the Playwright image of Docker (the version of `@playwright/test`), joined to the
+network of the Grafana container: start the server first. `npm run e2e` leaves them out; the CI runs them in a job of
+their own, on the Grafana version of `docker-compose.yaml`.
+
+When the drawing changes on purpose, write the baselines again with `npm run e2e:visual:update`, look at the new images
+and commit them with the change. Do the same after changing the default Grafana version of `docker-compose.yaml`. When
+the CI job fails, its `visual-differences` artifact holds the expected, actual and diff images. A difference of up to
+50 pixels is accepted: the text of an arm64 machine, such as a recent Mac, and of the amd64 runners differs by a few
+dozen faint pixels.
+
 ## Pull requests
 
-Before opening one, run `npm run typecheck`, `npm run lint`, `npm run test:ci` and, for a change of the drawing or
-the interactions, `npm run e2e`. Add a line to `CHANGELOG.md` under the next version. The CI also runs the full plugin
-validator on the archive, as the review of the catalog does; to run it yourself, zip `dist` in a folder named after the
-plugin id and run `npx -y @grafana/plugin-validator@latest -sourceCodeUri file://./ <archive>.zip`.
+Before opening one, run `npm run typecheck`, `npm run lint`, `npm run test:ci` and, for a change of the drawing or the
+interactions, `npm run e2e` and `npm run e2e:visual`. Add a line to `CHANGELOG.md` under the next version. The CI also
+runs the full plugin validator on the archive, as the review of the catalog does; to run it yourself, zip `dist` in a
+folder named after the plugin id and run `npx -y @grafana/plugin-validator@latest -sourceCodeUri file://./
+<archive>.zip`.
 
 ## Releases
 
