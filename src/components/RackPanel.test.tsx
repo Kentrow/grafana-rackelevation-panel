@@ -21,6 +21,22 @@ describe('RackPanel', () => {
     expect(rack.querySelectorAll('[data-testid^="device-"]')).toHaveLength(6);
   });
 
+  it('shows the worst device state and the active alerts of each rack next to its name', () => {
+    const series = [
+      csvToFrame('device,rack,position,status\nsw-01,R1,1,down\nsrv-01,R1,2,up\nsrv-02,R2,1,up\n', 'A'),
+      csvToFrame('device,alertname,severity\nsrv-02,HighTemp,warning\nsrv-02,DiskFull,warning\n', 'C'),
+    ];
+    const { rerender } = render(<RackPanel {...props(series)} />);
+    const header = (rack: string) => within(screen.getByTestId(`rack-${rack}`)).getByTestId('rack-header');
+    expect(within(header('R1')).getByTestId('rack-state')).toHaveAttribute('data-state', 'down');
+    expect(within(header('R1')).queryByTestId('rack-alerts')).toBeNull();
+    expect(within(header('R2')).getByTestId('rack-state')).toHaveAttribute('data-state', 'up');
+    expect(within(header('R2')).getByTestId('rack-alerts')).toHaveTextContent('2');
+    expect(header('R1').querySelector('title')).toHaveTextContent('1 device out of service');
+    rerender(<RackPanel {...props(series, { showRackState: false })} />);
+    expect(screen.queryByTestId('rack-state')).toBeNull();
+  });
+
   it('numbers the overflow zone, except the units of a device drawn there far from its position', () => {
     const series = [
       csvToFrame('device,rack,position\ntypo,R1,1000\nnear,R1,44\n', 'A'),

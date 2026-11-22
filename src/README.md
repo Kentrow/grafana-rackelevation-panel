@@ -18,8 +18,8 @@ produce such a table works without extra code.
 - One or several racks side by side, front, rear or both faces, 10-inch or 19-inch, sized to fill the panel.
 - NetBox placement rules: lowest unit, descending numbering, full-depth devices, 0U devices.
 - Colour, unit, value mappings, data links and variables come from the standard Grafana field config.
-- In service, out of service and not monitored states; active alerts badge; free units of each rack; a legend with
-  the counts.
+- In service, out of service and not monitored states; active alerts badge; the worst state, alerts and free units
+  of each rack; a legend with the counts.
 - Device card on hover, data links on click, highlight of a device from a dashboard variable, role filter.
 - Overlapping or overflowing devices are drawn and listed, never hidden.
 
@@ -169,6 +169,9 @@ an override **Fields with name**.
   down to the panel.
 - Under each rack name, the number of free units of the face, a full-depth device of the other face counting as
   taken.
+- Next to each rack name, the state of the rack at a glance: a red dot when one of its devices is out of service, a
+  green one when its monitored devices are in service, a grey one when none is monitored, and ▲ with the count of
+  its active alerts, red when one is critical. Hover the name for the counts; **Show rack state** turns it off.
 - The legend at the bottom counts the devices in service (or with a value), out of service and not monitored, and the
   active alerts.
 

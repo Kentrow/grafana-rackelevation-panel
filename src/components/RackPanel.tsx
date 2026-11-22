@@ -69,6 +69,7 @@ export const RackPanel = ({ data, options: saved, width, height, fieldConfig, id
     showZeroU,
     showUnitNumbers,
     showRackSummary,
+    showRackState,
     showLegend,
     label,
     labelSeparator,
@@ -189,6 +190,7 @@ export const RackPanel = ({ data, options: saved, width, height, fieldConfig, id
               hatch={hatch}
               emphasis={emphasis}
               showSummary={showRackSummary}
+              showState={showRackState}
               hasLinks={racksWithLinks.has(view.layout.rack.id)}
               scale={scale}
             />
@@ -206,6 +208,7 @@ export const RackPanel = ({ data, options: saved, width, height, fieldConfig, id
     showUnitNumbers,
     showZeroU,
     showRackSummary,
+    showRackState,
     racksWithLinks,
     fitToPanel,
     width,
