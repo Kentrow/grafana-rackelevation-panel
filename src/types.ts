@@ -67,6 +67,8 @@ export interface RackElevationOptions {
   roles: string[];
   highlightVariable: string;
   showTooltip: boolean;
+  /** Extra columns of the device card, in this order. Empty: all of them. */
+  cardColumns: string[];
 }
 
 export type Face = 'front' | 'rear';
@@ -193,4 +195,5 @@ export const DEFAULT_OPTIONS: RackElevationOptions = {
   // With the $, Grafana knows that the panel depends on the variable and redraws it when the variable changes.
   highlightVariable: '$device',
   showTooltip: true,
+  cardColumns: [],
 };

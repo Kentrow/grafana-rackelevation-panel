@@ -1,7 +1,7 @@
 import { FieldType, toDataFrame } from '@grafana/data';
 import { csvToFrame } from '../testing/fixtures';
 import { DEFAULT_UP_VALUES } from './status';
-import { extraFields, readAlerts, readDevices, readRacks, toBoolean, toNumber } from './mapping';
+import { cardFields, extraFields, readAlerts, readDevices, readRacks, toBoolean, toNumber } from './mapping';
 
 describe('readDevices', () => {
   it('applies the NetBox defaults: 1U, front, full depth, no status means unknown', () => {
@@ -139,6 +139,18 @@ describe('range queries', () => {
       ['sw-01', 1],
       ['sw-02', 2],
     ]);
+  });
+});
+
+describe('cardFields', () => {
+  const frame = csvToFrame('device,rack,serial,ip,owner,status\nsrv-01,R1,ABC123,10.0.0.1,ops,up\n', 'A');
+
+  it('lists every extra column without a choice', () => {
+    expect(cardFields(frame, {}, [], []).map((f) => f.name)).toEqual(['serial', 'ip', 'owner']);
+  });
+
+  it('lists only the chosen columns, in the order chosen, by name or display name, ignoring case', () => {
+    expect(cardFields(frame, {}, [], ['owner', 'IP', 'nope']).map((f) => f.name)).toEqual(['owner', 'ip']);
   });
 });
 

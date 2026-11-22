@@ -2,7 +2,7 @@ import React from 'react';
 import { css } from '@emotion/css';
 import { DataFrame, GrafanaTheme2 } from '@grafana/data';
 import { useStyles2 } from '@grafana/ui';
-import { extraFields, toText } from '../data/mapping';
+import { cardFields, toText } from '../data/mapping';
 import { unitRange } from '../layout/errors';
 import { powerText } from '../layout/health';
 import { ColumnMapping, Device, Rack } from '../types';
@@ -15,6 +15,8 @@ interface Props {
   frame?: DataFrame;
   columns: ColumnMapping;
   valueFields: string[];
+  /** Extra columns to show, in this order; all of them when empty. */
+  cardColumns?: string[];
 }
 
 const STATES = { up: 'In service', down: 'Out of service', unknown: 'Not monitored' };
@@ -27,12 +29,13 @@ function extraValues(
   frame: DataFrame | undefined,
   columns: ColumnMapping,
   valueFields: string[],
+  cardColumns: string[] | undefined,
   row: number
 ): Array<[string, string]> {
   if (!frame) {
     return [];
   }
-  return extraFields(frame, columns, valueFields).flatMap((field): Array<[string, string]> => {
+  return cardFields(frame, columns, valueFields, cardColumns).flatMap((field): Array<[string, string]> => {
     const text = toText(field.values[row]);
     if (text === undefined) {
       return [];
@@ -42,7 +45,7 @@ function extraValues(
 }
 
 /** Device card shown on hover. */
-export const DeviceTooltip = ({ device, rack, look, frame, columns, valueFields }: Props) => {
+export const DeviceTooltip = ({ device, rack, look, frame, columns, valueFields, cardColumns }: Props) => {
   const styles = useStyles2(getStyles);
   const units =
     device.position === undefined || device.uHeight <= 0
@@ -56,7 +59,7 @@ export const DeviceTooltip = ({ device, rack, look, frame, columns, valueFields 
     ['Face', `${device.face}${device.fullDepth ? ', full depth' : ''}`],
     ['Value', look?.valueText],
     ['Power', device.power !== undefined ? powerText({ draw: device.power }) : undefined],
-    ...extraValues(frame, columns, valueFields, device.row),
+    ...extraValues(frame, columns, valueFields, cardColumns, device.row),
   ];
   return (
     <div data-testid="device-tooltip">

@@ -4,6 +4,8 @@
 
 **Features:**
 
+- Card columns: **Card columns** picks the extra columns of the device card and their order; empty, all of them as
+  before.
 - Power: a `power` column on the devices and a `power_capacity` column on the racks show the draw of each rack against
   its capacity, on a line under its name and as a gauge in the top of the frame, green, orange from 80 %, red over
   100 %. The card shows the draw of the device. The demo racks have power data.

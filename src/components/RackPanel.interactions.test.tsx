@@ -102,6 +102,14 @@ describe('tooltip', () => {
     expect(within(screen.getByTestId('device-tooltip')).getByText('1.25 kW')).toBeInTheDocument();
   });
 
+  it('shows only the extra columns chosen for the card, in their order', () => {
+    render(<RackPanel {...panelProps(loadFixture('multi-rack'), { cardColumns: ['serial'] })} />);
+    hover('pdu-a1-a');
+    const card = screen.getByTestId('device-tooltip');
+    expect(within(card).getByText('serial')).toBeInTheDocument();
+    expect(within(card).queryByText('current')).toBeNull();
+  });
+
   it('can be switched off', () => {
     render(<RackPanel {...panelProps(loadFixture('basic'), { showTooltip: false })} />);
     hover('fw-hq-01');
