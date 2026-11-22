@@ -17,12 +17,13 @@ produce such a table works without extra code.
 
 - One or several racks side by side, front, rear or both faces, 10-inch or 19-inch, sized to fill the panel.
 - Where a new device fits: the free blocks of each rack for a given height.
+- Power draw of each rack against its capacity, with a gauge.
 - NetBox placement rules: lowest unit, descending numbering, full-depth devices, 0U devices.
 - Colour, unit, value mappings, data links and variables come from the standard Grafana field config.
 - In service, out of service and not monitored states; active alerts badge; the worst state, alerts and free units
   of each rack; a legend with the counts.
-- Device card on hover, data links on click, highlight of devices from a dashboard variable (wildcards allowed), role
-  filter.
+- Labels from a template of any columns; a device card on hover with the columns you pick; data links on click.
+- Highlight of devices from a dashboard variable (wildcards allowed), role filter, keyboard navigation.
 - Overlapping or overflowing devices are drawn and listed, never hidden.
 
 ![Tour of the demo dashboard: device card on hover, highlight with a wildcard, data links and keyboard](https://raw.githubusercontent.com/Kentrow/grafana-rackelevation-panel/main/src/img/demo.gif)

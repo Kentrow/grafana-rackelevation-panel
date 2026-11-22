@@ -1,32 +1,19 @@
 # Changelog
 
-## Unreleased
+## [1.2.0](https://github.com/Kentrow/grafana-rackelevation-panel/tree/v1.2.0) (2026-11-22)
 
 **Features:**
 
-- Card columns: **Card columns** picks the extra columns of the device card and their order; empty, all of them as
-  before.
-- Power: a `power` column on the devices and a `power_capacity` column on the racks show the draw of each rack against
-  its capacity, on a line under its name and as a gauge in the top of the frame, green, orange from 80 %, red over
-  100 %. The card shows the draw of the device. The demo racks have power data.
 - Free space: **Free space for** a new device of a given height, typed or from a variable such as `$space`, outlines
   the blocks of free units where it fits on each face, on both faces for a full-depth device. The demo dashboard has a
   **Free space (U)** variable.
+- Power: a `power` column on the devices and a `power_capacity` column on the racks show the draw of each rack against
+  its capacity, on a line under its name and as a gauge in the top of the frame, green, orange from 80 %, red over
+  100 %. The card shows the draw of the device. The demo racks have power data.
 - Label templates: a **Label template** such as `{device} · {ip}` writes any column of the device row in the label,
   formatted as Grafana displays it, `{value}` being the colour value with its unit.
-
-**Fixes:**
-
-- The standard option **No value** is no longer offered: the panel never draws an empty value. Min and max stay, for
-  the percent thresholds and the continuous colour schemes.
-- A rack on several rows of the racks frame took its last row silently: it now takes the first one, as devices do,
-  and the others are listed as problems.
-
-**Performance:**
-
-- Moving the pointer over a device no longer renders the panel again, only the card moves; going from device to
-  device is about 14 times faster on a room of 1000 devices.
-- A change of highlight draws again only the devices whose emphasis changes, about twice as fast.
+- Card columns: **Card columns** picks the extra columns of the device card and their order; empty, all of them as
+  before.
 
 **Accessibility:**
 
@@ -38,16 +25,26 @@
 - No axe violation (WCAG 2.1 A and AA) on the demo and fixtures dashboards, in both themes, checked in the end-to-end
   tests.
 
+**Performance:**
+
+- Moving the pointer over a device no longer renders the panel again, only the card moves; going from device to
+  device is about 14 times faster on a room of 1000 devices.
+- A change of highlight draws again only the devices whose emphasis changes, about twice as fast.
+
+**Fixes:**
+
+- A rack on several rows of the racks frame took its last row silently: it now takes the first one, as devices do,
+  and the others are listed as problems.
+- The standard option **No value** is no longer offered: the panel never draws an empty value. Min and max stay, for
+  the percent thresholds and the continuous colour schemes.
+
 **Documentation:**
-
-- A reference of every option with its default, and every problem message in the troubleshooting.
-
-- An animated tour of the demo dashboard in the README: device card, highlight with a wildcard, data links and
-  keyboard. `npm run demo` and `scripts/make-gif.py` make it again when the drawing changes.
 
 - The NetBox recipe is checked on NetBox 4.7 with Infinity 4.1: the parent of a child device comes from
   `parent_bay.device.name`, since GraphQL has no `parent_device` field (the query failed); the NetBox `status` gives
   the state; the format of the v2 API tokens is given.
+- A reference of every option with its default, and every problem message in the troubleshooting.
+- An animated tour of the demo dashboard in the README, a screenshot of the free space, and a new logo.
 
 ## [1.1.0](https://github.com/Kentrow/grafana-rackelevation-panel/tree/v1.1.0) (2026-11-22)
 
