@@ -4,6 +4,12 @@
 
 **Features:**
 
+- Labelled time series without a join: a series whose `device` or `host` label (or the new **Series device label**)
+  names a device gives it a column named after its metric, with its last value, ready for the status, the colour,
+  the card and the labels. Zabbix metrics and Prometheus series in **Time series** format need no transformation.
+- **Critical severities**: the alert severities drawn in red, `critical` by default; `4` and `5` for Zabbix.
+- The **Columns** options offer the columns of the labelled series and accept a typed name.
+
 - Card columns: **Card columns** picks the extra columns of the device card and their order; empty, all of them as
   before.
 - Power: a `power` column on the devices and a `power_capacity` column on the racks show the draw of each rack against
@@ -39,6 +45,8 @@
   tests.
 
 **Documentation:**
+
+- A Zabbix recipe, checked on Zabbix 7.0 with the Zabbix plugin 6.10, and a Prometheus recipe without transformation.
 
 - A reference of every option with its default, and every problem message in the troubleshooting.
 

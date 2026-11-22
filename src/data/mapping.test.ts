@@ -224,10 +224,16 @@ describe('readAlerts', () => {
     );
     const alerts = readAlerts(frame, {});
     expect(alerts.get('sw-01')).toEqual([
-      { name: 'HighCpu', severity: 'warning' },
-      { name: 'Down', severity: 'critical' },
+      { name: 'HighCpu', severity: 'warning', critical: false },
+      { name: 'Down', severity: 'critical', critical: true },
     ]);
-    expect(alerts.get('srv-01')).toEqual([{ name: 'Disk', severity: undefined }]);
+    expect(alerts.get('srv-01')).toEqual([{ name: 'Disk', severity: undefined, critical: false }]);
+  });
+
+  it('marks critical the alerts whose severity is one of the critical severities, ignoring case', () => {
+    const frame = csvToFrame('device,alertname,severity\nsw-01,Down,4\nsw-01,Hot,2\nsrv-01,Disk,Critical\n', 'C');
+    expect([...readAlerts(frame, {}).values()].flat().map((a) => a.critical)).toEqual([false, false, true]);
+    expect([...readAlerts(frame, {}, ['4', '5']).values()].flat().map((a) => a.critical)).toEqual([true, false, false]);
   });
 });
 

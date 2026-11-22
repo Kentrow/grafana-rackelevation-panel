@@ -351,6 +351,45 @@ write(
         ),
         datasource: PROMETHEUS,
       },
+      {
+        ...panel(
+          3,
+          'Labelled series, no join: status and temperature',
+          { h: 28, w: 24, x: 0, y: 56 },
+          {
+            description:
+              'netbox_device_info as a table, device_up and device_temperature_celsius as time series: the panel reads their device label and their last values, without a transformation.',
+            targets: [
+              promql('A', 'netbox_device_info'),
+              {
+                datasource: PROMETHEUS,
+                refId: 'B',
+                expr: 'device_up',
+                instant: false,
+                range: true,
+                format: 'time_series',
+              },
+              {
+                datasource: PROMETHEUS,
+                refId: 'C',
+                expr: 'device_temperature_celsius',
+                instant: false,
+                range: true,
+                format: 'time_series',
+              },
+              RACKS_QUERY,
+              ALERTS_QUERY,
+            ],
+            options: {
+              columns: { status: 'device_up' },
+              valueFields: ['device_temperature_celsius'],
+              label: ['name', 'value'],
+            },
+            fieldConfig: TEMPERATURE,
+          }
+        ),
+        datasource: PROMETHEUS,
+      },
     ],
     { refresh: '10s', time: { from: 'now-15m', to: 'now' } }
   )

@@ -273,7 +273,12 @@ export function readRacks(frame: DataFrame, mapping: ColumnMapping): Rack[] {
 }
 
 /** Active alerts by device name. */
-export function readAlerts(frame: DataFrame, mapping: ColumnMapping): Map<string, Alert[]> {
+export function readAlerts(
+  frame: DataFrame,
+  mapping: ColumnMapping,
+  criticalSeverities: string[] = ['critical']
+): Map<string, Alert[]> {
+  const critical = new Set(criticalSeverities.map((s) => s.trim().toLowerCase()));
   const alerts = new Map<string, Alert[]>();
   const device = columnField(frame, 'device', mapping) ?? findField(frame, 'device');
   if (!device) {
@@ -287,7 +292,8 @@ export function readAlerts(frame: DataFrame, mapping: ColumnMapping): Map<string
       continue;
     }
     const list = alerts.get(key) ?? [];
-    list.push({ name: toText(at(name, row)), severity: toText(at(severity, row)) });
+    const level = toText(at(severity, row));
+    list.push({ name: toText(at(name, row)), severity: level, critical: critical.has(level?.toLowerCase() ?? '') });
     alerts.set(key, list);
   }
   return alerts;
