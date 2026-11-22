@@ -4,6 +4,8 @@ import { Face, FaceOption, Rack, RackLayout } from '../types';
 export const UNIT_INCHES = 1.75;
 /** Rack name and site above the frame. */
 export const HEADER_HEIGHT = 36;
+/** Line under the subtitle for the power of the racks, when the data has some. */
+export const POWER_LINE_HEIGHT = 13;
 /** Thickness of the frame around the slots. */
 export const FRAME = 6;
 export const NUMBERS_WIDTH = 26;
@@ -84,7 +86,8 @@ export function panelGeometry(
   faceOption: FaceOption,
   unitHeight: number,
   showUnitNumbers: boolean,
-  showZeroU: boolean
+  showZeroU: boolean,
+  headerHeight = HEADER_HEIGHT
 ): PanelGeometry {
   const zeroUBand = showZeroU && racks.some((r) => r.zeroU.length > 0);
   const faces: Face[] = faceOption === 'both' ? ['front', 'rear'] : [faceOption];
@@ -92,7 +95,7 @@ export function panelGeometry(
   // Distance from the top of a view to the bottom of its slots, and below it.
   const floor = Math.max(
     0,
-    ...racks.map((r, i) => HEADER_HEIGHT + FRAME + (overflows[i].above + r.rack.uHeight) * unitHeight)
+    ...racks.map((r, i) => headerHeight + FRAME + (overflows[i].above + r.rack.uHeight) * unitHeight)
   );
   const basement = Math.max(0, ...overflows.map((o) => o.below * unitHeight));
   const views: RackView[] = [];
@@ -100,7 +103,7 @@ export function panelGeometry(
   racks.forEach((layout, i) => {
     const geometry = rackGeometry(unitHeight, showUnitNumbers, zeroUBand, layout.rack.width);
     faces.forEach((face, f) => {
-      const y = PADDING + floor - (HEADER_HEIGHT + FRAME + (overflows[i].above + layout.rack.uHeight) * unitHeight);
+      const y = PADDING + floor - (headerHeight + FRAME + (overflows[i].above + layout.rack.uHeight) * unitHeight);
       views.push({ layout, geometry, face, overflow: overflows[i], x, y });
       x += geometry.width + (f < faces.length - 1 ? FACE_GAP : RACK_GAP);
     });
@@ -117,7 +120,7 @@ export const MAX_UNIT_HEIGHT = 40;
  * Unit height that makes the tallest rack, overflows included, fill the given height: the vertical counterpart of the
  * panelGeometry layout.
  */
-export function autoUnitHeight(racks: RackLayout[], availableHeight: number): number {
+export function autoUnitHeight(racks: RackLayout[], availableHeight: number, headerHeight = HEADER_HEIGHT): number {
   const overflows = racks.map(overflowOf);
   const units =
     Math.max(0, ...racks.map((r, i) => overflows[i].above + r.rack.uHeight)) +
@@ -125,7 +128,7 @@ export function autoUnitHeight(racks: RackLayout[], availableHeight: number): nu
   if (units === 0) {
     return MAX_UNIT_HEIGHT;
   }
-  const fitting = Math.floor((availableHeight - 2 * PADDING - HEADER_HEIGHT - 2 * FRAME) / units);
+  const fitting = Math.floor((availableHeight - 2 * PADDING - headerHeight - 2 * FRAME) / units);
   return Math.min(MAX_UNIT_HEIGHT, Math.max(MIN_UNIT_HEIGHT, fitting));
 }
 

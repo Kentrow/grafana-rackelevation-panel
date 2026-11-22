@@ -161,6 +161,24 @@ function multiRack() {
   }
   // A column outside the contract, listed in the tooltip as it is.
   devices.forEach((d, i) => (d.serial = `SN${String(4711 + i * 37).padStart(6, '0')}`));
+  // Power draw by model, in watts: no random draw, so that the other values stay as they were. The PDUs feed the
+  // devices and the UPSs back them up: they draw nothing of their own here.
+  const draw = {
+    'Arista 7050SX3': 220,
+    'FortiGate 600F': 180,
+    'Dell R660': 420,
+    'Dell R760': 680,
+    'HPE DL360 Gen11': 450,
+    'NetApp AFF A250': 720,
+    'Lenovo SR650 V3': 610,
+  };
+  devices.forEach((d) => (d.power = draw[d.model] ?? ''));
+  // Capacities that show each load: under 80 %, 80 to 100 %, over, and a rack without a known capacity.
+  const load = { 'PAR1-A3': 0.55, 'PAR1-A1': 0.92, 'PAR1-A2': 1.08, 'PAR1-A5': 0.7 };
+  for (const r of racks) {
+    const sum = devices.filter((d) => d.rack === r.rack).reduce((total, d) => total + (d.power || 0), 0);
+    r.power_capacity = load[r.rack] ? Math.round(sum / load[r.rack] / 100) * 100 : '';
+  }
   const alerts = [
     { device: 'sw-a1-tor-02', alertname: 'HighTemperature', severity: 'critical' },
     { device: 'fw-par1-02', alertname: 'DeviceDown', severity: 'critical' },
@@ -174,8 +192,11 @@ function multiRack() {
       throw new Error(`Alert on unknown device ${a.device}`);
     }
   }
-  write('multi-rack/racks.csv', csv(['rack', 'name', 'u_height', 'starting_unit', 'desc_units', 'site'], racks));
-  write('multi-rack/devices.csv', csv([...DEVICE_COLUMNS, 'current', 'serial'], devices));
+  write(
+    'multi-rack/racks.csv',
+    csv(['rack', 'name', 'u_height', 'starting_unit', 'desc_units', 'site', 'power_capacity'], racks)
+  );
+  write('multi-rack/devices.csv', csv([...DEVICE_COLUMNS, 'power', 'current', 'serial'], devices));
   write('multi-rack/alerts.csv', csv(['device', 'alertname', 'severity'], alerts));
 }
 

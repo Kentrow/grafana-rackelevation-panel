@@ -4,6 +4,7 @@ import { DataFrame, GrafanaTheme2 } from '@grafana/data';
 import { useStyles2 } from '@grafana/ui';
 import { extraFields, toText } from '../data/mapping';
 import { unitRange } from '../layout/errors';
+import { powerText } from '../layout/health';
 import { ColumnMapping, Device, Rack } from '../types';
 import { DeviceLook } from './deviceLook';
 
@@ -54,6 +55,7 @@ export const DeviceTooltip = ({ device, rack, look, frame, columns, valueFields 
     ['Units', units],
     ['Face', `${device.face}${device.fullDepth ? ', full depth' : ''}`],
     ['Value', look?.valueText],
+    ['Power', device.power !== undefined ? powerText({ draw: device.power }) : undefined],
     ...extraValues(frame, columns, valueFields, device.row),
   ];
   return (

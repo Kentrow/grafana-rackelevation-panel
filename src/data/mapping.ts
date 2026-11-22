@@ -208,6 +208,7 @@ export function readDevices(
       fullDepth: toBoolean(at(f.is_full_depth, row)) ?? true,
       role: toText(at(f.role, row)),
       model: toText(at(f.model, row)),
+      power: toNumber(at(f.power, row)),
       state: f.status ? deviceState(at(f.status, row), upValues) : 'unknown',
       ...colourOf(colours, row),
       parent,
@@ -231,6 +232,7 @@ export function readRacks(frame: DataFrame, mapping: ColumnMapping): Rack[] {
   const desc = findField(frame, 'desc_units');
   const site = findField(frame, 'site');
   const width = findField(frame, 'width');
+  const powerCapacity = findField(frame, 'power_capacity');
   const racks: Rack[] = [];
   for (let row = 0; row < frame.length; row++) {
     const rack = toText(at(id, row));
@@ -247,6 +249,7 @@ export function readRacks(frame: DataFrame, mapping: ColumnMapping): Rack[] {
       site: toText(at(site, row)),
       fixedHeight: uHeight !== undefined,
       width: positive(toInches(at(width, row))) ?? DEFAULT_RACK_WIDTH,
+      powerCapacity: positive(toNumber(at(powerCapacity, row))),
       row,
     });
   }

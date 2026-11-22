@@ -80,6 +80,21 @@ describe('RackPanel', () => {
     ]);
   });
 
+  it('shows the power draw of each rack against its capacity, as a gauge on the frame and on a line of its own', () => {
+    const series = [
+      csvToFrame('device,rack,position,power\nsrv-01,R1,1,3200\nsrv-02,R2,1,4600\nsrv-03,R3,1,6000\n', 'A'),
+      csvToFrame('rack,u_height,power_capacity\nR1,42,5000\nR2,42,5000\nR3,42,5000\n', 'B'),
+    ];
+    // Units of 20 px: racks wide enough for the whole subtitle.
+    render(<RackPanel {...props(series, { autoUnitHeight: false, unitHeight: 20 })} />);
+    const gauge = (rack: string) => within(screen.getByTestId(`rack-${rack}`)).getByTestId('power-gauge');
+    expect(['R1', 'R2', 'R3'].map((r) => gauge(r).getAttribute('data-level'))).toEqual(['ok', 'high', 'over']);
+    expect(within(screen.getByTestId('rack-R1')).getByTestId('rack-power')).toHaveTextContent('3.2 / 5 kW');
+    expect(within(screen.getByTestId('rack-R1')).getByTestId('rack-header').querySelector('title')).toHaveTextContent(
+      '3.2 kW of 5 kW (64 %)'
+    );
+  });
+
   it('numbers a descending rack from the top', () => {
     render(<RackPanel {...props(loadFixture('desc-units'), { racks: ['RACK-DESC'] })} />);
     const numbers = within(screen.getByTestId('rack-RACK-DESC')).getByTestId('unit-numbers');

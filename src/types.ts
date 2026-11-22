@@ -11,6 +11,7 @@ export const COLUMNS = [
   'status',
   'value',
   'parent_device',
+  'power',
 ] as const;
 
 export type Column = (typeof COLUMNS)[number];
@@ -92,6 +93,8 @@ export interface Device {
   value?: number;
   /** Index in the devices frame of the field the value comes from. */
   valueField?: number;
+  /** Power draw, in watts. */
+  power?: number;
   parent?: string;
   /** Row in the devices frame, to read display values, links and extra columns. */
   row: number;
@@ -109,6 +112,8 @@ export interface Rack {
   site?: string;
   /** Height given by the racks frame. Without it the rack grows to fit its devices. */
   fixedHeight: boolean;
+  /** Power the rack can deliver, in watts. */
+  powerCapacity?: number;
   /** Width in inches, as NetBox: 10, 19, 21 or 23. */
   width: number;
   /** Row in the racks frame, for its data links; unset for a rack known from the devices only. */
