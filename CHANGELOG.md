@@ -17,6 +17,8 @@
 
 **Fixes:**
 
+- The standard option **No value** is no longer offered: the panel never draws an empty value. Min and max stay, for
+  the percent thresholds and the continuous colour schemes.
 - A rack on several rows of the racks frame took its last row silently: it now takes the first one, as devices do,
   and the others are listed as problems.
 
