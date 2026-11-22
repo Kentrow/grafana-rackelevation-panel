@@ -37,7 +37,7 @@
     ],
     "screenshots": [
       {
-        "name": "Both faces of five racks: rack state, temperature colours, alert badges and the device card",
+        "name": "Both faces of five racks: rack state and power, temperature colours, alert badges and the device card",
         "path": "img/screenshot-racks.png"
       },
       {

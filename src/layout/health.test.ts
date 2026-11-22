@@ -1,6 +1,6 @@
 import { Alert, Device, Rack } from '../types';
 import { placeDevices } from './place';
-import { rackHealth } from './health';
+import { powerText, rackHealth, rackPower } from './health';
 
 const device = (name: string, d: Partial<Device> = {}): Device => ({
   name,
@@ -75,5 +75,41 @@ describe('rackHealth', () => {
       (d) => d.role !== 'storage'
     );
     expect(health).toEqual({ state: 'up', down: 0, alerts: 0, critical: false });
+  });
+});
+
+describe('rackPower', () => {
+  it('adds the power draw of every device of the rack once, whatever the filter, against its capacity', () => {
+    const layout = placeDevices({
+      devices: [
+        device('srv', { power: 450 }),
+        // Full depth: drawn on both faces, counted once.
+        device('sw', { position: 2, power: 150 }),
+        device('pdu', { position: undefined, uHeight: 0 }),
+      ],
+      racks: [{ ...rack, powerCapacity: 1000 }],
+    }).racks[0];
+    expect(rackPower(layout)).toEqual({ draw: 600, capacity: 1000, ratio: 0.6 });
+  });
+
+  it('has no draw without power values, and no ratio without capacity', () => {
+    const layout = placeDevices({ devices: [device('srv')], racks: [rack] }).racks[0];
+    expect(rackPower(layout)).toEqual({});
+    const noCapacity = placeDevices({ devices: [device('srv', { power: 200 })], racks: [rack] }).racks[0];
+    expect(rackPower(noCapacity)).toEqual({ draw: 200 });
+  });
+});
+
+describe('powerText', () => {
+  it.each([
+    [{ draw: 3200, capacity: 5000 }, '3.2 / 5 kW'],
+    [{ draw: 850, capacity: 1000 }, '0.85 / 1 kW'],
+    [{ draw: 640, capacity: 800 }, '640 / 800 W'],
+    [{ draw: 12345 }, '12.3 kW'],
+    [{ draw: 850 }, '850 W'],
+    [{ capacity: 5000 }, undefined],
+    [{}, undefined],
+  ])('writes %p as %p', (power, text) => {
+    expect(powerText(power)).toBe(text);
   });
 });

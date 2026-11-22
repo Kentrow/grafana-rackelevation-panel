@@ -183,6 +183,18 @@ describe('readRacks', () => {
   });
 });
 
+describe('power', () => {
+  it('reads the power draw of the devices, mapped or not, and the power capacity of the racks', () => {
+    const devices = csvToFrame('device,rack,watts\nsw-01,R1,180\nsw-02,R1,\n', 'A');
+    expect(readDevices(devices, { power: 'watts' }, DEFAULT_UP_VALUES).devices.map((d) => d.power)).toEqual([
+      180,
+      undefined,
+    ]);
+    const racks = csvToFrame('rack,power_capacity\nR1,5000\nR2,\n', 'B');
+    expect(readRacks(racks, {}).map((r) => r.powerCapacity)).toEqual([5000, undefined]);
+  });
+});
+
 describe('readAlerts', () => {
   it('groups the alerts by device', () => {
     const frame = csvToFrame(

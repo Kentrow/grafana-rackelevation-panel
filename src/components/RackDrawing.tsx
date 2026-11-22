@@ -2,7 +2,13 @@ import React, { useLayoutEffect, useRef } from 'react';
 import { css } from '@emotion/css';
 import { GrafanaTheme2 } from '@grafana/data';
 import { useStyles2 } from '@grafana/ui';
-import { autoUnitHeight as fittingUnitHeight, panelGeometry } from '../layout/geometry';
+import {
+  autoUnitHeight as fittingUnitHeight,
+  HEADER_HEIGHT,
+  panelGeometry,
+  POWER_LINE_HEIGHT,
+} from '../layout/geometry';
+import { rackPower } from '../layout/health';
 import { Device, FaceOption, RackLayout } from '../types';
 import { DeviceLook } from './deviceLook';
 import { Emphasis, HatchIds, KeyboardRole } from './DeviceRect';
@@ -50,12 +56,16 @@ export const RackDrawing = React.memo((props: Props) => {
     }
   });
 
-  const unitHeight = props.autoUnitHeight && !fitToPanel ? fittingUnitHeight(racks, height) : props.unitHeight;
+  // A line for the power under the rack names when the data has some: on every rack, so that they share their floor.
+  const powerLine = racks.some((r) => rackPower(r).draw !== undefined);
+  const headerHeight = HEADER_HEIGHT + (powerLine ? POWER_LINE_HEIGHT : 0);
+  const unitHeight =
+    props.autoUnitHeight && !fitToPanel ? fittingUnitHeight(racks, height, headerHeight) : props.unitHeight;
   const {
     views,
     width: contentWidth,
     height: contentHeight,
-  } = panelGeometry(racks, face, unitHeight, props.showUnitNumbers, props.showZeroU);
+  } = panelGeometry(racks, face, unitHeight, props.showUnitNumbers, props.showZeroU, headerHeight);
   const size = fitToPanel
     ? { width, height, viewBox: `0 0 ${contentWidth} ${contentHeight}` }
     : { width: contentWidth, height: contentHeight };
@@ -98,6 +108,7 @@ export const RackDrawing = React.memo((props: Props) => {
             keyboard={props.keyboard}
             hasLinks={props.racksWithLinks.has(view.layout.rack.id)}
             scale={scale}
+            headerHeight={headerHeight}
           />
         </g>
       ))}

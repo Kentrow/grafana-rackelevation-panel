@@ -4,6 +4,9 @@
 
 **Features:**
 
+- Power: a `power` column on the devices and a `power_capacity` column on the racks show the draw of each rack against
+  its capacity, on a line under its name and as a gauge in the top of the frame, green, orange from 80 %, red over
+  100 %. The card shows the draw of the device. The demo racks have power data.
 - Free space: **Free space for** a new device of a given height, typed or from a variable such as `$space`, outlines
   the blocks of free units where it fits on each face, on both faces for a full-depth device. The demo dashboard has a
   **Free space (U)** variable.

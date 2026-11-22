@@ -96,6 +96,12 @@ describe('tooltip', () => {
     errors.mockRestore();
   });
 
+  it('shows the power draw of the device', () => {
+    render(<RackPanel {...panelProps([csvToFrame('device,rack,position,power\nsrv-01,R1,3,1250\n', 'A')])} />);
+    hover('srv-01');
+    expect(within(screen.getByTestId('device-tooltip')).getByText('1.25 kW')).toBeInTheDocument();
+  });
+
   it('can be switched off', () => {
     render(<RackPanel {...panelProps(loadFixture('basic'), { showTooltip: false })} />);
     hover('fw-hq-01');

@@ -11,6 +11,7 @@ import {
   freeBlocks,
   freeUnits,
   HEADER_HEIGHT,
+  POWER_LINE_HEIGHT,
   MAX_UNIT_HEIGHT,
   MIN_UNIT_HEIGHT,
   labelFontSize,
@@ -254,5 +255,26 @@ describe('freeBlocks', () => {
       { bottom: 1, top: 5 },
       { bottom: 7, top: 12 },
     ]);
+  });
+});
+
+describe('header height', () => {
+  const racks = buildModel(loadFixture('basic'), {
+    frames: {},
+    columns: {},
+    valueFields: [],
+    upValues: DEFAULT_UP_VALUES,
+    racks: [],
+  }).racks;
+
+  it('makes the drawing taller by the extra header line, the racks keeping the same floor', () => {
+    const plain = panelGeometry(racks, 'front', 10, true, true);
+    const taller = panelGeometry(racks, 'front', 10, true, true, HEADER_HEIGHT + POWER_LINE_HEIGHT);
+    expect(taller.height - plain.height).toBe(POWER_LINE_HEIGHT);
+    expect(taller.views[0].y).toBe(plain.views[0].y);
+  });
+
+  it('leaves less room for the units with the extra line', () => {
+    expect(autoUnitHeight(racks, 600, HEADER_HEIGHT + 100)).toBeLessThan(autoUnitHeight(racks, 600));
   });
 });

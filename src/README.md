@@ -81,6 +81,7 @@ ignoring case, or mapped to other names in the **Columns** options.
 | `status`        | string or number | no       | In service when it is one of the **In service values**; empty: not monitored  |
 | `value`         | number           | no       | Metric giving the colour, see [Colours](#colours)                             |
 | `parent_device` | string           | no       | The row is listed in the card of its parent instead of being placed           |
+| `power`         | number           | no       | Power draw in watts, added up per rack, see [Power](#power)                   |
 
 Any other column is shown in the device card, as it is: site, serial number, IP address...
 
@@ -88,15 +89,16 @@ When the frame has a time field, as with a Prometheus range query, only the late
 
 ### Racks (optional)
 
-| Column          | Type    | Meaning                                                 |
-| --------------- | ------- | ------------------------------------------------------- |
-| `rack`          | string  | Rack, the key of the `rack` column of the devices       |
-| `name`          | string  | Name shown above the rack, `rack` by default            |
-| `u_height`      | number  | Height in units, 42 by default                          |
-| `starting_unit` | number  | Number of the first unit, 1 by default                  |
-| `desc_units`    | boolean | Units numbered from the top, `false` by default         |
-| `site`          | string  | Shown under the name                                    |
-| `width`         | number  | Width in inches as in NetBox (10, 19...), 19 by default |
+| Column           | Type    | Meaning                                                 |
+| ---------------- | ------- | ------------------------------------------------------- |
+| `rack`           | string  | Rack, the key of the `rack` column of the devices       |
+| `name`           | string  | Name shown above the rack, `rack` by default            |
+| `u_height`       | number  | Height in units, 42 by default                          |
+| `starting_unit`  | number  | Number of the first unit, 1 by default                  |
+| `desc_units`     | boolean | Units numbered from the top, `false` by default         |
+| `site`           | string  | Shown under the name                                    |
+| `width`          | number  | Width in inches as in NetBox (10, 19...), 19 by default |
+| `power_capacity` | number  | Power the rack can deliver, in watts                    |
 
 Without a racks frame, each rack of the devices is drawn with these defaults and grows to fit its highest device.
 With a racks frame, devices outside the rack are drawn in a dashed overflow zone and listed as problems. The racks
@@ -188,6 +190,11 @@ an override **Fields with name**.
   `$space`: the blocks of free units where it fits are outlined on each face, with their size, and the rack name tells
   in how many blocks it fits. A full-depth device needs the units free on both faces; turn **Full-depth device** off
   for a device mounted on one face only, such as a patch panel.
+- **Power**: with a `power` column on the devices, the draw of each rack is written on a line under its name, and
+  with a `power_capacity` column on the racks frame, against its capacity (`3.2 / 5 kW`) with a gauge in the top of the
+  rack frame: green under 80 % of the capacity, the usual margin of a power feed, orange up to 100 %, red over. Every
+  device counts, whatever the role filter; put the power on the devices that draw it, not on the PDUs that feed them,
+  or it counts twice. The card of a device shows its own draw.
 - Under each rack name, the number of free units of the face, a full-depth device of the other face counting as
   taken.
 - Next to each rack name, the state of the rack at a glance: a red dot when one of its devices is out of service, a
@@ -343,6 +350,21 @@ up * on (device) group_left (rack, position, u_height, face, is_full_depth, role
 
 with **status** mapped to `Value`. This join keeps only the devices that have the left metric: patch panels and
 other unmonitored devices disappear. Prefer the three joined queries to see the whole inventory.
+
+### Power
+
+The draw of the devices comes from the monitoring: the power reading of the servers (IPMI, Redfish), or the outlets of
+smart PDUs mapped to the devices they feed. With Prometheus, an instant query such as
+
+```promql
+sum by (device) (ipmi_dcmi_power_consumption_watts)
+```
+
+(from the IPMI exporter, with a `device` label set by relabelling) in **Table** format, joined to the inventory with
+**Join by field** on `device` and mapped to **power** in the **Columns** options. The capacity of the racks goes in the
+racks frame, as a `power_capacity` column: the power of its feeds, for instance 230 V × 32 A = 7360 W for one
+single-phase 32 A feed. The allocated draw of NetBox, on the power ports of the device types, can stand in for a
+measure.
 
 ### Alerts
 

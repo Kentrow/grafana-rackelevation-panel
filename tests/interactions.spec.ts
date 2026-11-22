@@ -94,7 +94,8 @@ test('should open the rack page from the rack name', async ({ gotoDashboardPage,
   // netbox.example.com does not exist: answer for it, to read the URL that the link opened.
   await page.context().route('https://netbox.example.com/**', (route) => route.fulfill({ body: 'NetBox' }));
   const popup = page.waitForEvent('popup');
-  await header.click();
+  // The rack name is the button of the links, not its subtitle.
+  await header.getByRole('button').click();
   expect((await popup).url()).toBe('https://netbox.example.com/dcim/racks/?q=PAR1-A3');
 });
 
@@ -159,4 +160,21 @@ test('should outline the free blocks where a new device fits', async ({
   );
   const blocks = await panel.getByTestId('free-block').count();
   expect(blocks).toBeGreaterThan(0);
+});
+
+test('should show the power of each rack against its capacity', async ({
+  gotoDashboardPage,
+  readProvisionedDashboard,
+}) => {
+  const dashboard = await readProvisionedDashboard({ fileName: 'demo.json' });
+  const dashboardPage = await gotoDashboardPage(dashboard);
+  const panel = dashboardPage.getPanelByTitle('Both faces').locator;
+  // multi-rack: Paris A1 at 92 % of its capacity, Paris A2 over it.
+  const a1 = panel.getByTestId('rack-PAR1-A1').first();
+  await expect(a1.getByTestId('power-gauge')).toHaveAttribute('data-level', 'high');
+  await expect(a1.getByTestId('rack-power')).toHaveText('4.85 / 5.3 kW');
+  await expect(panel.getByTestId('rack-PAR1-A2').first().getByTestId('power-gauge')).toHaveAttribute(
+    'data-level',
+    'over'
+  );
 });

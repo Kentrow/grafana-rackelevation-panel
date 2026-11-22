@@ -6,6 +6,7 @@ import {
   freeUnits,
   HEADER_HEIGHT,
   labelFontSize,
+  POWER_LINE_HEIGHT,
   Overflow,
   RackGeometry,
   truncate,
@@ -13,7 +14,7 @@ import {
   ZERO_U_GAP,
 } from '../layout/geometry';
 import { unitRange } from '../layout/errors';
-import { rackHealth } from '../layout/health';
+import { powerLevel, powerText, rackHealth, rackPower } from '../layout/health';
 import { Device, Face, RackLayout } from '../types';
 import { DeviceLook } from './deviceLook';
 import { DeviceColors, DeviceRect, Emphasis, HatchIds, KeyboardRole } from './DeviceRect';
@@ -37,6 +38,8 @@ interface Props {
   showState?: boolean;
   /** Units of a new device: the free blocks where it fits are outlined. */
   freeSpace?: { units: number; fullDepth: boolean };
+  /** Height of the header above the frame: taller with a line for the power. */
+  headerHeight?: number;
   /** What the devices are for the keyboard; undefined: not focusable. */
   keyboard?: KeyboardRole;
   /** The racks frame has data links for this rack: its name opens them. */
@@ -67,6 +70,7 @@ export const Rack = ({
   emphasis,
   showSummary = false,
   showState = false,
+  headerHeight = HEADER_HEIGHT,
   freeSpace,
   keyboard,
   hasLinks = false,
@@ -75,7 +79,7 @@ export const Rack = ({
   const { rack } = layout;
   const { unitHeight: u, numbersWidth, innerWidth, zeroUWidth } = geometry;
   const slotsX = numbersWidth + FRAME;
-  const frameY = HEADER_HEIGHT + overflow.above * u;
+  const frameY = headerHeight + overflow.above * u;
   const slotsY = frameY + FRAME;
   const slotsHeight = rack.uHeight * u;
   const numberSize = Math.min(10, Math.max(6, Math.round(u * 0.6)));
@@ -90,6 +94,8 @@ export const Rack = ({
       .filter((p) => p.clamped)
       .flatMap((p) => Array.from({ length: Math.ceil(p.device.uHeight) }, (_, i) => Math.floor(p.top) + i))
   );
+  const power = rackPower(layout);
+  const level = power.ratio !== undefined ? powerLevel(power.ratio) : undefined;
   const subtitle = truncate(
     [rack.site, caption, showSummary ? `${free} U free` : undefined].filter(Boolean).join(' · '),
     innerWidth + 2 * FRAME + zeroUWidth,
@@ -163,6 +169,9 @@ export const Rack = ({
               `${free} U free of ${rack.uHeight}`,
               health.down > 0 ? `${health.down} device${health.down > 1 ? 's' : ''} out of service` : undefined,
               health.alerts > 0 ? alertCount : undefined,
+              power.draw !== undefined && power.capacity !== undefined && power.ratio !== undefined
+                ? `${powerText({ draw: power.draw })} of ${powerText({ draw: power.capacity })} (${Math.round(power.ratio * 100)} %)`
+                : powerText(power),
               freeSpace
                 ? blocks.length > 0
                   ? `a ${freeSpace.units} U device fits in ${blocks.length} free block${blocks.length > 1 ? 's' : ''}`
@@ -215,6 +224,24 @@ export const Rack = ({
             {subtitle}
           </text>
         )}
+        {powerText(power) && (
+          <text
+            data-testid="rack-power"
+            x={slotsX + innerWidth / 2}
+            y={29 + POWER_LINE_HEIGHT}
+            textAnchor="middle"
+            fontSize={11}
+            fill={
+              level === 'over'
+                ? theme.colors.error.text
+                : level === 'high'
+                  ? theme.colors.warning.text
+                  : theme.colors.text.secondary
+            }
+          >
+            {truncate(powerText(power) ?? '', innerWidth + 2 * FRAME + zeroUWidth, 11)}
+          </text>
+        )}
       </g>
       {/* Overflow zones: where devices outside the rack are drawn, straddling the frame. */}
       {overflow.above > 0 && (
@@ -248,6 +275,33 @@ export const Rack = ({
         fill={theme.colors.background.primary}
         stroke={theme.colors.border.strong}
       />
+      {/* Power gauge in the top of the frame: the share of the capacity that the devices draw. */}
+      {power.ratio !== undefined && level && (
+        <g data-testid="power-gauge" data-level={level} data-ratio={power.ratio.toFixed(2)} pointerEvents="none">
+          <rect
+            x={numbersWidth + 1.5}
+            y={frameY + 1.5}
+            width={innerWidth + 2 * FRAME - 3}
+            height={FRAME - 3}
+            rx={1}
+            fill={theme.colors.border.weak}
+          />
+          <rect
+            x={numbersWidth + 1.5}
+            y={frameY + 1.5}
+            width={(innerWidth + 2 * FRAME - 3) * Math.min(1, power.ratio)}
+            height={FRAME - 3}
+            rx={1}
+            fill={
+              level === 'ok'
+                ? theme.colors.success.main
+                : level === 'high'
+                  ? theme.colors.warning.main
+                  : theme.colors.error.main
+            }
+          />
+        </g>
+      )}
       {numbersWidth > 0 && (
         <g data-testid="unit-numbers" fontSize={numberSize} fill={theme.colors.text.secondary} textAnchor="end">
           {Array.from({ length: rack.uHeight }, (_, slot) => (
