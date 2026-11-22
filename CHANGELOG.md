@@ -46,6 +46,10 @@
 
 **Documentation:**
 
+- Example dashboards to import, linked from the README: from CSV files through Infinity, and from NetBox and
+  Prometheus without transformation, with a site variable read from NetBox. Checked on NetBox 4.7 and Prometheus 3.5
+  with Infinity 4.1. The CSV recipe tells how to type the Infinity columns: Infinity reads `false` as empty in a CSV
+  boolean column.
 - A Zabbix recipe, checked on Zabbix 7.0 with the Zabbix plugin 6.10, and a Prometheus recipe without transformation.
 - A LibreNMS recipe, checked on LibreNMS 26.11 with Infinity 4.1: the state and the alerts from its API, joined to the
   inventory. The NetBox recipe no longer suggests **Rename by regex** to align device names: it renames columns.

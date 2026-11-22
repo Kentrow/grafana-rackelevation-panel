@@ -39,6 +39,9 @@ Then open <http://localhost:3000> (anonymous access, no login) and the dashboard
 Everything comes from TestData and from the Prometheus and exporter containers of `docker-compose.yaml`: no account,
 no external service.
 
+The [examples/dashboards](examples/dashboards) folder holds dashboards to import into your own Grafana: from CSV files,
+and from NetBox and Prometheus. They are written by `npm run dashboards`, as the dashboards above.
+
 ## Feedback and contributing
 
 Bugs and ideas are welcome in the [issues](https://github.com/Kentrow/grafana-rackelevation-panel/issues). To work on
