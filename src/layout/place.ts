@@ -3,6 +3,7 @@ import { Alert, Device, Face, Layout, LayoutError, Rack, RackLayout } from '../t
 import {
   cycleError,
   duplicateError,
+  duplicateRackError,
   lastUnit,
   orphanError,
   overflowError,
@@ -84,7 +85,15 @@ function resolveDevices(input: PlaceInput, errors: LayoutError[]): Device[] {
 
 /** Racks in display order, grown to fit their devices when their height is not given. */
 function resolveRacks(input: PlaceInput, byRack: Map<string, Device[]>, errors: LayoutError[]): Rack[] {
-  const racks = new Map<string, Rack>((input.racks ?? []).map((r) => [r.id, { ...r }]));
+  // The first row of a rack counts, as for devices.
+  const racks = new Map<string, Rack>();
+  for (const r of input.racks ?? []) {
+    if (racks.has(r.id)) {
+      errors.push(duplicateRackError(r));
+    } else {
+      racks.set(r.id, { ...r });
+    }
+  }
   for (const id of byRack.keys()) {
     if (!racks.has(id)) {
       if (input.racks) {

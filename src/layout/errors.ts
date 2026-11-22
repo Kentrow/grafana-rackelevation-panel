@@ -10,6 +10,12 @@ export const duplicateError = (device: Device): LayoutError => ({
   device: device.name,
 });
 
+export const duplicateRackError = (rack: Rack): LayoutError => ({
+  kind: 'duplicate',
+  message: `Rack ${rack.id} appears more than once in the racks frame; row ${(rack.row ?? 0) + 1} is ignored.`,
+  rack: rack.id,
+});
+
 export const orphanError = (device: Device): LayoutError => ({
   kind: 'orphan-child',
   message: `${device.name} has parent ${device.parent}, which is not in the data.`,

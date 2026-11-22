@@ -222,3 +222,25 @@ describe('placeDevices', () => {
     expect(errors.map((e) => e.message)).toEqual(['Rack R9 is not in the racks frame; drawn with default values.']);
   });
 });
+
+describe('placeDevices, racks frame', () => {
+  it('keeps the first row of a rack that appears more than once in the racks frame, and says so', () => {
+    const { racks, errors } = placeDevices({
+      devices: [device('sw', { position: 1 })],
+      racks: [rack({ uHeight: 42 }), rack({ uHeight: 24, row: 1 })],
+    });
+    expect(racks.map((r) => r.rack.uHeight)).toEqual([42]);
+    expect(errors.map((e) => [e.kind, e.message])).toEqual([
+      ['duplicate', 'Rack R1 appears more than once in the racks frame; row 2 is ignored.'],
+    ]);
+  });
+
+  it('draws the racks of the racks frame, empty, when the devices frame has no rows', () => {
+    const { racks, errors } = placeDevices({ devices: [], racks: [rack(), rack({ id: 'R2', name: 'R2' })] });
+    expect(racks.map((r) => [r.rack.id, r.front.length])).toEqual([
+      ['R1', 0],
+      ['R2', 0],
+    ]);
+    expect(errors).toEqual([]);
+  });
+});

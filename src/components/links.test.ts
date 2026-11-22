@@ -1,5 +1,7 @@
 import { FieldType, LinkModel, toDataFrame } from '@grafana/data';
-import { deviceLinks, hasLinks, rackLinks } from './links';
+import React from 'react';
+import { locationService } from '@grafana/runtime';
+import { deviceLinks, followLink, hasLinks, rackLinks } from './links';
 
 const link = (title: string, href: string): LinkModel => ({ title, href, target: '_self', origin: {} });
 
@@ -66,5 +68,37 @@ describe('rackLinks', () => {
     expect(rackLinks(frame, 1, [fromDefaults]).map((l) => l.href)).toEqual(['Rack in NetBox:R2']);
     expect(rackLinks(frame, undefined, [fromDefaults])).toEqual([]);
     expect(rackLinks(undefined, 0)).toEqual([]);
+  });
+});
+
+describe('followLink', () => {
+  const event = {} as React.MouseEvent;
+  afterEach(() => jest.restoreAllMocks());
+
+  it('lets a link with its own handler handle the click', () => {
+    const onClick = jest.fn();
+    followLink({ ...link('Run', '/x'), onClick }, event);
+    expect(onClick).toHaveBeenCalledWith(event);
+  });
+
+  it('opens a link targeting _blank in a new tab, without access to the dashboard', () => {
+    const open = jest.spyOn(window, 'open').mockImplementation(() => null);
+    followLink({ ...link('NetBox', 'https://netbox.example.com/'), target: '_blank' }, event);
+    expect(open).toHaveBeenCalledWith('https://netbox.example.com/', '_blank', 'noopener,noreferrer');
+  });
+
+  it('goes to a Grafana page with the router, without reloading', () => {
+    const push = jest.spyOn(locationService, 'push').mockImplementation(() => {});
+    followLink(link('Dashboard', '/d/device?var-device=sw-01'), event);
+    expect(push).toHaveBeenCalledWith('/d/device?var-device=sw-01');
+  });
+
+  it('goes to an outside page in the same tab', () => {
+    // jsdom cannot navigate, and says so: that is the navigation of the page, not the router of Grafana.
+    const errors = jest.spyOn(console, 'error').mockImplementation(() => {});
+    const push = jest.spyOn(locationService, 'push').mockImplementation(() => {});
+    followLink(link('NetBox', 'https://netbox.example.com/dcim/devices/'), event);
+    expect(push).not.toHaveBeenCalled();
+    expect(errors.mock.calls.flat().join(' ')).toMatch(/Not implemented: navigation/);
   });
 });
