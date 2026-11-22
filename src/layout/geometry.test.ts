@@ -8,6 +8,7 @@ import {
   cardPosition,
   FACE_GAP,
   FRAME,
+  freeBlocks,
   freeUnits,
   HEADER_HEIGHT,
   MAX_UNIT_HEIGHT,
@@ -211,5 +212,47 @@ describe('cardPosition', () => {
     // 360 px wide in a 400 px panel, pointer in the middle: neither side has room, the card stays within the margins.
     expect(cardPosition({ x: 200, y: 150 }, { width: 360, height: 250 }, panel, 12)).toEqual({ left: 28, top: 38 });
     expect(cardPosition({ x: 390, y: 290 }, { width: 380, height: 280 }, panel, 12)).toEqual({ left: 12, top: 12 });
+  });
+});
+
+describe('freeBlocks', () => {
+  const rack = { id: 'R1', name: 'R1', uHeight: 12, startingUnit: 1, descUnits: false, fixedHeight: true, width: 19 };
+  const layoutOf = (devices: Array<Partial<Device> & { name: string }>) =>
+    placeDevices({ devices: devices.map((d) => ({ ...halfDevice, ...d })), racks: [rack] }).racks[0];
+
+  it('lists the runs of free units that hold a device of that height, bottom to top', () => {
+    // U1-12, taken: U3-4 and U9; free runs U1-2, U5-8, U10-12.
+    const layout = layoutOf([
+      { name: 'srv', position: 3, uHeight: 2 },
+      { name: 'sw', position: 9 },
+    ]);
+    expect(freeBlocks(layout, 'front', 2, true)).toEqual([
+      { bottom: 1, top: 2 },
+      { bottom: 5, top: 8 },
+      { bottom: 10, top: 12 },
+    ]);
+    expect(freeBlocks(layout, 'front', 3, true)).toEqual([
+      { bottom: 5, top: 8 },
+      { bottom: 10, top: 12 },
+    ]);
+    expect(freeBlocks(layout, 'front', 13, true)).toEqual([]);
+  });
+
+  it('needs the other face free too for a full-depth device, only this face for a half-depth one', () => {
+    // A half-depth patch panel on the rear at U6.
+    const layout = layoutOf([{ name: 'patch', position: 6, face: 'rear', fullDepth: false }]);
+    expect(freeBlocks(layout, 'front', 4, false)).toEqual([{ bottom: 1, top: 12 }]);
+    expect(freeBlocks(layout, 'front', 4, true)).toEqual([
+      { bottom: 1, top: 5 },
+      { bottom: 7, top: 12 },
+    ]);
+  });
+
+  it('counts a unit partly taken by a half-unit device as taken', () => {
+    const layout = layoutOf([{ name: 'shelf', position: 6.5, uHeight: 0.5 }]);
+    expect(freeBlocks(layout, 'front', 1, true)).toEqual([
+      { bottom: 1, top: 5 },
+      { bottom: 7, top: 12 },
+    ]);
   });
 });

@@ -16,6 +16,7 @@ the view changes. The panel knows no data source; it reads tables with documente
 produce such a table works without extra code.
 
 - One or several racks side by side, front, rear or both faces, 10-inch or 19-inch, sized to fill the panel.
+- Where a new device fits: the free blocks of each rack for a given height.
 - NetBox placement rules: lowest unit, descending numbering, full-depth devices, 0U devices.
 - Colour, unit, value mappings, data links and variables come from the standard Grafana field config.
 - In service, out of service and not monitored states; active alerts badge; the worst state, alerts and free units
@@ -183,6 +184,10 @@ an override **Fields with name**.
   even when they are mapped to another one. An unknown or empty column leaves nothing, and a separator left at an end
   of the label is removed. Labels are cut to the width of the device and hidden below a unit height of 10 px; the card
   always shows everything.
+- **Free space**: set **Free space for** to the height of a new device, such as `2`, or to a variable such as
+  `$space`: the blocks of free units where it fits are outlined on each face, with their size, and the rack name tells
+  in how many blocks it fits. A full-depth device needs the units free on both faces; turn **Full-depth device** off
+  for a device mounted on one face only, such as a patch panel.
 - Under each rack name, the number of free units of the face, a full-depth device of the other face counting as
   taken.
 - Next to each rack name, the state of the rack at a glance: a red dot when one of its devices is out of service, a
@@ -211,6 +216,8 @@ an override **Fields with name**.
 | Display      | Show unit numbers  | on                          | Unit numbers left of each rack                                                                    |
 | Display      | Show free units    | on                          | Free units of the face under the rack name                                                        |
 | Display      | Show rack state    | on                          | State dot and active alerts next to the rack name                                                 |
+| Display      | Free space for     | empty                       | Height of a new device, or a variable such as `$space`: outlines the free blocks where it fits    |
+| Display      | Full-depth device  | on                          | The new device needs its units free on both faces                                                 |
 | Display      | Show legend        | on                          | Counts by state and active alerts at the bottom                                                   |
 | Labels       | Label template     | empty                       | `{column}` placeholders, such as `{device} · {ip}`; replaces the two options below                |
 | Labels       | Label              | name                        | Parts of the label in the order picked: name, model, value, role                                  |

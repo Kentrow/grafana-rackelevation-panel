@@ -77,11 +77,14 @@ export const RackPanel = ({ data, options: saved, width, height, fieldConfig, id
     showUnitNumbers,
     showRackSummary,
     showRackState,
+    freeSpaceFullDepth,
     showLegend,
     label,
     labelSeparator,
   } = options;
   const template = options.labelTemplate.trim();
+  // Units of a new device, typed or from a variable such as $space; anything else turns the free blocks off.
+  const freeSpaceUnits = parseFloat(replaceVariables(options.freeSpace ?? '')) || 0;
   // Lists resolved from variables are compared as strings, so that memoization survives a re-render.
   const racksKey = resolveList(options.racks, replaceVariables).join('\n');
   const rolesKey = resolveList(options.roles, replaceVariables)
@@ -222,6 +225,7 @@ export const RackPanel = ({ data, options: saved, width, height, fieldConfig, id
               emphasis={emphasis}
               showSummary={showRackSummary}
               showState={showRackState}
+              freeSpace={freeSpaceUnits > 0 ? { units: freeSpaceUnits, fullDepth: freeSpaceFullDepth } : undefined}
               keyboard={keyboardRole}
               hasLinks={racksWithLinks.has(view.layout.rack.id)}
               scale={scale}
@@ -241,6 +245,8 @@ export const RackPanel = ({ data, options: saved, width, height, fieldConfig, id
     showZeroU,
     showRackSummary,
     showRackState,
+    freeSpaceUnits,
+    freeSpaceFullDepth,
     keyboardRole,
     racksWithLinks,
     fitToPanel,

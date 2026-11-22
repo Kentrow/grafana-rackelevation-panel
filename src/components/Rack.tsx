@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 import { GrafanaTheme2 } from '@grafana/data';
 import {
   FRAME,
+  freeBlocks,
   freeUnits,
   HEADER_HEIGHT,
   labelFontSize,
@@ -11,6 +12,7 @@ import {
   unitNumberAt,
   ZERO_U_GAP,
 } from '../layout/geometry';
+import { unitRange } from '../layout/errors';
 import { rackHealth } from '../layout/health';
 import { Device, Face, RackLayout } from '../types';
 import { DeviceLook } from './deviceLook';
@@ -33,6 +35,8 @@ interface Props {
   showSummary?: boolean;
   /** Worst device state and active alerts next to the rack name. */
   showState?: boolean;
+  /** Units of a new device: the free blocks where it fits are outlined. */
+  freeSpace?: { units: number; fullDepth: boolean };
   /** What the devices are for the keyboard; undefined: not focusable. */
   keyboard?: KeyboardRole;
   /** The racks frame has data links for this rack: its name opens them. */
@@ -63,6 +67,7 @@ export const Rack = ({
   emphasis,
   showSummary = false,
   showState = false,
+  freeSpace,
   keyboard,
   hasLinks = false,
   scale = 1,
@@ -75,6 +80,10 @@ export const Rack = ({
   const slotsHeight = rack.uHeight * u;
   const numberSize = Math.min(10, Math.max(6, Math.round(u * 0.6)));
   const free = freeUnits(layout, face);
+  const blocks = freeSpace ? freeBlocks(layout, face, freeSpace.units, freeSpace.fullDepth) : [];
+  /** Slot of the top of a unit, counted from the top of the rack. */
+  const slotOf = (unit: number) =>
+    rack.descUnits ? unit - rack.startingUnit : rack.startingUnit + rack.uHeight - 1 - unit;
   // Slots of the devices drawn at the edge of an overflow zone, far from their units: their numbers would be wrong.
   const clampedSlots = new Set(
     layout[face]
@@ -154,6 +163,11 @@ export const Rack = ({
               `${free} U free of ${rack.uHeight}`,
               health.down > 0 ? `${health.down} device${health.down > 1 ? 's' : ''} out of service` : undefined,
               health.alerts > 0 ? alertCount : undefined,
+              freeSpace
+                ? blocks.length > 0
+                  ? `a ${freeSpace.units} U device fits in ${blocks.length} free block${blocks.length > 1 ? 's' : ''}`
+                  : `no room for a ${freeSpace.units} U device`
+                : undefined,
             ]
               .filter(Boolean)
               .join(' · ')}
@@ -260,6 +274,37 @@ export const Rack = ({
       <g transform={`translate(${slotsX}, ${slotsY})`}>
         <rect width={innerWidth} height={slotsHeight} fill={theme.colors.background.canvas} />
         <path d={separators} stroke={theme.colors.border.weak} strokeWidth={0.5} />
+        {blocks.map(({ bottom, top }) => {
+          const units = top - bottom + 1;
+          const y = Math.min(slotOf(bottom), slotOf(top)) * u;
+          return (
+            <g key={bottom} data-testid="free-block" data-units={unitRange(bottom, top)} pointerEvents="none">
+              <rect
+                x={1.5}
+                y={y + 1.5}
+                width={innerWidth - 3}
+                height={units * u - 3}
+                rx={2}
+                fill={theme.colors.primary.transparent}
+                stroke={theme.colors.primary.border}
+                strokeDasharray="4 3"
+              />
+              {u * Math.min(units, 2) >= 12 && (
+                <text
+                  x={innerWidth / 2}
+                  y={y + (units * u) / 2}
+                  textAnchor="middle"
+                  dominantBaseline="central"
+                  fontSize={Math.min(12, Math.round(u * 0.7))}
+                  fill={theme.colors.primary.text}
+                  aria-hidden
+                >
+                  {units} U free
+                </text>
+              )}
+            </g>
+          );
+        })}
         {layout[face].map((p) =>
           draw(p.device, {
             face,

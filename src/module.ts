@@ -206,6 +206,23 @@ export const plugin = new PanelPlugin<RackElevationOptions>(RackPanel)
         category: DISPLAY,
         defaultValue: DEFAULT_OPTIONS.showRackState,
       })
+      .addTextInput({
+        path: 'freeSpace',
+        name: 'Free space for',
+        description:
+          'Units of a new device, such as 2, or a variable such as $space: the blocks of free units where it fits are outlined on each face. Empty: off.',
+        category: DISPLAY,
+        defaultValue: DEFAULT_OPTIONS.freeSpace,
+        settings: { placeholder: '2' },
+      })
+      .addBooleanSwitch({
+        path: 'freeSpaceFullDepth',
+        name: 'Full-depth device',
+        description: 'The new device needs its units free on both faces; off, on the face drawn only.',
+        category: DISPLAY,
+        defaultValue: DEFAULT_OPTIONS.freeSpaceFullDepth,
+        showIf: (options) => Boolean(options.freeSpace?.trim()),
+      })
       .addBooleanSwitch({
         path: 'showLegend',
         name: 'Show legend',

@@ -4,6 +4,9 @@
 
 **Features:**
 
+- Free space: **Free space for** a new device of a given height, typed or from a variable such as `$space`, outlines
+  the blocks of free units where it fits on each face, on both faces for a full-depth device. The demo dashboard has a
+  **Free space (U)** variable.
 - Label templates: a **Label template** such as `{device} · {ip}` writes any column of the device row in the label,
   formatted as Grafana displays it, `{value}` being the colour value with its unit.
 

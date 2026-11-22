@@ -32,6 +32,17 @@
         "options": []
       },
       {
+        "type": "textbox",
+        "name": "space",
+        "label": "Free space (U)",
+        "query": "",
+        "current": {
+          "text": "",
+          "value": ""
+        },
+        "options": []
+      },
+      {
         "type": "custom",
         "name": "role",
         "label": "Role",
@@ -225,7 +236,8 @@
         "valueFields": [
           "value",
           "current"
-        ]
+        ],
+        "freeSpace": "$space"
       },
       "fieldConfig": {
         "defaults": {

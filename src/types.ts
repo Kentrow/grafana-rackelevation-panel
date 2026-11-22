@@ -53,6 +53,10 @@ export interface RackElevationOptions {
   showRackSummary: boolean;
   /** Worst device state and active alerts of each rack next to its name. */
   showRackState: boolean;
+  /** Units of a new device, or a variable: the free blocks where it fits are outlined. Empty: off. */
+  freeSpace: string;
+  /** The new device is full depth: its units must be free on both faces. */
+  freeSpaceFullDepth: boolean;
   /** Device counts by state at the bottom of the panel. */
   showLegend: boolean;
   label: LabelPart[];
@@ -174,6 +178,8 @@ export const DEFAULT_OPTIONS: RackElevationOptions = {
   showUnitNumbers: true,
   showRackSummary: true,
   showRackState: true,
+  freeSpace: '',
+  freeSpaceFullDepth: true,
   showLegend: true,
   label: ['name'],
   labelSeparator: '·',
