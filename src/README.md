@@ -110,7 +110,8 @@ option lists racks, by id or name and with variables if needed, only those are d
 ### Alerts (optional)
 
 A frame with a `device` column and an `alertname` column, and optionally `severity`. Each row is an active alert:
-the device gets a badge with their count, red if one is `critical`, and the card lists them.
+the device gets a badge with their count, red if one has a severity among the **Critical severities** (`critical` by
+default; `4` and `5` for Zabbix), and the card lists them.
 
 ### Which frame is which
 
@@ -118,9 +119,14 @@ The frames can be picked in the **Data** options, by query or frame name. Otherw
 `device` and `position` or `u_height` columns, the racks frame the one with `rack` and no `device`, the alerts frame
 the one with `alertname`.
 
-The panel does not join frames itself. Several queries that return device columns (an inventory and two metrics, for
-instance) must be joined with the **Join by field** transformation, mode **OUTER (TABULAR)**, on `device`. The panel
-lists the frames it ignores.
+**Time series** need no transformation: a series whose label names a device (`device`, then `host`, or the
+**Series device label** of the options) gives that device a column named after its metric, with its last value. The
+metric is the `item` label (Zabbix), the `__name__` label (Prometheus), else the name of the series. Map these columns
+like the others: **status** to `up`, **Colour fields** to `temperature`... With several series of a metric for one
+device, the first one counts.
+
+Other tables with device columns (an inventory and metrics in **Table** format, for instance) must be joined with the
+**Join by field** transformation, mode **OUTER (TABULAR)**, on `device`. The panel lists the frames it ignores.
 
 ## Placement
 
@@ -208,33 +214,35 @@ an override **Fields with name**.
 
 ## Options
 
-| Category     | Option             | Default                     | What it does                                                                                      |
-| ------------ | ------------------ | --------------------------- | ------------------------------------------------------------------------------------------------- |
-| Data         | Devices frame      | found by its columns        | Query refId or frame name of the devices, see [Which frame is which](#which-frame-is-which)       |
-| Data         | Racks frame        | found by its columns        | Same for the optional racks frame                                                                 |
-| Data         | Alerts frame       | found by its columns        | Same for the optional alerts frame                                                                |
-| Data         | In service values  | `up`, `1`, `true`, `active` | Status values meaning in service, ignoring case; any other value means out of service             |
-| Data         | Colour fields      | `value`                     | Fields giving the colour, the first one with a value for each device, see [Colours](#colours)     |
-| Columns      | One per column     | the contract name           | The field to read for each column of the [data contract](#data-contract) when it has another name |
-| Display      | Racks              | all                         | Racks to draw, in this order, by id or name; variables allowed, multi-value included              |
-| Display      | Face               | Front                       | Front, rear, or both faces side by side                                                           |
-| Display      | Auto unit height   | on                          | The tallest rack fills the panel height; the racks scroll sideways when too wide                  |
-| Display      | Unit height        | 16 px                       | Height of a unit when auto unit height is off; labels are hidden below 10 px                      |
-| Display      | Fit to panel       | off                         | Scales everything down to the panel instead of scrolling                                          |
-| Display      | Show 0U band       | on                          | Devices without position, such as PDUs, in a band right of the rack                               |
-| Display      | Show unit numbers  | on                          | Unit numbers left of each rack                                                                    |
-| Display      | Show free units    | on                          | Free units of the face under the rack name                                                        |
-| Display      | Show rack state    | on                          | State dot and active alerts next to the rack name                                                 |
-| Display      | Free space for     | empty                       | Height of a new device, or a variable such as `$space`: outlines the free blocks where it fits    |
-| Display      | Full-depth device  | on                          | The new device needs its units free on both faces                                                 |
-| Display      | Show legend        | on                          | Counts by state and active alerts at the bottom                                                   |
-| Labels       | Label template     | empty                       | `{column}` placeholders, such as `{device} · {ip}`; replaces the two options below                |
-| Labels       | Label              | name                        | Parts of the label in the order picked: name, model, value, role                                  |
-| Labels       | Separator          | `·`                         | Between the parts of the label                                                                    |
-| Interactions | Role filter        | none                        | Roles to keep, the others fade and stop reacting; accepts a variable such as `$role`              |
-| Interactions | Highlight variable | `$device`                   | Dashboard variable whose devices are highlighted, `*` wildcards allowed                           |
-| Interactions | Tooltip            | on                          | Device card on hover and on focus                                                                 |
-| Interactions | Card columns       | all                         | Extra columns of the device card, in this order                                                   |
+| Category     | Option              | Default                     | What it does                                                                                        |
+| ------------ | ------------------- | --------------------------- | --------------------------------------------------------------------------------------------------- |
+| Data         | Devices frame       | found by its columns        | Query refId or frame name of the devices, see [Which frame is which](#which-frame-is-which)         |
+| Data         | Racks frame         | found by its columns        | Same for the optional racks frame                                                                   |
+| Data         | Alerts frame        | found by its columns        | Same for the optional alerts frame                                                                  |
+| Data         | In service values   | `up`, `1`, `true`, `active` | Status values meaning in service, ignoring case; any other value means out of service               |
+| Data         | Series device label | device, then host           | Label of the time series that names their device, see [Which frame is which](#which-frame-is-which) |
+| Data         | Critical severities | `critical`                  | Severities of the alerts drawn as critical: `4` and `5` for Zabbix                                  |
+| Data         | Colour fields       | `value`                     | Fields giving the colour, the first one with a value for each device, see [Colours](#colours)       |
+| Columns      | One per column      | the contract name           | The field to read for each column of the [data contract](#data-contract) when it has another name   |
+| Display      | Racks               | all                         | Racks to draw, in this order, by id or name; variables allowed, multi-value included                |
+| Display      | Face                | Front                       | Front, rear, or both faces side by side                                                             |
+| Display      | Auto unit height    | on                          | The tallest rack fills the panel height; the racks scroll sideways when too wide                    |
+| Display      | Unit height         | 16 px                       | Height of a unit when auto unit height is off; labels are hidden below 10 px                        |
+| Display      | Fit to panel        | off                         | Scales everything down to the panel instead of scrolling                                            |
+| Display      | Show 0U band        | on                          | Devices without position, such as PDUs, in a band right of the rack                                 |
+| Display      | Show unit numbers   | on                          | Unit numbers left of each rack                                                                      |
+| Display      | Show free units     | on                          | Free units of the face under the rack name                                                          |
+| Display      | Show rack state     | on                          | State dot and active alerts next to the rack name                                                   |
+| Display      | Free space for      | empty                       | Height of a new device, or a variable such as `$space`: outlines the free blocks where it fits      |
+| Display      | Full-depth device   | on                          | The new device needs its units free on both faces                                                   |
+| Display      | Show legend         | on                          | Counts by state and active alerts at the bottom                                                     |
+| Labels       | Label template      | empty                       | `{column}` placeholders, such as `{device} · {ip}`; replaces the two options below                  |
+| Labels       | Label               | name                        | Parts of the label in the order picked: name, model, value, role                                    |
+| Labels       | Separator           | `·`                         | Between the parts of the label                                                                      |
+| Interactions | Role filter         | none                        | Roles to keep, the others fade and stop reacting; accepts a variable such as `$role`                |
+| Interactions | Highlight variable  | `$device`                   | Dashboard variable whose devices are highlighted, `*` wildcards allowed                             |
+| Interactions | Tooltip             | on                          | Device card on hover and on focus                                                                   |
+| Interactions | Card columns        | all                         | Extra columns of the device card, in this order                                                     |
 
 The standard options of the field config (unit, decimals, colour scheme, thresholds, value mappings, data links)
 apply as described in [Colours](#colours) and [Interactions](#interactions).
@@ -326,11 +334,11 @@ in service and the others (`offline`, `planned`, `failed`...) out of service. Ad
 service values** to keep them out of the red, or leave `status` out of the query to draw every device as not
 monitored.
 
-Live state and colour come from your monitoring (Prometheus, Zabbix, LibreNMS...): add a query that returns `device`
-and the metric, and join it to the inventory with **Join by field** on `device`. To take the state from the
-monitoring rather than from NetBox, map **status** to its column in the **Columns** options. The device names of NetBox and of the
-monitoring usually match on the hostname; otherwise align them with the **Rename by regex** transformation or, in
-PromQL, with `label_replace`.
+Live state and colour come from your monitoring (Prometheus, Zabbix, LibreNMS...): add its queries, time series
+labelled with the device as in the [Prometheus](#prometheus) and [Zabbix](#zabbix) recipes, or a table joined to the
+inventory with **Join by field** on `device`. To take the state from the monitoring rather than from NetBox, map
+**status** to its column in the **Columns** options. The device names of NetBox and of the monitoring usually match on
+the hostname; otherwise align them with the **Rename by regex** transformation or, in PromQL, with `label_replace`.
 
 ### Nautobot with the Infinity data source
 
@@ -408,8 +416,16 @@ These queries were checked on Nautobot 3.2. For the state and the colour from th
 ### Prometheus
 
 If an exporter or recording rule publishes the inventory as an info metric, for instance
-`netbox_device_info{device, rack, position, u_height, face, is_full_depth, role, model} 1`, three instant queries in
-**Table** format give everything:
+`netbox_device_info{device, rack, position, u_height, face, is_full_depth, role, model} 1`, the simplest is the
+inventory in **Table** format and the metrics as **Time series**, which the panel reads by their `device` label:
+
+- A: `netbox_device_info`, format **Table**
+- B: `up` or any 0/1 health metric with a `device` label, format **Time series**
+- C: a metric for the colour, for instance `device_temperature_celsius`, format **Time series**
+
+then map **status** to `up` and set **Colour fields** to `device_temperature_celsius`: no transformation.
+
+Three instant queries in **Table** format also work:
 
 - A: `netbox_device_info`
 - B: `up` or any 0/1 health metric with a `device` label
@@ -426,6 +442,23 @@ up * on (device) group_left (rack, position, u_height, face, is_full_depth, role
 
 with **status** mapped to `Value`. This join keeps only the devices that have the left metric: patch panels and
 other unmonitored devices disappear. Prefer the three joined queries to see the whole inventory.
+
+### Zabbix
+
+Install the [Zabbix](https://grafana.com/grafana/plugins/alexanderzobnin-zabbix-app/) app, enable it, and add a Zabbix
+data source with an API token. The inventory comes from another source, NetBox or a CSV file for instance, as a table;
+the panel takes the state, the colour and the alerts from Zabbix in the same panel, with the **Mixed** data source:
+
+- A: the inventory, a table with `device`, `rack`, `position`...
+- B: Zabbix, query type **Metrics**, the group and hosts of the racks and the items of the state and the colour, for
+  instance `/ICMP ping|Temperature/`. The panel reads each series by its `host` label and names the column after its
+  item: map **status** to `ICMP ping`, which is 1 or 0, and set **Colour fields** to `Temperature`.
+- C: Zabbix, query type **Problems**, the same group and hosts. It gives one JSON object per problem: add the
+  **Extract fields** transformation, **Apply to** C, source `Problems`, format **JSON**, with the paths
+  `hosts[0].host` as `device`, `name` as `alertname` and `severity` as `severity`. Set **Critical severities** to `4`
+  and `5`, High and Disaster, for red badges.
+
+The host names of Zabbix must be the device names of the inventory. Checked on Zabbix 7.0 with the Zabbix plugin 6.10.
 
 ### Power
 

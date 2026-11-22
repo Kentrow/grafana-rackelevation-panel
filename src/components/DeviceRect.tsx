@@ -90,7 +90,7 @@ export const DeviceRect = React.memo(
     const opacity = (back ? 0.45 : 1) * (faded ? 0.3 : 1);
     // The copy seen from the other face is only a reminder of the device: out of the keyboard and screen readers.
     const focusable = keyboard !== undefined && !back && emphasis !== 'filtered';
-    const critical = device.alerts.some((a) => a.severity?.toLowerCase() === 'critical');
+    const critical = device.alerts.some((a) => a.critical);
     return (
       // The badge sits beside the focusable group, not in it: its count is not part of what the label says.
       <g>

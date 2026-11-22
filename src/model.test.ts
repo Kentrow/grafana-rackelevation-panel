@@ -1,6 +1,7 @@
 import { DEFAULT_UP_VALUES } from './data/status';
 import { buildModel, ModelOptions } from './model';
-import { describeModel, loadFixture } from './testing/fixtures';
+import { FieldType, toDataFrame } from '@grafana/data';
+import { csvToFrame, describeModel, loadFixture } from './testing/fixtures';
 
 const options = (o: Partial<ModelOptions> = {}): ModelOptions => ({
   frames: {},
@@ -53,5 +54,41 @@ describe('fixtures', () => {
     const devices = model('multi-rack').racks.flatMap((r) => r.front.map((p) => p.device));
     const sw = devices.find((d) => d.name === 'sw-a3-tor-01');
     expect(sw?.alerts.map((a) => a.name)).toEqual(['InterfaceErrors', 'HighCpu']);
+  });
+});
+
+describe('labelled series', () => {
+  const inventory = () => csvToFrame('device,rack,position\nsw-01,R1,40\nsw-02,R1,39\n', 'A');
+  const wide = (host = 'host') =>
+    toDataFrame({
+      refId: 'B',
+      fields: [
+        { name: 'Time', type: FieldType.time, values: [1000] },
+        { name: 'a', type: FieldType.number, values: [1], labels: { [host]: 'sw-01', item: 'Device up' } },
+        { name: 'b', type: FieldType.number, values: [0], labels: { [host]: 'sw-02', item: 'Device up' } },
+        { name: 'c', type: FieldType.number, values: [44], labels: { [host]: 'sw-01', item: 'Temperature' } },
+      ],
+    });
+  const states = (m: ReturnType<typeof buildModel>) =>
+    m.racks.flatMap((r) => r.front.map((p) => [p.device.name, p.device.state, p.device.value]));
+
+  it('gives the devices the last values of the series whose host or device label names them, without a join', () => {
+    const m = buildModel(
+      [inventory(), wide()],
+      options({ columns: { status: 'Device up' }, valueFields: ['Temperature'] })
+    );
+    expect(states(m)).toEqual([
+      ['sw-01', 'up', 44],
+      ['sw-02', 'down', undefined],
+    ]);
+    expect(m.errors).toEqual([]);
+  });
+
+  it('reads the label named in the options', () => {
+    const m = buildModel(
+      [inventory(), wide('hostname')],
+      options({ columns: { status: 'Device up' }, seriesLabel: 'hostname' })
+    );
+    expect(states(m).map((s) => s[1])).toEqual(['up', 'down']);
   });
 });

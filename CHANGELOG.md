@@ -14,6 +14,11 @@
   formatted as Grafana displays it, `{value}` being the colour value with its unit.
 - Card columns: **Card columns** picks the extra columns of the device card and their order; empty, all of them as
   before.
+- Labelled time series without a join: a series whose `device` or `host` label (or the new **Series device label**)
+  names a device gives it a column named after its metric, with its last value, ready for the status, the colour,
+  the card and the labels. Zabbix metrics and Prometheus series in **Time series** format need no transformation.
+- **Critical severities**: the alert severities drawn in red, `critical` by default; `4` and `5` for Zabbix.
+- The **Columns** options offer the columns of the labelled series and accept a typed name.
 
 **Accessibility:**
 
@@ -44,6 +49,7 @@
   `parent_bay.device.name`, since GraphQL has no `parent_device` field (the query failed); the NetBox `status` gives
   the state; the format of the v2 API tokens is given.
 - A Nautobot recipe, checked on Nautobot 3.2 with Infinity: devices and racks of a location in two GraphQL queries.
+- A Zabbix recipe, checked on Zabbix 7.0 with the Zabbix plugin 6.10, and a Prometheus recipe without transformation.
 - A reference of every option with its default, and every problem message in the troubleshooting.
 - An animated tour of the demo dashboard in the README, a screenshot of the free space, and a new logo.
 

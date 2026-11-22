@@ -20,7 +20,7 @@ export function useRackModel(
   racksKey: string,
   theme: GrafanaTheme2
 ) {
-  const { frames, columns, valueFields, upValues, label, labelSeparator } = options;
+  const { frames, columns, valueFields, upValues, label, labelSeparator, seriesLabel, criticalSeverities } = options;
   const template = options.labelTemplate.trim();
   const model = useMemo(
     () =>
@@ -30,8 +30,10 @@ export function useRackModel(
         valueFields,
         upValues,
         racks: racksKey ? racksKey.split('\n') : [],
+        seriesLabel,
+        criticalSeverities,
       }),
-    [series, frames, columns, valueFields, upValues, racksKey]
+    [series, frames, columns, valueFields, upValues, racksKey, seriesLabel, criticalSeverities]
   );
   /** Every device drawn, by name, with its rack. */
   const devices = useMemo(() => {

@@ -52,11 +52,11 @@ describe('rackHealth', () => {
       [
         'srv',
         [
-          { name: 'HighTemp', severity: 'warning' },
-          { name: 'Down', severity: 'Critical' },
+          { name: 'HighTemp', severity: 'warning', critical: false },
+          { name: 'Down', severity: 'Critical', critical: true },
         ],
       ],
-      ['sw', [{ name: 'HighTemp', severity: 'warning' }]],
+      ['sw', [{ name: 'HighTemp', severity: 'warning', critical: false }]],
     ]);
     expect(healthOf([device('srv'), device('sw', { position: 2 })], alerts)).toEqual({
       state: 'up',
