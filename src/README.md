@@ -364,8 +364,8 @@ The problems of the data are listed under the warning icon in the top right corn
 - **Rack x is not in the racks frame; drawn with default values**, **Rack x from the options is not in the data**:
   the rack names of the devices, the racks frame and the **Racks** option differ.
 - **Frame "B" also has a device column and is ignored**: join it to the devices frame with **Join by field**.
-- **x appears more than once**: the same device is on several rows of a frame without time field; only the first
-  one is drawn.
+- **x appears more than once**, **Rack x appears more than once in the racks frame**: the same device or rack is on
+  several rows of a frame without time field; only the first one counts.
 - **x overlaps y** or **x is outside rack**: the inventory places two devices on the same units, or past the rack
   height given by the racks frame.
 - **x has parent y, which is not in the data** or **x is its own ancestor**: the `parent_device` column names a

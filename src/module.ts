@@ -20,6 +20,12 @@ const DISPLAY = ['Display'];
 const LABELS = ['Labels'];
 const INTERACTIONS = ['Interactions'];
 
+/**
+ * Options of a multi-select, typed as addMultiSelect wants them. Its TOption is the type of the value, an array, while
+ * its options hold one item each: the only cast of the module, kept here.
+ */
+const multiOptions = <T>(options: Array<SelectableValue<T>>) => options as unknown as Array<SelectableValue<T[]>>;
+
 const LABEL_PARTS: Array<{ value: LabelPart; label: string }> = [
   { value: 'name', label: 'Name' },
   { value: 'model', label: 'Model' },
@@ -119,7 +125,7 @@ export const plugin = new PanelPlugin<RackElevationOptions>(RackPanel)
       settings: {
         allowCustomValue: true,
         options: [],
-        getOptions: (context) => fieldNamesOf(context.data) as unknown as Promise<Array<SelectableValue<string[]>>>,
+        getOptions: async (context) => multiOptions(await fieldNamesOf(context.data)),
       },
     });
     // The value column is replaced by the colour fields above.
@@ -246,8 +252,7 @@ export const plugin = new PanelPlugin<RackElevationOptions>(RackPanel)
         category: LABELS,
         defaultValue: DEFAULT_OPTIONS.label,
         showIf: (options) => !options.labelTemplate?.trim(),
-        // addMultiSelect types its options with the type of the whole value, an array, not of one item.
-        settings: { options: LABEL_PARTS as unknown as Array<SelectableValue<LabelPart[]>> },
+        settings: { options: multiOptions(LABEL_PARTS) },
       })
       .addTextInput({
         path: 'labelSeparator',
@@ -266,11 +271,7 @@ export const plugin = new PanelPlugin<RackElevationOptions>(RackPanel)
         settings: {
           allowCustomValue: true,
           options: [],
-          // Same typing quirk as the label parts.
-          getOptions: (context) =>
-            rolesOf(context.data, context.options?.columns?.role) as unknown as Promise<
-              Array<SelectableValue<string[]>>
-            >,
+          getOptions: async (context) => multiOptions(await rolesOf(context.data, context.options?.columns?.role)),
         },
       })
       .addTextInput({
