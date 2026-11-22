@@ -140,6 +140,7 @@ export const RackPanel = ({ data, options: saved, width, height, fieldConfig, id
             frame={model.devicesFrame}
             columns={columns}
             valueFields={valueFields}
+            cardColumns={options.cardColumns}
           />
         </div>
       )}

@@ -83,7 +83,8 @@ ignoring case, or mapped to other names in the **Columns** options.
 | `parent_device` | string           | no       | The row is listed in the card of its parent instead of being placed           |
 | `power`         | number           | no       | Power draw in watts, added up per rack, see [Power](#power)                   |
 
-Any other column is shown in the device card, as it is: site, serial number, IP address...
+Any other column is shown in the device card, as it is: site, serial number, IP address... Pick some of them, in the
+order you want, with **Card columns**.
 
 When the frame has a time field, as with a Prometheus range query, only the latest row of each device is read.
 
@@ -232,6 +233,7 @@ an override **Fields with name**.
 | Interactions | Role filter        | none                        | Roles to keep, the others fade and stop reacting; accepts a variable such as `$role`              |
 | Interactions | Highlight variable | `$device`                   | Dashboard variable whose devices are highlighted, `*` wildcards allowed                           |
 | Interactions | Tooltip            | on                          | Device card on hover and on focus                                                                 |
+| Interactions | Card columns       | all                         | Extra columns of the device card, in this order                                                   |
 
 The standard options of the field config (unit, decimals, colour scheme, thresholds, value mappings, data links)
 apply as described in [Colours](#colours) and [Interactions](#interactions).

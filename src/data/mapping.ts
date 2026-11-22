@@ -65,6 +65,22 @@ export function extraFields(frame: DataFrame, mapping: ColumnMapping, valueField
   return frame.fields.filter((f) => !used.has(f) && f.type !== FieldType.time);
 }
 
+/**
+ * Columns written in the device card under its inventory: every extra column, or only those chosen in the options, in
+ * their order, by name or display name.
+ */
+export function cardFields(
+  frame: DataFrame,
+  mapping: ColumnMapping,
+  valueFields: string[],
+  chosen: string[] | undefined
+): Field[] {
+  if (!chosen?.length) {
+    return extraFields(frame, mapping, valueFields);
+  }
+  return chosen.map((name) => findField(frame, name)).filter((f): f is Field => f !== undefined);
+}
+
 export function toText(raw: unknown): string | undefined {
   if (raw === null || raw === undefined) {
     return undefined;

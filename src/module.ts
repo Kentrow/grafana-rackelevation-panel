@@ -8,7 +8,8 @@ import {
   VisualizationSuggestionScore,
 } from '@grafana/data';
 import { RackPanel } from './components/RackPanel';
-import { findField, toText } from './data/mapping';
+import { identifyFrames } from './data/identify';
+import { extraFields, findField, toText } from './data/mapping';
 import { DEFAULT_UP_VALUES } from './data/status';
 import { FrameSelect } from './editor/FrameSelect';
 import { migrateOptions } from './migrations';
@@ -43,6 +44,16 @@ async function fieldNamesOf(frames: DataFrame[] | undefined) {
 }
 
 /** Roles found in the data, offered by the role filter. */
+/** Extra columns of the devices frame, found as the panel finds it: those the card can show. */
+async function cardColumnsOf(frames: DataFrame[] | undefined, options: Partial<RackElevationOptions> | undefined) {
+  const columns = options?.columns ?? {};
+  const devices = identifyFrames(frames ?? [], options?.frames ?? {}, columns).devices;
+  return (devices ? extraFields(devices, columns, options?.valueFields ?? []) : []).map((f) => {
+    const name = f.config.displayName || f.name;
+    return { value: name, label: name };
+  });
+}
+
 async function rolesOf(frames: DataFrame[] | undefined, roleColumn: string | undefined) {
   const roles = new Set<string>();
   for (const frame of frames ?? []) {
@@ -288,6 +299,20 @@ export const plugin = new PanelPlugin<RackElevationOptions>(RackPanel)
         description: 'Device card on hover: inventory, state, value, extra columns, alerts and child devices.',
         category: INTERACTIONS,
         defaultValue: DEFAULT_OPTIONS.showTooltip,
+      })
+      .addMultiSelect({
+        path: 'cardColumns',
+        name: 'Card columns',
+        description:
+          'Columns written in the device card under its inventory, in this order. Empty: every column that is not in the data contract.',
+        category: INTERACTIONS,
+        defaultValue: DEFAULT_OPTIONS.cardColumns,
+        showIf: (options) => options.showTooltip,
+        settings: {
+          allowCustomValue: true,
+          options: [],
+          getOptions: async (context) => multiOptions(await cardColumnsOf(context.data, context.options)),
+        },
       });
   })
   // Offered in the visualization picker when a frame has rack and position columns.
