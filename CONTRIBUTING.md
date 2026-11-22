@@ -28,7 +28,8 @@ Changes to `src/plugin.json` need a restart of the Grafana server.
 - No `any`. Frames are typed with `DataFrame` and `Field` from `@grafana/data`.
 - Colours, spacing and typography come from the Grafana theme; styles use Emotion with `useStyles2`.
 - Do not change anything in `.config/`: it belongs to `@grafana/create-plugin`, which updates it with
-  `npx @grafana/create-plugin@latest update`. Extend the configurations from the files at the root instead, as
+  `npx @grafana/create-plugin@latest update`, run by hand now and then in a pull request of its own (Dependabot
+  updates the dependencies, not the scaffold). Extend the configurations from the files at the root instead, as
   `webpack.config.ts` does.
 - The layout snapshots of `src/__snapshots__/` are reviewed by a human: read the diff before updating them.
 - The user documentation is `src/README.md`, the page of the plugin in the catalog. Its quick-start CSV is the
