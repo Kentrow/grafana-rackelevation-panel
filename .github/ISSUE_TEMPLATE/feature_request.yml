@@ -1,0 +1,20 @@
+name: Feature request
+description: Something the panel should draw or do.
+labels: [enhancement]
+body:
+  - type: textarea
+    id: need
+    attributes:
+      label: What do you want to see or do?
+      description: The situation first (your racks, your data source, what you look for), then the idea.
+    validations:
+      required: true
+  - type: textarea
+    id: data
+    attributes:
+      label: Data you have
+      description: The columns your inventory or monitoring gives, if the idea depends on them (NetBox, Nautobot, SQL...).
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: How do you do it today?

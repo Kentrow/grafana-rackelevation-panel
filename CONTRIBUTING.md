@@ -1,8 +1,9 @@
 # Contributing
 
 Thanks for your interest in the rack elevation panel. Bugs and feature requests go to the
-[issues](https://github.com/Kentrow/grafana-rackelevation-panel/issues); for a bug, the CSV or the table that the panel
-receives (Query inspector, Data tab) helps a lot.
+[issues](https://github.com/Kentrow/grafana-rackelevation-panel/issues), whose forms ask for what helps most: for a
+bug, the CSV or the table that the panel receives (Query inspector, Data tab). Security vulnerabilities are reported
+privately, as [SECURITY.md](SECURITY.md) says.
 
 ## Development
 

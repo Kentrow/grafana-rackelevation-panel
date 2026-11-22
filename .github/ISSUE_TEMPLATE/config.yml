@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: User documentation
+    url: https://grafana.com/grafana/plugins/kentrow-rackelevation-panel/
+    about: Data contract, options, recipes for NetBox, Prometheus and CSV, troubleshooting.
+  - name: Report a security vulnerability
+    url: https://github.com/Kentrow/grafana-rackelevation-panel/security/advisories/new
+    about: Privately, not in a public issue.
