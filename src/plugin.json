@@ -37,11 +37,11 @@
     ],
     "screenshots": [
       {
-        "name": "Both faces of five racks, temperature colours, alert badges and the device card",
+        "name": "Both faces of five racks: rack state, temperature colours, alert badges and the device card",
         "path": "img/screenshot-racks.png"
       },
       {
-        "name": "Highlight from a dashboard variable and role filter, light theme",
+        "name": "Highlight with a wildcard from a dashboard variable and role filter, light theme",
         "path": "img/screenshot-light.png"
       },
       {
