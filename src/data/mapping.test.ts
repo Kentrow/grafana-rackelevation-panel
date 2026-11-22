@@ -195,6 +195,15 @@ describe('readRacks', () => {
   });
 });
 
+describe('Nautobot GraphQL values', () => {
+  it('reads the FRONT and REAR faces and the A_10 and A_19 widths of the Nautobot enums', () => {
+    const devices = csvToFrame('device,rack,position,face\nsw-01,R1,40,FRONT\nfw-01,R1,36,REAR\n', 'A');
+    expect(readDevices(devices, {}, DEFAULT_UP_VALUES).devices.map((d) => d.face)).toEqual(['front', 'rear']);
+    const racks = csvToFrame('rack,width\nR1,A_19\nR2,A_10\n', 'B');
+    expect(readRacks(racks, {}).map((r) => r.width)).toEqual([19, 10]);
+  });
+});
+
 describe('power', () => {
   it('reads the power draw of the devices, mapped or not, and the power capacity of the racks', () => {
     const devices = csvToFrame('device,rack,watts\nsw-01,R1,180\nsw-02,R1,\n', 'A');
