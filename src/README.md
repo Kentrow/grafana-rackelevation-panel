@@ -191,8 +191,9 @@ A second query with the racks columns adds rack heights, names and widths.
 ### NetBox with the Infinity data source
 
 Install the [Infinity](https://grafana.com/grafana/plugins/yesoreyeram-infinity-datasource/) data source and set it
-up for your NetBox URL, with an `Authorization` header holding your API token (`Token <token>`, or
-`Bearer <token>` for the v2 tokens of NetBox 4.5+), kept as a secure header.
+up for your NetBox URL, with an `Authorization` header holding your API token, kept as a secure header:
+`Bearer nbt_<key>.<token>` for the v2 tokens of NetBox 4.5 and later, as NetBox shows them, or `Token <token>` for
+the older ones.
 
 The device height and depth belong to the device type, which the REST API of devices does not return; the GraphQL
 API returns them in one query. Add a query of type **GraphQL**, source **URL**, URL `https://netbox.example.com/graphql/`,
@@ -204,6 +205,7 @@ query {
     name
     position
     face
+    status
     rack {
       name
     }
@@ -215,8 +217,10 @@ query {
       u_height
       is_full_depth
     }
-    parent_device {
-      name
+    parent_bay {
+      device {
+        name
+      }
     }
   }
 }
@@ -231,10 +235,11 @@ with the columns:
 | `position`                  | `position`      | number  |
 | `device_type.u_height`      | `u_height`      | number  |
 | `face`                      | `face`          | string  |
+| `status`                    | `status`        | string  |
 | `device_type.is_full_depth` | `is_full_depth` | boolean |
 | `role.name`                 | `role`          | string  |
 | `device_type.model`         | `model`         | string  |
-| `parent_device.name`        | `parent_device` | string  |
+| `parent_bay.device.name`    | `parent_device` | string  |
 
 A second GraphQL query, root selector `data.rack_list`, gives the racks frame:
 
@@ -255,11 +260,17 @@ query {
 
 with `name` as `rack`, and `u_height`, `starting_unit`, `desc_units`, `width` and `site.name` as `site`.
 
-Filter and field names can change between NetBox versions: try the queries in the GraphiQL page of NetBox, at
-`/graphql/`, first.
+These queries were checked on NetBox 4.7. Filter and field names can change between NetBox versions: try them in
+the GraphiQL page of NetBox, at `/graphql/`, first.
 
-State and colour come from your monitoring (Prometheus, Zabbix, LibreNMS...): add a query that returns `device` and
-the metric, and join it to the inventory with **Join by field** on `device`. The device names of NetBox and of the
+The `status` of NetBox gives the state: `active` is one of the default **In service values**, so active devices are
+in service and the others (`offline`, `planned`, `failed`...) out of service. Add `planned` or `staged` to the **In
+service values** to keep them out of the red, or leave `status` out of the query to draw every device as not
+monitored.
+
+Live state and colour come from your monitoring (Prometheus, Zabbix, LibreNMS...): add a query that returns `device`
+and the metric, and join it to the inventory with **Join by field** on `device`. To take the state from the
+monitoring rather than from NetBox, map **status** to its column in the **Columns** options. The device names of NetBox and of the
 monitoring usually match on the hostname; otherwise align them with the **Rename by regex** transformation or, in
 PromQL, with `label_replace`.
 
