@@ -49,6 +49,19 @@ Changes to `src/plugin.json` need a restart of the Grafana server.
 - Never edit the generated fixtures or `provisioning/dashboards/*.json` by hand: change the scripts of `scripts/` and
   run them. The CI fails when the committed files differ from what the scripts write.
 
+## Screenshots and demo
+
+The catalog shows the screenshots of `src/img/` listed in `src/plugin.json`, and the README the animated demo
+`src/img/demo.gif`. Retake them when the drawing changes, from the dev stack (`npm run build && npm run server`):
+
+- Screenshots: 1600 x 820 px at a device scale of 1, in kiosk mode (`&kiosk`): `screenshot-racks.png` is the panel
+  Both faces of the demo dashboard, dark, with a device card; `screenshot-light.png` the panel Filtered by role, light,
+  with a highlight; `screenshot-conflicts.png` the collisions panel of the fixtures dashboard with its problems open.
+- Demo: `npm run demo` plays a scripted tour of the demo dashboard and saves its frames in `test-results/demo-frames/`;
+  `scripts/make-gif.py` writes `src/img/demo.gif` from them. It needs Pillow, for instance in a virtual environment:
+  `python3 -m venv /tmp/gif && /tmp/gif/bin/pip install pillow && /tmp/gif/bin/python scripts/make-gif.py`. Keep the
+  GIF under a megabyte or two: the catalog page loads it.
+
 ## Pull requests
 
 Before opening one, run `npm run typecheck`, `npm run lint`, `npm run test:ci` and, for a change of the drawing or

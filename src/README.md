@@ -24,6 +24,8 @@ produce such a table works without extra code.
   filter.
 - Overlapping or overflowing devices are drawn and listed, never hidden.
 
+![Tour of the demo dashboard: device card on hover, highlight with a wildcard, data links and keyboard](https://raw.githubusercontent.com/Kentrow/grafana-rackelevation-panel/main/src/img/demo.gif)
+
 ## Installation
 
 Grafana 13.2 or later. In Grafana, open **Administration > Plugins and data > Plugins**, search for **Rack

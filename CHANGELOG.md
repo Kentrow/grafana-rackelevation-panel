@@ -25,6 +25,9 @@
 
 **Documentation:**
 
+- An animated tour of the demo dashboard in the README: device card, highlight with a wildcard, data links and
+  keyboard. `npm run demo` and `scripts/make-gif.py` make it again when the drawing changes.
+
 - The NetBox recipe is checked on NetBox 4.7 with Infinity 4.1: the parent of a child device comes from
   `parent_bay.device.name`, since GraphQL has no `parent_device` field (the query failed); the NetBox `status` gives
   the state; the format of the v2 API tokens is given.
