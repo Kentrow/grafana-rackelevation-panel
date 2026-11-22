@@ -10,10 +10,14 @@ export interface RackHealth {
   critical: boolean;
 }
 
-/** State of a rack at a glance, from every device in it: both faces and the 0U band, each device once. */
-export function rackHealth(layout: RackLayout): RackHealth {
-  const devices = new Set<Device>([...layout.front, ...layout.rear].map((p) => p.device));
-  layout.zeroU.forEach((d) => devices.add(d));
+/**
+ * State of a rack at a glance, from its devices on both faces and in the 0U band, each device once. Only the devices
+ * kept by `counted` count, such as those of the role filter, as in the legend.
+ */
+export function rackHealth(layout: RackLayout, counted: (device: Device) => boolean = () => true): RackHealth {
+  const all = new Set<Device>([...layout.front, ...layout.rear].map((p) => p.device));
+  layout.zeroU.forEach((d) => all.add(d));
+  const devices = [...all].filter(counted);
   let down = 0;
   let up = 0;
   let alerts = 0;
@@ -24,6 +28,6 @@ export function rackHealth(layout: RackLayout): RackHealth {
     alerts += device.alerts.length;
     critical ||= device.alerts.some((a) => a.severity?.toLowerCase() === 'critical');
   }
-  const state = down > 0 ? 'down' : up > 0 ? 'up' : devices.size > 0 ? 'unknown' : undefined;
+  const state = down > 0 ? 'down' : up > 0 ? 'up' : devices.length > 0 ? 'unknown' : undefined;
   return { state, down, alerts, critical };
 }

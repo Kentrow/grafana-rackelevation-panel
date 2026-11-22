@@ -23,7 +23,10 @@ describe('RackPanel', () => {
 
   it('shows the worst device state and the active alerts of each rack next to its name', () => {
     const series = [
-      csvToFrame('device,rack,position,status\nsw-01,R1,1,down\nsrv-01,R1,2,up\nsrv-02,R2,1,up\n', 'A'),
+      csvToFrame(
+        'device,rack,position,status,role\nsw-01,R1,1,down,switch\nsrv-01,R1,2,up,server\nsrv-02,R2,1,up,server\n',
+        'A'
+      ),
       csvToFrame('device,alertname,severity\nsrv-02,HighTemp,warning\nsrv-02,DiskFull,warning\n', 'C'),
     ];
     const { rerender } = render(<RackPanel {...props(series)} />);
@@ -33,6 +36,9 @@ describe('RackPanel', () => {
     expect(within(header('R2')).getByTestId('rack-state')).toHaveAttribute('data-state', 'up');
     expect(within(header('R2')).getByTestId('rack-alerts')).toHaveTextContent('2');
     expect(header('R1').querySelector('title')).toHaveTextContent('1 device out of service');
+    // The role filter and the hidden 0U band leave their devices out, as in the legend.
+    rerender(<RackPanel {...props(series, { roles: ['server'] })} />);
+    expect(within(header('R1')).getByTestId('rack-state')).toHaveAttribute('data-state', 'up');
     rerender(<RackPanel {...props(series, { showRackState: false })} />);
     expect(screen.queryByTestId('rack-state')).toBeNull();
   });

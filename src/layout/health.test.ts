@@ -65,4 +65,15 @@ describe('rackHealth', () => {
       critical: true,
     });
   });
+
+  it('counts only the devices kept by the filter, as the legend does', () => {
+    const health = rackHealth(
+      placeDevices({
+        devices: [device('srv'), device('nas', { position: 2, state: 'down', role: 'storage' })],
+        racks: [rack],
+      }).racks[0],
+      (d) => d.role !== 'storage'
+    );
+    expect(health).toEqual({ state: 'up', down: 0, alerts: 0, critical: false });
+  });
 });

@@ -83,7 +83,8 @@ export const Rack = ({
     innerWidth + 2 * FRAME + zeroUWidth,
     11
   );
-  const health = rackHealth(layout);
+  // As in the legend: devices out of the role filter, and those of a hidden 0U band, do not count.
+  const health = rackHealth(layout, (d) => emphasis(d) !== 'filtered' && (zeroUWidth > 0 || !layout.zeroU.includes(d)));
   const stateColor = {
     down: theme.colors.error.main,
     up: theme.colors.success.main,
