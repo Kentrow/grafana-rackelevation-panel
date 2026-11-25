@@ -28,15 +28,6 @@ produce such a table works without extra code.
 
 ![Tour of the demo dashboard: device card on hover, highlight with a wildcard, data links and keyboard](https://raw.githubusercontent.com/Kentrow/grafana-rackelevation-panel/main/src/img/demo.gif)
 
-## Installation
-
-Grafana 13.2 or later. In Grafana, open **Administration > Plugins and data > Plugins**, search for **Rack
-elevation** and install it, or run:
-
-```bash
-grafana cli plugins install kentrow-rackelevation-panel
-```
-
 ## Quick start
 
 Display a rack in a few minutes, with no data source to install:
@@ -249,10 +240,30 @@ apply as described in [Colours](#colours) and [Interactions](#interactions).
 
 ## Recipes
 
+### Example dashboards
+
+Two dashboards to import in **Dashboards** > **New** > **Import**, by pasting the file or uploading it, then picking
+the data sources. They need the panel 1.2 or later.
+
+- [Rack elevation from CSV][csv-example]: the five racks of the demo, from three CSV files held inline by
+  [Infinity](https://grafana.com/grafana/plugins/yesoreyeram-infinity-datasource/) queries: devices, racks and alerts.
+  Set **Source** to **URL** in each query to read your own files. Both faces, free space and highlight variables, data
+  links.
+- [Rack elevation from NetBox and Prometheus][netbox-example]: the devices and racks of a NetBox site from its GraphQL
+  API through Infinity, as in the [NetBox recipe](#netbox-with-the-infinity-data-source), with a **Site** variable
+  listing the sites of NetBox; the state from the Prometheus metric `up` read by its `device` label, and the firing
+  alerts that have a `device` label. No transformation. Set the URL and the API token of NetBox in the Infinity data
+  source, and the URL of NetBox for the links in the hidden `netbox_url` variable.
+
+[csv-example]: https://raw.githubusercontent.com/Kentrow/grafana-rackelevation-panel/main/examples/dashboards/rack-elevation-csv.json
+[netbox-example]: https://raw.githubusercontent.com/Kentrow/grafana-rackelevation-panel/main/examples/dashboards/rack-elevation-netbox-prometheus.json
+
 ### CSV, no infrastructure
 
 Paste the CSV of the [quick start](#quick-start) in TestData, or serve a CSV file through the Infinity data source.
-A second query with the racks columns adds rack heights, names and widths.
+A second query with the racks columns adds rack heights, names and widths. With Infinity, declare the columns with
+their types, else every column is text: **number** for `position`, `u_height`, `value`..., and **string** for
+`is_full_depth` and `desc_units`, since Infinity reads `false` as empty in a CSV boolean column.
 
 ### NetBox with the Infinity data source
 
@@ -334,11 +345,12 @@ in service and the others (`offline`, `planned`, `failed`...) out of service. Ad
 service values** to keep them out of the red, or leave `status` out of the query to draw every device as not
 monitored.
 
-Live state and colour come from your monitoring (Prometheus, Zabbix, LibreNMS...): add its queries, time series
-labelled with the device as in the [Prometheus](#prometheus) and [Zabbix](#zabbix) recipes, or a table joined to the
-inventory with **Join by field** on `device`. To take the state from the monitoring rather than from NetBox, map
-**status** to its column in the **Columns** options. The device names of NetBox and of the monitoring usually match on
-the hostname; otherwise align them with the **Rename by regex** transformation or, in PromQL, with `label_replace`.
+Live state and colour come from your monitoring (Prometheus, Zabbix, LibreNMS...): add its queries, time series labelled
+with the device as in the [Prometheus](#prometheus) and [Zabbix](#zabbix) recipes, or a table joined to the inventory
+with **Join by field** on `device` as in the [LibreNMS](#librenms) recipe. To take the state from the monitoring rather
+than from NetBox, map **status** to its column in the **Columns** options. The device names of NetBox and of the
+monitoring usually match on the hostname; otherwise align them in the queries, for instance with `label_replace` in
+PromQL. The **Rename by regex** transformation renames columns, not the values in them.
 
 ### Nautobot with the Infinity data source
 
@@ -459,6 +471,29 @@ the panel takes the state, the colour and the alerts from Zabbix in the same pan
   and `5`, High and Disaster, for red badges.
 
 The host names of Zabbix must be the device names of the inventory. Checked on Zabbix 7.0 with the Zabbix plugin 6.10.
+
+### LibreNMS
+
+LibreNMS has no rack positions: the inventory comes from another source, NetBox or a CSV file for instance, and the
+panel takes the state and the alerts from the API of LibreNMS, in the same panel with the **Mixed** data source. Create
+an API token in LibreNMS (**API** > **API Tokens** in the settings menu, or `lnms api:token-create <user>`) and set up
+an [Infinity](https://grafana.com/grafana/plugins/yesoreyeram-infinity-datasource/) data source for your LibreNMS URL,
+with an `X-Auth-Token` header holding the token, kept as a secure header. Then:
+
+- A: the inventory, a table with `device`, `rack`, `position`...
+- B: Infinity, type **JSON**, source **URL**, URL `https://librenms.example.com/api/v0/devices`, parser **Backend**,
+  root selector `devices`, with the columns `hostname` as `device` (string) and `status` as `status` (number). The
+  status is 1 when the device answers and 0 when it is down, and `1` is a default **In service value**.
+- C: Infinity, the same way, URL `https://librenms.example.com/api/v0/alerts` with the URL parameter `state` = `1`
+  for the active alerts, root selector `alerts`, with the columns `hostname` as `device`, `name` as `alertname` and
+  `severity` as `severity` (strings). The `critical` alerts of LibreNMS get red badges, the `warning` ones orange.
+
+Join A and B with **Join by field** on `device`, mode **OUTER (TABULAR)**, with its **Apply to** filter on A and B so
+that C stays apart as the alerts frame. If the inventory has its own `status` column, name the LibreNMS one
+differently, `librenms_status` for instance, and map **status** to it in the **Columns** options.
+
+The hostnames of LibreNMS must be the device names of the inventory. When the devices were added by IP address, take
+`sysName` as `device` in B, and `details.rule.0.sysName` in C. Checked on LibreNMS 26.11 with Infinity 4.1.
 
 ### Power
 

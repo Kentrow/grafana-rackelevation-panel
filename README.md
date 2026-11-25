@@ -15,7 +15,7 @@ coloured by device state or by any metric with the standard Grafana field config
 `grafana cli plugins install kentrow-rackelevation-panel`.
 
 **[User documentation](src/README.md)**: quick start, data contract, colours, interactions and recipes for CSV,
-NetBox, Nautobot and Prometheus. It is also the page of the plugin in the Grafana catalog.
+NetBox, Nautobot, Prometheus, Zabbix and LibreNMS. It is also the page of the plugin in the Grafana catalog.
 
 ## Try it locally
 
@@ -39,6 +39,9 @@ Then open <http://localhost:3000> (anonymous access, no login) and the dashboard
 
 Everything comes from TestData and from the Prometheus and exporter containers of `docker-compose.yaml`: no account,
 no external service.
+
+The [examples/dashboards](examples/dashboards) folder holds dashboards to import into your own Grafana: from CSV files,
+and from NetBox and Prometheus. They are written by `npm run dashboards`, as the dashboards above.
 
 ## Feedback and contributing
 

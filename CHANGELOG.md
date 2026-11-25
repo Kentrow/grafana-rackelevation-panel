@@ -43,8 +43,20 @@
 - The standard option **No value** is no longer offered: the panel never draws an empty value. Min and max stay, for
   the percent thresholds and the continuous colour schemes.
 
+**Changes:**
+
+- Visual regression tests: the demo panels and a device card, in the dark and light themes, compared with their
+  baselines in the CI, in the Playwright image of Docker. No change in the panel.
+
 **Documentation:**
 
+- Example dashboards to import, linked from the README: from CSV files through Infinity, and from NetBox and
+  Prometheus without transformation, with a site variable read from NetBox. Checked on NetBox 4.7 and Prometheus 3.5
+  with Infinity 4.1. The CSV recipe tells how to type the Infinity columns: Infinity reads `false` as empty in a CSV
+  boolean column.
+- A LibreNMS recipe, checked on LibreNMS 26.11 with Infinity 4.1: the state and the alerts from its API, joined to the
+  inventory. The NetBox recipe no longer suggests **Rename by regex** to align device names: it renames columns.
+- The catalog page no longer has an Installation section: the catalog shows how to install every plugin.
 - The NetBox recipe is checked on NetBox 4.7 with Infinity 4.1: the parent of a child device comes from
   `parent_bay.device.name`, since GraphQL has no `parent_device` field (the query failed); the NetBox `status` gives
   the state; the format of the v2 API tokens is given.

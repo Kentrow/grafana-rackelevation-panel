@@ -1,0 +1,336 @@
+{
+  "__inputs": [
+    {
+      "name": "DS_NETBOX",
+      "label": "NetBox",
+      "description": "Infinity data source set up with the URL and the API token of NetBox",
+      "type": "datasource",
+      "pluginId": "yesoreyeram-infinity-datasource",
+      "pluginName": "Infinity"
+    },
+    {
+      "name": "DS_PROMETHEUS",
+      "label": "Prometheus",
+      "description": "Prometheus with the health metric and the alerts of the devices",
+      "type": "datasource",
+      "pluginId": "prometheus",
+      "pluginName": "Prometheus"
+    }
+  ],
+  "__elements": {},
+  "__requires": [
+    {
+      "type": "grafana",
+      "id": "grafana",
+      "name": "Grafana",
+      "version": "13.2.0"
+    },
+    {
+      "type": "panel",
+      "id": "kentrow-rackelevation-panel",
+      "name": "Rack elevation",
+      "version": "1.2.0"
+    },
+    {
+      "type": "panel",
+      "id": "text",
+      "name": "Text",
+      "version": ""
+    },
+    {
+      "type": "datasource",
+      "id": "yesoreyeram-infinity-datasource",
+      "name": "Infinity",
+      "version": "4.1.0"
+    },
+    {
+      "type": "datasource",
+      "id": "prometheus",
+      "name": "Prometheus",
+      "version": "1.0.0"
+    }
+  ],
+  "id": null,
+  "uid": "rack-elevation-netbox-prometheus",
+  "title": "Rack elevation from NetBox and Prometheus",
+  "tags": [
+    "rack-elevation"
+  ],
+  "editable": true,
+  "graphTooltip": 0,
+  "schemaVersion": 39,
+  "time": {
+    "from": "now-15m",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "",
+  "refresh": "1m",
+  "links": [],
+  "annotations": {
+    "list": []
+  },
+  "templating": {
+    "list": [
+      {
+        "type": "query",
+        "name": "site",
+        "label": "Site",
+        "datasource": {
+          "type": "yesoreyeram-infinity-datasource",
+          "uid": "${DS_NETBOX}"
+        },
+        "query": {
+          "queryType": "infinity",
+          "refId": "variable",
+          "infinityQuery": {
+            "refId": "variable",
+            "type": "graphql",
+            "source": "url",
+            "format": "table",
+            "parser": "backend",
+            "url": "/graphql/",
+            "url_options": {
+              "method": "POST",
+              "body_type": "graphql",
+              "body_graphql_query": "query {\n  site_list {\n    name\n    slug\n  }\n}"
+            },
+            "root_selector": "data.site_list",
+            "columns": [
+              {
+                "selector": "name",
+                "text": "__text",
+                "type": "string"
+              },
+              {
+                "selector": "slug",
+                "text": "__value",
+                "type": "string"
+              }
+            ]
+          }
+        },
+        "refresh": 1,
+        "current": {},
+        "options": []
+      },
+      {
+        "type": "textbox",
+        "name": "device",
+        "label": "Highlighted device",
+        "query": "",
+        "current": {
+          "text": "",
+          "value": ""
+        },
+        "options": []
+      },
+      {
+        "type": "constant",
+        "name": "netbox_url",
+        "query": "https://netbox.example.com",
+        "hide": 2,
+        "options": []
+      }
+    ]
+  },
+  "panels": [
+    {
+      "id": 1,
+      "type": "text",
+      "title": "",
+      "gridPos": {
+        "h": 4,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "options": {
+        "mode": "markdown",
+        "content": "The **devices** and **racks** come from the GraphQL API of NetBox, through Infinity: set the URL of NetBox in the Infinity data source, with an `Authorization` header holding the API token. The state comes from the Prometheus series of **health**, read by their `device` label: replace `up` with the 0/1 metric of your devices and map **status** to its name in the **Columns** options, or clear it to take the NetBox status. The **alerts** are the firing alerts with a `device` label. Set the `netbox_url` variable in the settings for the links. See the [NetBox recipe](https://github.com/Kentrow/grafana-rackelevation-panel/blob/main/src/README.md#netbox-with-the-infinity-data-source)."
+      }
+    },
+    {
+      "id": 2,
+      "type": "kentrow-rackelevation-panel",
+      "title": "Racks",
+      "datasource": {
+        "type": "datasource",
+        "uid": "-- Mixed --"
+      },
+      "gridPos": {
+        "h": 28,
+        "w": 24,
+        "x": 0,
+        "y": 4
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "yesoreyeram-infinity-datasource",
+            "uid": "${DS_NETBOX}"
+          },
+          "refId": "devices",
+          "type": "graphql",
+          "source": "url",
+          "format": "table",
+          "parser": "backend",
+          "url": "/graphql/",
+          "url_options": {
+            "method": "POST",
+            "body_type": "graphql",
+            "body_graphql_query": "query {\n  device_list(filters: { site: { slug: { exact: \"$site\" } } }) {\n    name\n    position\n    face\n    status\n    rack {\n      name\n    }\n    role {\n      name\n    }\n    device_type {\n      model\n      u_height\n      is_full_depth\n    }\n    parent_bay {\n      device {\n        name\n      }\n    }\n  }\n}"
+          },
+          "root_selector": "data.device_list",
+          "columns": [
+            {
+              "selector": "name",
+              "text": "device",
+              "type": "string"
+            },
+            {
+              "selector": "rack.name",
+              "text": "rack",
+              "type": "string"
+            },
+            {
+              "selector": "position",
+              "text": "position",
+              "type": "number"
+            },
+            {
+              "selector": "device_type.u_height",
+              "text": "u_height",
+              "type": "number"
+            },
+            {
+              "selector": "face",
+              "text": "face",
+              "type": "string"
+            },
+            {
+              "selector": "status",
+              "text": "status",
+              "type": "string"
+            },
+            {
+              "selector": "device_type.is_full_depth",
+              "text": "is_full_depth",
+              "type": "boolean"
+            },
+            {
+              "selector": "role.name",
+              "text": "role",
+              "type": "string"
+            },
+            {
+              "selector": "device_type.model",
+              "text": "model",
+              "type": "string"
+            },
+            {
+              "selector": "parent_bay.device.name",
+              "text": "parent_device",
+              "type": "string"
+            }
+          ]
+        },
+        {
+          "datasource": {
+            "type": "yesoreyeram-infinity-datasource",
+            "uid": "${DS_NETBOX}"
+          },
+          "refId": "racks",
+          "type": "graphql",
+          "source": "url",
+          "format": "table",
+          "parser": "backend",
+          "url": "/graphql/",
+          "url_options": {
+            "method": "POST",
+            "body_type": "graphql",
+            "body_graphql_query": "query {\n  rack_list(filters: { site: { slug: { exact: \"$site\" } } }) {\n    name\n    u_height\n    starting_unit\n    desc_units\n    width\n    site {\n      name\n    }\n  }\n}"
+          },
+          "root_selector": "data.rack_list",
+          "columns": [
+            {
+              "selector": "name",
+              "text": "rack",
+              "type": "string"
+            },
+            {
+              "selector": "u_height",
+              "text": "u_height",
+              "type": "number"
+            },
+            {
+              "selector": "starting_unit",
+              "text": "starting_unit",
+              "type": "number"
+            },
+            {
+              "selector": "desc_units",
+              "text": "desc_units",
+              "type": "boolean"
+            },
+            {
+              "selector": "width",
+              "text": "width",
+              "type": "number"
+            },
+            {
+              "selector": "site.name",
+              "text": "site",
+              "type": "string"
+            }
+          ]
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "refId": "health",
+          "expr": "up{device!=\"\"}",
+          "legendFormat": "{{device}}",
+          "instant": false,
+          "range": true,
+          "format": "time_series"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "refId": "alerts",
+          "expr": "ALERTS{alertstate=\"firing\", device!=\"\"}",
+          "instant": true,
+          "range": false,
+          "format": "table"
+        }
+      ],
+      "options": {
+        "face": "both",
+        "columns": {
+          "status": "up"
+        }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "links": [
+            {
+              "title": "Open in NetBox",
+              "url": "${netbox_url}/dcim/devices/?q=${__data.fields.device}",
+              "targetBlank": true
+            },
+            {
+              "title": "Highlight in this dashboard",
+              "url": "/d/rack-elevation-netbox-prometheus/rack-elevation-from-netbox-and-prometheus?var-device=${__data.fields.device}&${site:queryparam}"
+            }
+          ]
+        },
+        "overrides": []
+      }
+    }
+  ]
+}
