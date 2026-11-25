@@ -27,15 +27,6 @@ produce such a table works without extra code.
 
 ![Tour of the demo dashboard: device card on hover, highlight with a wildcard, data links and keyboard](https://raw.githubusercontent.com/Kentrow/grafana-rackelevation-panel/main/src/img/demo.gif)
 
-## Installation
-
-Grafana 13.2 or later. In Grafana, open **Administration > Plugins and data > Plugins**, search for **Rack
-elevation** and install it, or run:
-
-```bash
-grafana cli plugins install kentrow-rackelevation-panel
-```
-
 ## Quick start
 
 Display a rack in a few minutes, with no data source to install:

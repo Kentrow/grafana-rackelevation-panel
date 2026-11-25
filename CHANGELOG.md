@@ -51,6 +51,7 @@
 
 **Documentation:**
 
+- The catalog page no longer has an Installation section: the catalog shows how to install every plugin.
 - Example dashboards to import, linked from the README: from CSV files through Infinity, and from NetBox and
   Prometheus without transformation, with a site variable read from NetBox. Checked on NetBox 4.7 and Prometheus 3.5
   with Infinity 4.1. The CSV recipe tells how to type the Infinity columns: Infinity reads `false` as empty in a CSV
