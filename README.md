@@ -29,8 +29,9 @@ docker compose up
 
 Then open <http://localhost:3000> (anonymous access, no login) and the dashboards tagged `rack-elevation`:
 
-- **Rack elevation demo**: front view, both faces with alerts, role filter, temperature thresholds, data links on the
-  devices and the racks. Add `?var-device=sw-hq-core-01` to the URL to highlight a device.
+- **Rack elevation demo**: front view, both faces with alerts and power gauges, role filter, temperature thresholds,
+  data links on the devices and the racks. Type `sw-a1-*` in **Highlighted device** to highlight a family of devices,
+  or `4` in **Free space (U)** to see where a 4U device fits.
 - **Rack elevation fixtures**: one panel per reference data set: faces, descending numbering, 0U band, overlaps and
   overflows, child devices, 10-inch rack, 30 racks of 1000 devices, Prometheus frames.
 - **Rack elevation live (Prometheus)**: the PromQL recipes on live metrics from a small exporter, with alerts firing
